@@ -270,12 +270,14 @@ body.touch #fishUi .fmeter{right:150px;}
   position:fixed; left:50%; transform:translateX(-50%);
   bottom:calc(18px + var(--safe-b)); z-index:34;
   width:min(860px, calc(100vw - 32px));
+  max-height:calc(100vh - 36px - var(--safe-b));
+  display:flex; flex-direction:column;
   background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
   box-shadow:0 18px 48px rgba(0,0,0,.45); backdrop-filter:blur(6px);
   overflow:hidden; animation:rise .22s ease;
 }
 #signHead{
-  display:flex; align-items:center; gap:12px; padding:13px 18px;
+  display:flex; align-items:center; gap:12px; padding:13px 18px; flex:none;
   border-bottom:1px solid var(--line-soft);
   background:linear-gradient(180deg, rgba(255,255,255,.05), transparent);
 }
@@ -291,7 +293,10 @@ body.touch #fishUi .fmeter{right:150px;}
   background:rgba(62,212,126,.12); border:1px solid rgba(62,212,126,.4);
   border-radius:99px; padding:5px 11px;
 }
-#signBody{padding:15px 18px 4px;}
+#signBody{
+  padding:15px 18px 4px;
+  overflow-y:auto; -webkit-overflow-scrolling:touch; flex:1 1 auto;
+}
 #signLead{
   margin:0 0 13px; font-size:17px; line-height:1.55; color:var(--text);
   word-break:keep-all; padding-left:11px; border-left:3px solid var(--sign);
@@ -397,6 +402,43 @@ body.dev-phone #totalWrap{font-size:11.5px; padding:4px 9px; gap:3px;}
 body.dev-phone #totalScore{font-size:13px;}
 body.in-game #totalWrap{display:none;}
 
+/* ═══ 기기 모드 선택 (시작 화면 & 상단 바) ═══ */
+.devPickGroup{
+  display:flex; gap:8px; justify-content:center; margin:16px 0 20px; width:100%;
+}
+.devPickBtn{
+  flex:1; padding:10px 8px; border-radius:12px; border:1px solid var(--line);
+  background:var(--panel2); color:var(--dim); font-size:14px; font-weight:700;
+  cursor:pointer; transition:all .15s ease; outline:none;
+}
+.devPickBtn:hover{border-color:var(--info); color:var(--text);}
+.devPickBtn.active{
+  background:var(--info); color:#06263a; border-color:var(--info);
+  box-shadow:0 0 14px rgba(62,174,255,.4);
+}
+
+#devSwitchBtn{
+  background:var(--chip); border:1px solid var(--line); border-radius:10px;
+  padding:6px 10px; font-size:15px; cursor:pointer; color:var(--text);
+  transition:all .15s ease;
+}
+#devSwitchBtn:hover{border-color:var(--accent); background:rgba(255,255,255,.08);}
+
+/* ═══ 화면 폭 기준 반응형 보조 ═══ */
+@media (max-width: 600px){
+  #signPanel{width:calc(100vw - 16px); bottom:calc(8px + var(--safe-b)); max-height:calc(100vh - 48px - var(--safe-b));}
+  #signBody{padding:10px 12px 2px; max-height:calc(100vh - 160px);}
+  #signLead{font-size:15px; margin-bottom:8px;}
+  .signRow{padding:8px 10px; margin-bottom:6px;}
+  .signRow span{font-size:13.5px;}
+  #signName{font-size:16.5px;}
+  #signFoot{padding:8px 12px 10px;}
+  #signClose{min-height:44px; font-size:14.5px;}
+  #topbar{gap:4px; padding:4px 6px;}
+  #smartWrap{padding:4px 8px; font-size:12px;}
+  #totalWrap{display:none;}
+}
+
 </style>
 </head>
 <body>
@@ -406,6 +448,11 @@ body.in-game #totalWrap{display:none;}
 <div class="overlay" id="title">
   <div class="card">
     <h1><span class="yellow">놀이</span>도시 🏙️</h1>
+    <div class="devPickGroup" id="devPickGroup" aria-label="기기 화면 비율 선택">
+      <button type="button" class="devPickBtn" data-dev="pc">💻 노트북</button>
+      <button type="button" class="devPickBtn" data-dev="tablet">📟 태블릿</button>
+      <button type="button" class="devPickBtn" data-dev="phone">📱 폰</button>
+    </div>
     <button class="bigBtn" id="startBtn" type="button">🚶 탐험 시작</button>
   </div>
 </div>
@@ -418,6 +465,7 @@ body.in-game #totalWrap{display:none;}
   <span id="smartWrap" title="스마트시티 팻말">🏙️ <b id="smartCount">0/5</b></span>
   <button id="hubBtn" type="button" title="미니게임 수첩 (Tab)">🎮 미니게임 <b id="hubBtnCount">★ 0/0</b></button>
   <button id="walkBtn" type="button" title="걷기 ↔ 조망 (M)">🚶 걷기</button>
+  <button id="devSwitchBtn" type="button" title="화면 비율 변경 (노트북·태블릿·폰)">💻</button>
   <button id="soundBtn" type="button" aria-label="소리 끄기">🔊</button>
 </div>
 
@@ -600,14 +648,43 @@ window.G = {};
   G.touch = matchMedia('(pointer: coarse)').matches;
   /** 기기 버전: 주소의 ?device=phone|tablet|pc (phone.html·tablet.html이 붙여 준다). 없으면 자동 판단 */
   const qDev = (location.search.match(/[?&]device=(phone|tablet|pc)\b/) || [])[1];
-  G.DEVICE = qDev || (G.touch ? (Math.min(screen.width, screen.height) < 600 ? 'phone' : 'tablet') : 'pc');
+  const autoDev = G.touch
+    ? (Math.min(screen.width, screen.height) < 600 ? 'phone' : 'tablet')
+    : (window.innerWidth < 640 ? 'phone' : (window.innerWidth <= 1024 ? 'tablet' : 'pc'));
+  G.DEVICE = qDev || autoDev;
   if (G.DEVICE !== 'pc') G.touch = true;            // 폰·태블릿 버전은 늘 터치 화면 배치
   /** 기기별 맞춤 값 — 시야각(걷기), 조이스틱 반지름(px) */
-  G.DEVICE_CFG = ({
+  G.DEVICE_MAP = {
     phone: { fov: 70, joyR: 52 },
     tablet: { fov: 58, joyR: 72 },
     pc: { fov: 55, joyR: 58 },
-  })[G.DEVICE];
+  };
+  G.DEVICE_CFG = G.DEVICE_MAP[G.DEVICE];
+
+  G.setDevice = dev => {
+    if (!G.DEVICE_MAP[dev]) return;
+    G.DEVICE = dev;
+    G.DEVICE_CFG = G.DEVICE_MAP[dev];
+    if (dev !== 'pc') G.touch = true;
+    document.body.classList.remove('dev-phone', 'dev-tablet', 'dev-pc');
+    document.body.classList.add('dev-' + dev);
+    document.body.classList.toggle('touch', G.touch);
+    const u = new URL(location.href);
+    u.searchParams.set('device', dev);
+    history.replaceState(null, '', u.toString());
+    const joy = G.$('joy');
+    const jump = G.$('jumpBtn');
+    if (joy && jump) {
+      const showTouch = G.touch && G.explore?.mode === 'walk' && G.explore?.walking;
+      joy.hidden = !showTouch;
+      jump.hidden = !showTouch;
+    }
+    const iconBtn = G.$('devSwitchBtn');
+    if (iconBtn) iconBtn.textContent = dev === 'phone' ? '📱' : (dev === 'tablet' ? '📟' : '💻');
+    document.querySelectorAll('.devPickBtn').forEach(b => {
+      b.classList.toggle('active', b.dataset.dev === dev);
+    });
+  };
   /** 저사양 모드: 주소 끝에 ?low 를 붙이면 그림자·계단 현상 보정을 끄고 해상도를 낮춘다 */
   G.LOW = /[?&]low\b/.test(location.search);
   G.reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -5075,6 +5152,27 @@ window.G = {};
   $('startBtn').addEventListener('click', () => G.main.begin());
   if (G.touch) document.body.classList.add('touch');
   document.body.classList.add('dev-' + G.DEVICE);
+
+  // 기기 모드 버튼 초기화 및 이벤트 연결
+  document.querySelectorAll('.devPickBtn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.dev === G.DEVICE);
+    btn.addEventListener('click', () => {
+      G.sfx.unlock(); G.sfx.play('click');
+      G.setDevice(btn.dataset.dev);
+    });
+  });
+
+  const devSwitchBtn = $('devSwitchBtn');
+  if (devSwitchBtn) {
+    devSwitchBtn.textContent = G.DEVICE === 'phone' ? '📱' : (G.DEVICE === 'tablet' ? '📟' : '💻');
+    devSwitchBtn.addEventListener('click', () => {
+      G.sfx.unlock(); G.sfx.play('click');
+      const order = ['pc', 'tablet', 'phone'];
+      const next = order[(order.indexOf(G.DEVICE) + 1) % order.length];
+      G.setDevice(next);
+      G.toast(`화면 모드: ${next === 'phone' ? '📱 핸드폰' : (next === 'tablet' ? '📟 태블릿' : '💻 노트북')}`, 1500);
+    });
+  }
 
   /* ── 렌더 루프 ── */
   let last = performance.now(), swingT = 0, offset = 0;   // offset: 점검용 step()이 앞당긴 시간

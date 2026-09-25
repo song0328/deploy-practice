@@ -23,14 +23,43 @@ window.G = {};
   G.touch = matchMedia('(pointer: coarse)').matches;
   /** 기기 버전: 주소의 ?device=phone|tablet|pc (phone.html·tablet.html이 붙여 준다). 없으면 자동 판단 */
   const qDev = (location.search.match(/[?&]device=(phone|tablet|pc)\b/) || [])[1];
-  G.DEVICE = qDev || (G.touch ? (Math.min(screen.width, screen.height) < 600 ? 'phone' : 'tablet') : 'pc');
+  const autoDev = G.touch
+    ? (Math.min(screen.width, screen.height) < 600 ? 'phone' : 'tablet')
+    : (window.innerWidth < 640 ? 'phone' : (window.innerWidth <= 1024 ? 'tablet' : 'pc'));
+  G.DEVICE = qDev || autoDev;
   if (G.DEVICE !== 'pc') G.touch = true;            // 폰·태블릿 버전은 늘 터치 화면 배치
   /** 기기별 맞춤 값 — 시야각(걷기), 조이스틱 반지름(px) */
-  G.DEVICE_CFG = ({
+  G.DEVICE_MAP = {
     phone: { fov: 70, joyR: 52 },
     tablet: { fov: 58, joyR: 72 },
     pc: { fov: 55, joyR: 58 },
-  })[G.DEVICE];
+  };
+  G.DEVICE_CFG = G.DEVICE_MAP[G.DEVICE];
+
+  G.setDevice = dev => {
+    if (!G.DEVICE_MAP[dev]) return;
+    G.DEVICE = dev;
+    G.DEVICE_CFG = G.DEVICE_MAP[dev];
+    if (dev !== 'pc') G.touch = true;
+    document.body.classList.remove('dev-phone', 'dev-tablet', 'dev-pc');
+    document.body.classList.add('dev-' + dev);
+    document.body.classList.toggle('touch', G.touch);
+    const u = new URL(location.href);
+    u.searchParams.set('device', dev);
+    history.replaceState(null, '', u.toString());
+    const joy = G.$('joy');
+    const jump = G.$('jumpBtn');
+    if (joy && jump) {
+      const showTouch = G.touch && G.explore?.mode === 'walk' && G.explore?.walking;
+      joy.hidden = !showTouch;
+      jump.hidden = !showTouch;
+    }
+    const iconBtn = G.$('devSwitchBtn');
+    if (iconBtn) iconBtn.textContent = dev === 'phone' ? '📱' : (dev === 'tablet' ? '📟' : '💻');
+    document.querySelectorAll('.devPickBtn').forEach(b => {
+      b.classList.toggle('active', b.dataset.dev === dev);
+    });
+  };
   /** 저사양 모드: 주소 끝에 ?low 를 붙이면 그림자·계단 현상 보정을 끄고 해상도를 낮춘다 */
   G.LOW = /[?&]low\b/.test(location.search);
   G.reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;

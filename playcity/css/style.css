@@ -261,12 +261,14 @@ body.touch #fishUi .fmeter{right:150px;}
   position:fixed; left:50%; transform:translateX(-50%);
   bottom:calc(18px + var(--safe-b)); z-index:34;
   width:min(860px, calc(100vw - 32px));
+  max-height:calc(100vh - 36px - var(--safe-b));
+  display:flex; flex-direction:column;
   background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
   box-shadow:0 18px 48px rgba(0,0,0,.45); backdrop-filter:blur(6px);
   overflow:hidden; animation:rise .22s ease;
 }
 #signHead{
-  display:flex; align-items:center; gap:12px; padding:13px 18px;
+  display:flex; align-items:center; gap:12px; padding:13px 18px; flex:none;
   border-bottom:1px solid var(--line-soft);
   background:linear-gradient(180deg, rgba(255,255,255,.05), transparent);
 }
@@ -282,7 +284,10 @@ body.touch #fishUi .fmeter{right:150px;}
   background:rgba(62,212,126,.12); border:1px solid rgba(62,212,126,.4);
   border-radius:99px; padding:5px 11px;
 }
-#signBody{padding:15px 18px 4px;}
+#signBody{
+  padding:15px 18px 4px;
+  overflow-y:auto; -webkit-overflow-scrolling:touch; flex:1 1 auto;
+}
 #signLead{
   margin:0 0 13px; font-size:17px; line-height:1.55; color:var(--text);
   word-break:keep-all; padding-left:11px; border-left:3px solid var(--sign);
@@ -387,3 +392,40 @@ body.dev-tablet #totalScore{font-size:18px;}
 body.dev-phone #totalWrap{font-size:11.5px; padding:4px 9px; gap:3px;}
 body.dev-phone #totalScore{font-size:13px;}
 body.in-game #totalWrap{display:none;}
+
+/* ═══ 기기 모드 선택 (시작 화면 & 상단 바) ═══ */
+.devPickGroup{
+  display:flex; gap:8px; justify-content:center; margin:16px 0 20px; width:100%;
+}
+.devPickBtn{
+  flex:1; padding:10px 8px; border-radius:12px; border:1px solid var(--line);
+  background:var(--panel2); color:var(--dim); font-size:14px; font-weight:700;
+  cursor:pointer; transition:all .15s ease; outline:none;
+}
+.devPickBtn:hover{border-color:var(--info); color:var(--text);}
+.devPickBtn.active{
+  background:var(--info); color:#06263a; border-color:var(--info);
+  box-shadow:0 0 14px rgba(62,174,255,.4);
+}
+
+#devSwitchBtn{
+  background:var(--chip); border:1px solid var(--line); border-radius:10px;
+  padding:6px 10px; font-size:15px; cursor:pointer; color:var(--text);
+  transition:all .15s ease;
+}
+#devSwitchBtn:hover{border-color:var(--accent); background:rgba(255,255,255,.08);}
+
+/* ═══ 화면 폭 기준 반응형 보조 ═══ */
+@media (max-width: 600px){
+  #signPanel{width:calc(100vw - 16px); bottom:calc(8px + var(--safe-b)); max-height:calc(100vh - 48px - var(--safe-b));}
+  #signBody{padding:10px 12px 2px; max-height:calc(100vh - 160px);}
+  #signLead{font-size:15px; margin-bottom:8px;}
+  .signRow{padding:8px 10px; margin-bottom:6px;}
+  .signRow span{font-size:13.5px;}
+  #signName{font-size:16.5px;}
+  #signFoot{padding:8px 12px 10px;}
+  #signClose{min-height:44px; font-size:14.5px;}
+  #topbar{gap:4px; padding:4px 6px;}
+  #smartWrap{padding:4px 8px; font-size:12px;}
+  #totalWrap{display:none;}
+}

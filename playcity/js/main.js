@@ -37,6 +37,27 @@
   if (G.touch) document.body.classList.add('touch');
   document.body.classList.add('dev-' + G.DEVICE);
 
+  // 기기 모드 버튼 초기화 및 이벤트 연결
+  document.querySelectorAll('.devPickBtn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.dev === G.DEVICE);
+    btn.addEventListener('click', () => {
+      G.sfx.unlock(); G.sfx.play('click');
+      G.setDevice(btn.dataset.dev);
+    });
+  });
+
+  const devSwitchBtn = $('devSwitchBtn');
+  if (devSwitchBtn) {
+    devSwitchBtn.textContent = G.DEVICE === 'phone' ? '📱' : (G.DEVICE === 'tablet' ? '📟' : '💻');
+    devSwitchBtn.addEventListener('click', () => {
+      G.sfx.unlock(); G.sfx.play('click');
+      const order = ['pc', 'tablet', 'phone'];
+      const next = order[(order.indexOf(G.DEVICE) + 1) % order.length];
+      G.setDevice(next);
+      G.toast(`화면 모드: ${next === 'phone' ? '📱 핸드폰' : (next === 'tablet' ? '📟 태블릿' : '💻 노트북')}`, 1500);
+    });
+  }
+
   /* ── 렌더 루프 ── */
   let last = performance.now(), swingT = 0, offset = 0;   // offset: 점검용 step()이 앞당긴 시간
   function tick(real) {
