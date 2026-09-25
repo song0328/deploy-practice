@@ -53,12 +53,11 @@
     clampOrbit();
   }
   function zoomMap(f) { stopCameraTrip(); orbit.dist *= f; clampOrbit(); }
-  function focusMap(view, label = '놀이도시 전체 · 마커를 찾아가 보세요') {
+  function focusMap(view) {
     if (E.walking) exitWalk();
     stopCameraTrip();
     const to = { theta: view.theta ?? orbit.theta, phi: view.phi ?? 0.72, dist: view.dist, x: view.x, y: view.y ?? 2, z: view.z };
     cameraTrip = { at: performance.now(), from: { theta: orbit.theta, phi: orbit.phi, dist: orbit.dist, x: orbit.target.x, y: orbit.target.y, z: orbit.target.z }, to };
-    $('viewLabel').textContent = label;
   }
   function updateCameraTrip(now) {
     if (!cameraTrip) return;
@@ -236,14 +235,6 @@
       if (r && r.catch) r.catch(() => pointerLockFallback());
     } catch (err) { pointerLockFallback(); }
   }
-  function walkHelpText() {
-    if (G.touch) return '왼쪽 화면을 눌러 끌면 이동(끝까지 = 질주) · 오른쪽 화면을 밀어 둘러보기 · 점프 2번 = 2단 점프';
-    return document.pointerLockElement === canvas
-      ? 'WASD·방향키 이동 · Shift 질주 · Space 2단 점프 · M 조망 · Tab 미니게임 · Esc 마우스 풀기'
-      : lockBlocked
-        ? 'WASD 이동 · 마우스를 누른 채 끌어 둘러보기 · Space 점프 · M 조망 · Tab 미니게임'
-        : 'WASD 이동 · 화면 클릭 = 마우스로 둘러보기 (또는 끌기) · Space 점프 · M 조망 · Tab 미니게임';
-  }
   function enterWalk(opts = {}) {
     if (E.mode === 'title') return;
     stopCameraTrip(); setMapExpanded(false); clearMovement(); keepWalkerClear();
@@ -254,10 +245,9 @@
     document.body.classList.add('walking');
     canvas.classList.add('walking');
     $('walkBtn').textContent = '🌐 조망';
-    $('walkHelp').textContent = walkHelpText();
     E.refreshUi();
   }
-  function pointerLockFallback() { lockBlocked = true; if (E.walking) $('walkHelp').textContent = walkHelpText(); }
+  function pointerLockFallback() { lockBlocked = true; }
   function exitWalk(opts = {}) {
     E.walking = false; clearMovement(); walk.vy = 0;
     walk.pos.y = G.groundHeight(walk.pos.x, walk.pos.z, walk.pos.y - WALK_CFG.eye) + WALK_CFG.eye;
@@ -284,7 +274,6 @@
     const locked = document.pointerLockElement === canvas;
     const wasLocked = canvas.classList.contains('locked');
     canvas.classList.toggle('locked', locked);
-    if (E.walking) $('walkHelp').textContent = walkHelpText();
     if (!locked && wasLocked && E.walking) {
       // Esc로 잠금이 풀리면 마우스만 풀어 준다 (걷기는 그대로, 조망 전환은 M·버튼으로). 점프 챌린지 중엔 일시정지
       clearMovement();
@@ -533,13 +522,11 @@
   /* ═══════════ 화면 요소 표시 상태 ═══════════ */
   E.refreshUi = () => {
     const walking = E.walking, inGame = E.mode === 'game';
-    $('walkHelp').hidden = !walking || inGame;
     $('crosshair').hidden = !walking || (inGame && !E.walkGame);
     const touchWalk = walking && G.touch && (!inGame || E.walkGame);
     $('jumpBtn').hidden = !touchWalk;
     $('joyHint').hidden = !touchWalk || joyUsed;
     if (!touchWalk) joyEnd();
-    $('viewLabel').hidden = walking || inGame || E.mode === 'title';
     if (walking) E.near = undefined; else { E.near = null; $('prompt').hidden = true; }
   };
 
@@ -570,7 +557,6 @@
     if (snap.walking) {
       document.body.classList.add('walking'); canvas.classList.add('walking');
       $('walkBtn').textContent = '🌐 조망';
-      $('walkHelp').textContent = walkHelpText();
     } else {
       document.body.classList.remove('walking'); canvas.classList.remove('walking');
       $('walkBtn').textContent = '🚶 걷기';

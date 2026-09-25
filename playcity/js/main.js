@@ -30,8 +30,6 @@
       $('title').hidden = true;
       ['topbar', 'mapDock'].forEach(id => { $(id).hidden = false; });
       E.begin();
-      const found = Object.keys(G.store.data.found).length;
-      G.toast(found ? (G.touch ? '다시 오신 걸 환영해요! 🎮 미니게임 버튼으로 수첩을 열어요' : '다시 오신 걸 환영해요! Tab으로 미니게임 수첩을 열 수 있어요') : (G.touch ? '빛기둥이 미니게임이에요. 가까이 가서 「시작」!' : '빛기둥이 서 있는 곳이 미니게임이에요. 가까이 가서 E!'), 4200);
     },
   };
   $('startBtn').addEventListener('click', () => G.main.begin());

@@ -28,7 +28,6 @@
   <button id="walkBtn" type="button" title="걷기 ↔ 조망 (M)">🚶 걷기</button>
   <button id="soundBtn" type="button" aria-label="소리 끄기">🔊</button>
 </div>
-<div id="viewLabel" hidden>놀이도시 전체 · 마커를 찾아가 보세요</div>
 
 <!-- ═══ 지도 ═══ -->
 <aside id="mapDock" class="panel" hidden aria-label="지도">
@@ -40,11 +39,9 @@
     <button id="zoomOut" type="button" aria-label="축소">−</button>
     <button id="resetView" type="button" aria-label="도시 전체 보기">전체 보기</button>
   </div>
-  <p id="mapHint">드래그: 회전 · 우클릭 드래그: 이동 · 휠: 확대<br>지도를 누르면 그곳을 봐요 · 숫자 원 = 미니게임</p>
 </aside>
 
 <!-- ═══ 걷기 도구 ═══ -->
-<div id="walkHelp" hidden></div>
 <div id="crosshair" hidden></div>
 <div id="joy" hidden aria-hidden="true"><i id="joyKnob"></i></div>
 <div id="joyHint" hidden>👆 왼쪽을 누르고 끌면 이동<br>👉 오른쪽을 밀면 둘러보기</div>
@@ -146,6 +143,7 @@ if (typeof THREE === 'undefined') document.write('<script src="https://cdnjs.clo
 <script src="js/games/dance.js"></script>
 <script src="js/games/obby.js"></script>
 <script src="js/games/boat.js"></script>
+<script src="js/games/quiz.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
