@@ -174,6 +174,7 @@
           const s = starsFor(st.t);
           return ctx.finish({
             success: true, record: Math.round(st.t * 10) / 10, big: `${st.t.toFixed(1)}초`,
+            progress: 1,
             title: `정상 정복! ${'★'.repeat(s)}${'☆'.repeat(3 - s)}`,
             lines: [`떨어진 횟수 ${st.falls}번`, s < 3 ? `★★★까지: ${CFG.stars[0]}초 이내 (트램펄린 지름길을 써 봐요)` : '최고 등급! 더 빨리 올라갈 수 있을까요?', '꼭대기에서 보는 도시 풍경도 즐겨 보세요'],
           });
@@ -181,6 +182,7 @@
       } else if (st.t >= CFG.limit) {
         return ctx.finish({
           success: false, record: null, big: '시간 초과',
+          progress: (st.check + 1) / CHECKS.length,   // 올라간 체크포인트만큼
           title: '아쉬워요! ⏰',
           lines: [`${CHECKS.length}개 중 체크포인트 ${st.check + 1}개까지 갔어요.`, '팁: 높은 발판은 첫 점프의 꼭대기에서 한 번 더!'],
         });

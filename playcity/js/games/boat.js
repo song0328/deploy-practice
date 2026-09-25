@@ -380,6 +380,7 @@
         const sc = score();
         return ctx.finish({
           success: ok, record: sc, big: `${sc}점`,
+          progress: ok ? 1 : (-st.z) / CFG.length,   // 못 가도 간 거리만큼
           title: ok ? '결승선 통과! 🏁' : '배가 멈췄어요 💦',
           lines: [
             `부표 ${st.buoys}개 (황금 ${st.golds}개) · ${ok ? `${st.t.toFixed(1)}초 · 남은 ❤️ ${st.hearts}` : `${Math.round(-st.z)}/${CFG.length}m 지점`}`,

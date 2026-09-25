@@ -355,6 +355,7 @@
     const sc = score();
     G.ctx.finish({
       success: ok, record: sc, big: `${sc}점`,
+      progress: ok ? 1 : st.best / CFG.rows,   // 못 가도 간 칸수만큼
       title: ok ? '등교 성공! 🏫' : '다시 도전!',
       lines: [
         ok ? `${CFG.rows}칸을 건너 정문에 도착했어요 (${st.t.toFixed(1)}초).` : `${why} — ${st.best}/${CFG.rows}칸까지 갔어요.`,

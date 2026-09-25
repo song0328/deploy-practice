@@ -15,6 +15,24 @@
            init(ctx) 처음 한 번, enter(ctx) 장소 준비, start(ctx) 새 판, update(dt,now,ctx),
            exit(ctx) 정리, onKey(e,down,ctx)
      선택: walkGame(걷기 조작 사용), spotRadius, onBlur(ctx) */
+  /* ═══════════ 마을 점수 (모든 게임을 한 자로 재는 공통 점수) ═══════════
+     게임마다 눈금이 달라서(점수·초·미터) 그냥 더할 수 없다.
+     그래서 각 게임이 결과에 progress(0~1, 얼마나 해냈나)를 함께 넘기고,
+     여기서 게임별 만점(maxPts)을 곱해 같은 단위로 바꾼다.
+     못 깨도 progress 만큼은 점수가 남는다 — 0점이 되지 않게. */
+  const DEFAULT_MAX_PTS = 1000;
+  G.gamePoints = (def, r) => {
+    const prog = G.clamp(Number(r?.progress ?? (r?.success ? 1 : 0)) || 0, 0, 1);
+    return Math.round((def.maxPts || DEFAULT_MAX_PTS) * prog);
+  };
+  /** 모든 게임의 최고 마을 점수 합계 */
+  G.totalPoints = () => G.games.reduce((a, g) => a + (G.store.game(g.id).pts || 0), 0);
+  G.maxPoints = () => G.games.reduce((a, g) => a + (g.maxPts || DEFAULT_MAX_PTS), 0);
+  G.paintTotal = () => {
+    const el = $('totalScore');
+    if (el) el.textContent = `${G.totalPoints().toLocaleString('ko-KR')}점`;
+  };
+
   G.games = [];
   G.registerGame = def => {
     def.spot = def.spot || G.SPOTS[def.id];
@@ -159,9 +177,14 @@
       if (score !== undefined && score !== null && (r.success || def.recordOnFail !== false)) {
         if (rec.best === null || def.better(score, rec.best)) { rec.best = score; isNew = true; }
       }
+      // 마을 점수 — 못 깼어도 진행한 만큼 남는다 (최고 기록만 갱신)
+      const gained = G.gamePoints(def, r);
+      const ptsBefore = rec.pts || 0;
+      if (gained > ptsBefore) rec.pts = gained;
       const allBefore = G.games.every(g => G.store.game(g.id).clears > 0);
       if (r.success) rec.clears++;
       G.store.save();
+      G.paintTotal();
       if (r.success && !allBefore && G.games.every(g => G.store.game(g.id).clears > 0)) {
         r.lines = [...(r.lines || []), `🏆 <b>놀이도시 정복!</b> 미니게임 ${G.games.length}개를 모두 성공했어요!`];
       }
@@ -175,6 +198,10 @@
       $('resBig').textContent = r.big ?? '';
       $('resLines').innerHTML = (r.lines || []).map(l => `<li>${l}</li>`).join('');
       $('resBest').textContent = rec.best !== null ? `최고 기록 ${def.format(rec.best)}` : '';
+      $('resPts').textContent =
+        `🏆 마을 점수 +${gained.toLocaleString('ko-KR')}`
+        + (gained > ptsBefore ? ` (이 게임 최고 기록 경신)` : ` · 이 게임 최고 ${ptsBefore.toLocaleString('ko-KR')}`)
+        + `   ·   총점 ${G.totalPoints().toLocaleString('ko-KR')} / ${G.maxPoints().toLocaleString('ko-KR')}`;
       $('resNew').hidden = !isNew;
       setTimeout(() => {
         if (P.state !== 'over') return;

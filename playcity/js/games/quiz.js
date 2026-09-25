@@ -258,6 +258,8 @@
     ctx.finish({
       success: stars >= 2,
       record: st.score,
+      // 마을 점수: 틀려서 깎인 만큼 그대로 반영된다 (음수면 0)
+      progress: st.score / max,
       big: `${st.score}점`,
       title: stars === 3 ? `지구 지킴이! ${'★'.repeat(stars)}`
            : stars === 2 ? `잘했어요! ${'★'.repeat(stars)}☆`
@@ -299,6 +301,7 @@
     world: 'city',
     spotRadius: 3.0,
     cfg: CFG,                 // 시험·문서가 숫자를 베끼지 않고 여기서 읽어 간다
+    maxPts: 1500,             // 다른 게임(1000)보다 크게 — 퀴즈를 풀 이유를 만든다
     debug: () => st,
 
     init(ctx) { buildUi(ctx); },

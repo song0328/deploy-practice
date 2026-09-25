@@ -29,6 +29,7 @@
       G.sfx.unlock(); G.sfx.play('click');
       $('title').hidden = true;
       ['topbar', 'mapDock'].forEach(id => { $(id).hidden = false; });
+      G.paintTotal();   // 지난번까지 모은 마을 점수를 바로 보여 준다
       E.begin();
     },
   };

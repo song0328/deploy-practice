@@ -216,6 +216,7 @@
     const list = Object.entries(counts).map(([n, c]) => `${n} ×${c}`).join(', ');
     G.ctx.finish({
       success: ok, record: st.score, big: `${st.score}점`,
+      progress: st.score / CFG.goal,   // 못 채워도 모은 만큼 마을 점수가 남는다
       title: ok ? '강변 낚시왕 탄생! 🎣' : '시간 종료!',
       lines: [
         ok ? `목표 ${CFG.goal}점을 넘었어요.` : `목표 ${CFG.goal}점까지 ${CFG.goal - st.score}점 모자랐어요.`,

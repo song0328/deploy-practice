@@ -225,6 +225,7 @@
     const ok = st.score >= CFG.goal;
     G.ctx.finish({
       success: ok, record: Math.floor(st.score), big: `${Math.floor(st.score)}점`,
+      progress: st.score / CFG.goal,   // 못 채워도 모은 만큼
       title: ok ? (st.caughtN === 0 ? '완벽한 비밀 댄서! 🕺' : '선생님 몰래 성공! 💃') : st.lives <= 0 ? '교무실로 가자… 😵' : '시간 종료!',
       lines: [
         ok ? `목표 ${CFG.goal}점 달성!` : `목표 ${CFG.goal}점까지 ${Math.ceil(CFG.goal - st.score)}점 모자랐어요.`,

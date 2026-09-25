@@ -289,6 +289,19 @@ body.touch #fishUi .fmeter{right:150px;}
 }
 #quizNext:hover{filter:brightness(1.07);}
 
+
+/* ── 🏆 마을 점수 (모든 게임 합산) ── */
+#totalWrap{
+  display:inline-flex; align-items:center; gap:5px; padding:5px 12px;
+  background:var(--chip); border:1px solid var(--line); border-radius:99px;
+  font-size:13px; color:var(--dim); white-space:nowrap;
+}
+#totalScore{color:var(--accent); font-size:15px;}
+#resPts.pts{
+  margin:8px 0 0; font-size:14px; color:var(--accent);
+  word-break:keep-all; line-height:1.55;
+}
+
 /* ═══ 태블릿 버전: 큰 화면 — 손가락 닿는 곳을 크게, 지도도 크게 ═══ */
 body.dev-tablet #topbar button{font-size:17px; padding:10px 18px;}
 body.dev-tablet #logo{font-size:18px;}
@@ -338,3 +351,9 @@ body.dev-phone #quizFoot{padding:10px 13px 12px;}
 body.dev-phone #quizNext{min-height:54px; font-size:16px;}
 /* 퀴즈 중에는 조이스틱·점프 버튼이 필요 없다 (화면을 가리지 않게) */
 body.game-quiz #joy, body.game-quiz #jumpBtn{display:none !important;}
+
+body.dev-tablet #totalWrap{font-size:15px; padding:7px 14px;}
+body.dev-tablet #totalScore{font-size:18px;}
+body.dev-phone #totalWrap{font-size:11.5px; padding:4px 9px; gap:3px;}
+body.dev-phone #totalScore{font-size:13px;}
+body.in-game #totalWrap{display:none;}

@@ -66,7 +66,9 @@ window.G = {};
       try { localStorage.setItem(KEY, JSON.stringify(this.data)); } catch (e) { /* 무시 */ }
     },
     game(id) {
-      return this.data.games[id] || (this.data.games[id] = { best: null, clears: 0, plays: 0 });
+      const g = this.data.games[id] || (this.data.games[id] = { best: null, pts: 0, clears: 0, plays: 0 });
+      if (g.pts === undefined) g.pts = 0;   // 예전에 저장된 기록에도 칸을 만들어 준다
+      return g;
     },
   };
   G.store.load();
