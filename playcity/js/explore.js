@@ -110,7 +110,7 @@
     joy.id = e.pointerId; joy.ox = e.clientX; joy.oy = e.clientY;
     joy.el.style.left = joy.ox + 'px'; joy.el.style.top = joy.oy + 'px';
     joy.knob.style.transform = 'translate(-50%,-50%)';
-    joy.el.hidden = false; $('joyHint').hidden = true; joyUsed = true;
+    joy.el.hidden = false; joyUsed = true;
     try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* 합성 이벤트 */ }
   }
   function joyMove(e) {
@@ -525,7 +525,6 @@
     $('crosshair').hidden = !walking || (inGame && !E.walkGame);
     const touchWalk = walking && G.touch && (!inGame || E.walkGame);
     $('jumpBtn').hidden = !touchWalk;
-    $('joyHint').hidden = !touchWalk || joyUsed;
     if (!touchWalk) joyEnd();
     if (walking) E.near = undefined; else { E.near = null; $('prompt').hidden = true; }
   };

@@ -5,8 +5,6 @@
 <title>놀이도시 — 걸어서 찾는 미니게임</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="3D 도시를 걸어 다니며 미니게임을 찾아 도전하는 가벼운 웹 게임">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -45,7 +43,6 @@
 <!-- ═══ 걷기 도구 ═══ -->
 <div id="crosshair" hidden></div>
 <div id="joy" hidden aria-hidden="true"><i id="joyKnob"></i></div>
-<div id="joyHint" hidden>👆 왼쪽을 누르고 끌면 이동<br>👉 오른쪽을 밀면 둘러보기</div>
 <button id="jumpBtn" type="button" hidden aria-label="점프">점프</button>
 
 <!-- ═══ 마커 가까이에서 뜨는 안내 ═══ -->
@@ -148,5 +145,28 @@ if (typeof THREE === 'undefined') document.write('<script src="https://cdnjs.clo
 <script src="js/games/quiz-data.js"></script>
 <script src="js/games/quiz.js"></script>
 <script src="js/main.js"></script>
+<script>
+/* 오프라인 캐시 — 한 번 열어 두면 그 뒤로 인터넷 없이 돌아간다.
+   file:// 로 직접 열거나 지원하지 않는 브라우저면 조용히 넘어간다. */
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      const tell = () => navigator.serviceWorker.controller?.postMessage('ready?');
+      navigator.serviceWorker.addEventListener('message', ev => {
+        if (ev.data?.offlineReady && !sessionStorage.getItem('pc-offline-told')) {
+          sessionStorage.setItem('pc-offline-told', '1');
+          window.G?.toast?.('✅ 이제 인터넷 없이도 열려요', 2600);
+        }
+      });
+      if (navigator.serviceWorker.controller) tell();
+      else reg.addEventListener('updatefound', () => {
+        reg.installing?.addEventListener('statechange', e2 => {
+          if (e2.target.state === 'activated') setTimeout(tell, 400);
+        });
+      });
+    }).catch(() => { /* 캐시를 못 써도 게임은 그대로 돈다 */ });
+  });
+}
+</script>
 </body>
 </html>

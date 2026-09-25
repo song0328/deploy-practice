@@ -1,0 +1,33 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    {
+      "//": "three.js 는 내용이 바뀌지 않는다 → 1년 캐시. 두 번째 접속부터 아예 요청하지 않는다",
+      "source": "/playcity/vendor/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "//": "게임 코드는 고칠 수 있다 → 1시간. 같은 수업 시간 안에서는 다시 안 받고, 고치면 1시간 안에 퍼진다",
+      "source": "/playcity/(js|css)/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
+      ]
+    },
+    {
+      "//": "서비스워커와 첫 화면은 늘 새로 확인한다. 안 그러면 새 버전이 영영 안 퍼진다",
+      "source": "/playcity/sw.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache" },
+        { "key": "Service-Worker-Allowed", "value": "/playcity/" }
+      ]
+    },
+    {
+      "source": "/playcity/(index|phone|tablet).html",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache" }
+      ]
+    }
+  ]
+}

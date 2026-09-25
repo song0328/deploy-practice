@@ -9,12 +9,15 @@
   --chip:#1B2F4E;
   --r:16px;
   --safe-b:env(safe-area-inset-bottom,0px);
+  /* 글꼴은 기기에 이미 있는 것만 쓴다 — 인터넷에서 받아오지 않는다.
+     약한 와이파이·오프라인 교실에서 외부 호스트를 기다리지 않게 하려는 것. */
+  --font:'Pretendard','Apple SD Gothic Neo','Malgun Gothic','맑은 고딕','Noto Sans KR',system-ui,sans-serif;
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 [hidden]{display:none !important;}
 html,body{height:100%;}
-body{background:var(--bg); color:var(--text); font-family:'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif; overflow:hidden; -webkit-font-smoothing:antialiased; user-select:none; -webkit-user-select:none;}
-h1,h2,h3,.jua,button{font-family:'Jua','Noto Sans KR',sans-serif; font-weight:400;}
+body{background:var(--bg); color:var(--text); font-family:var(--font); overflow:hidden; -webkit-font-smoothing:antialiased; user-select:none; -webkit-user-select:none;}
+h1,h2,h3,.jua,button{font-family:var(--font); font-weight:800; letter-spacing:-.02em;}
 button{cursor:pointer; -webkit-tap-highlight-color:transparent; color:inherit;}
 button:disabled{cursor:default; opacity:.45;}
 kbd{display:inline-block; min-width:1.6em; padding:1px 6px; border-radius:6px; background:#0A1424; border:1px solid var(--line); font:12px/1.5 'Noto Sans KR',sans-serif; color:var(--text); text-align:center;}
@@ -62,7 +65,7 @@ body.in-game.game-obby #mapDock{display:block;}
 @keyframes rise{from{opacity:0; transform:translate(-50%,10px);} to{opacity:1; transform:translate(-50%,0);}}
 #promptIcon{flex:none; width:54px; height:54px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:30px; box-shadow:inset 0 -3px 0 rgba(0,0,0,.2);}
 .pbody{flex:1; min-width:0;}
-#promptName{font-family:'Jua'; font-weight:400; font-size:19px;}
+#promptName{font-family:var(--font); font-weight:800; font-size:19px;}
 #promptDesc{font-size:13px; color:var(--text); margin-top:2px; word-break:keep-all;}
 #promptCtl{font-size:11.5px; color:var(--dim); margin-top:2px; word-break:keep-all;}
 #promptRec{font-size:11.5px; color:var(--accent); margin-top:2px;}
@@ -91,7 +94,7 @@ body.in-game.game-obby #mapDock{display:block;}
 .step .no{flex:none; font-size:20px; line-height:1.2;}
 .step p{font-size:12.5px; line-height:1.55; color:var(--dim); word-break:keep-all;}
 .step p b{color:var(--text); font-weight:500;}
-.titleGames{font-family:'Jua'; font-size:14px; color:var(--accent); margin-bottom:16px; line-height:1.7; word-break:keep-all;}
+.titleGames{font-family:var(--font); font-weight:800; font-size:14px; color:var(--accent); margin-bottom:16px; line-height:1.7; word-break:keep-all;}
 .bigBtn{width:100%; background:var(--accent); color:var(--accent-ink); border:none; border-radius:14px; padding:13px; font-size:20px; transition:filter .15s, transform .15s;}
 .bigBtn:hover{filter:brightness(1.07); transform:translateY(-1px);}
 .bigBtn.ghost{background:var(--chip); color:var(--text); border:1px solid var(--line); font-size:16px;}
@@ -108,8 +111,8 @@ body.in-game.game-obby #mapDock{display:block;}
 .rec{font-size:13px; color:var(--accent); margin-top:10px;}
 #resTitle{font-size:34px;}
 #resTitle.good{color:var(--good);} #resTitle.bad{color:var(--warn);}
-#resBig{font-family:'Jua'; font-size:46px; line-height:1.1; margin:6px 0 2px;}
-#resNew{display:inline-block; background:var(--accent); color:var(--accent-ink); border-radius:99px; padding:2px 12px; font-size:13px; font-family:'Jua'; margin-left:6px; animation:pulse 1s ease infinite;}
+#resBig{font-family:var(--font); font-weight:800; font-size:46px; line-height:1.1; margin:6px 0 2px;}
+#resNew{display:inline-block; background:var(--accent); color:var(--accent-ink); border-radius:99px; padding:2px 12px; font-size:13px; font-family:var(--font); font-weight:800; margin-left:6px; animation:pulse 1s ease infinite;}
 @keyframes pulse{50%{transform:scale(1.08);}}
 #pause .card{width:min(360px,100%);}
 #pause .bigBtn{margin-top:8px;}
@@ -118,7 +121,7 @@ body.in-game.game-obby #mapDock{display:block;}
 #hub .card{width:min(860px,100%); text-align:left; padding:22px 24px;}
 .hubHead{display:flex; align-items:center; gap:12px; margin-bottom:14px;}
 .hubHead h1{font-size:28px; margin:0;}
-#hubProgress{color:var(--accent); font-family:'Jua'; font-size:15px;}
+#hubProgress{color:var(--accent); font-family:var(--font); font-weight:800; font-size:15px;}
 #hubClose{margin-left:auto; background:var(--chip); border:1px solid var(--line); border-radius:99px; padding:8px 16px; font-size:15px;}
 #hubList{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:10px;}
 .gcard{background:var(--panel2); border:1px solid var(--line-soft); border-radius:16px; padding:12px 13px; display:flex; flex-direction:column; gap:7px;}
@@ -143,20 +146,20 @@ body.in-game.game-obby #mapDock{display:block;}
 
 /* ── 게임 HUD ── */
 #hudBar{top:12px; left:50%; transform:translateX(-50%); z-index:32; display:flex; align-items:center; gap:12px; padding:7px 8px 7px 16px; border-radius:99px; max-width:calc(100vw - 20px);}
-#hudTitle{font-family:'Jua'; font-size:16px; white-space:nowrap;}
+#hudTitle{font-family:var(--font); font-weight:800; font-size:16px; white-space:nowrap;}
 #hudStats{display:flex; gap:6px;}
 #hudStats .stat{display:flex; flex-direction:column; align-items:center; background:#0A1424; border-radius:10px; padding:2px 10px 3px; min-width:54px;}
 #hudStats .l{font-size:10px; color:var(--dim); white-space:nowrap;}
-#hudStats .v{font-family:'Jua'; font-weight:400; font-size:17px; line-height:1.15; font-variant-numeric:tabular-nums; white-space:nowrap;}
+#hudStats .v{font-family:var(--font); font-weight:800; font-size:17px; line-height:1.15; font-variant-numeric:tabular-nums; white-space:nowrap;}
 #hudStats .stat.warn .v{color:var(--warn);}
 #hudPause{flex:none; width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--chip); font-size:15px;}
-#hudFlash{position:fixed; left:50%; top:30%; transform:translate(-50%,-50%) scale(.8); z-index:33; font-family:'Jua'; font-size:46px; line-height:1.25; white-space:pre-line !important; color:#fff; text-shadow:0 4px 0 rgba(0,0,0,.35),0 0 24px rgba(0,0,0,.35); opacity:0; pointer-events:none; transition:opacity .15s, transform .2s; text-align:center;}
+#hudFlash{position:fixed; left:50%; top:30%; transform:translate(-50%,-50%) scale(.8); z-index:33; font-family:var(--font); font-weight:800; font-size:46px; line-height:1.25; white-space:pre-line !important; color:#fff; text-shadow:0 4px 0 rgba(0,0,0,.35),0 0 24px rgba(0,0,0,.35); opacity:0; pointer-events:none; transition:opacity .15s, transform .2s; text-align:center;}
 #hudFlash.show{opacity:1; transform:translate(-50%,-50%) scale(1);}
 #hudFlash.good{color:#aef7c9;} #hudFlash.bad{color:#ffb4ab;} #hudFlash.gold{color:var(--accent);}
 #hudHint{position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:32; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:7px 16px; font-size:13px; color:var(--text); max-width:calc(100vw - 24px); text-align:center; pointer-events:none;}
 #gameLayer{position:fixed; inset:0; z-index:31; pointer-events:none;}
 #gameLayer > *{pointer-events:auto;}
-.tbtn{position:fixed; z-index:31; background:rgba(13,24,41,.78); border:1px solid var(--line); color:var(--text); border-radius:18px; font-family:'Jua'; font-size:18px; touch-action:none; user-select:none; -webkit-user-select:none; display:flex; align-items:center; justify-content:center;}
+.tbtn{position:fixed; z-index:31; background:rgba(13,24,41,.78); border:1px solid var(--line); color:var(--text); border-radius:18px; font-family:var(--font); font-weight:800; font-size:18px; touch-action:none; user-select:none; -webkit-user-select:none; display:flex; align-items:center; justify-content:center;}
 .tbtn:active,.tbtn.on{background:#27536b; border-color:var(--info);}
 .tbtn.big{width:118px; height:118px; border-radius:50%; font-size:21px; right:22px; bottom:calc(26px + var(--safe-b));}
 
@@ -224,7 +227,6 @@ body.touch #fishUi .fmeter{right:150px;}
 #joy i{position:absolute; left:50%; top:50%; width:58px; height:58px; border-radius:50%; background:rgba(237,244,255,.85); box-shadow:0 3px 10px rgba(0,0,0,.35); transform:translate(-50%,-50%);}
 #joy.run{border-color:var(--accent); background:rgba(255,210,63,.18);}
 #joy.run i{background:var(--accent);}
-#joyHint{position:fixed; left:18px; bottom:calc(40px + var(--safe-b)); z-index:29; background:var(--panel); border:1px dashed var(--line); border-radius:14px; padding:9px 13px; font-size:13px; line-height:1.6; color:var(--text); pointer-events:none;}
 
 #title .card{width:min(360px,100%);}
 #title h1{margin-bottom:18px;}
@@ -317,7 +319,6 @@ body.dev-tablet #hudPause{width:46px; height:46px; font-size:18px;}
 body.dev-tablet .tbtn{font-size:22px;}
 body.dev-tablet .tbtn.big{width:140px; height:140px;}
 body.dev-tablet .card h1{font-size:46px;} body.dev-tablet .bigBtn{font-size:22px; padding:16px;}
-body.dev-tablet #joyHint{font-size:15px;}
 
 /* ═══ 폰 버전: 세로 화면 — 위는 정보, 아래는 엄지 ═══ */
 body.dev-phone #logo, body.dev-phone #topbar .divider{display:none;}
