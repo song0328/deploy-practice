@@ -23,6 +23,7 @@
   <span id="logo" class="jua">🏙️ <span id="logoText">놀이도시</span></span>
   <span class="divider"></span>
   <span id="totalWrap">🏆 <b id="totalScore">0점</b></span>
+  <span id="smartWrap" title="스마트시티 팻말">🏙️ <b id="smartCount">0/5</b></span>
   <button id="hubBtn" type="button" title="미니게임 수첩 (Tab)">🎮 미니게임 <b id="hubBtnCount">★ 0/0</b></button>
   <button id="walkBtn" type="button" title="걷기 ↔ 조망 (M)">🚶 걷기</button>
   <button id="soundBtn" type="button" aria-label="소리 끄기">🔊</button>
@@ -55,6 +56,48 @@
     <p id="promptRec"></p>
   </div>
   <button id="promptStart" type="button"><kbd id="promptKey">E</kbd> 시작</button>
+</div>
+
+<!-- ═══ 스마트시티 팻말 ═══ -->
+<div id="signPrompt" class="panel" hidden role="dialog" aria-live="polite">
+  <span id="signPromptIcon"></span>
+  <div class="pbody">
+    <b id="signPromptName"></b>
+    <p id="signPromptSub"></p>
+  </div>
+  <button id="signPromptRead" type="button"><kbd id="signPromptKey">E</kbd> 읽기</button>
+</div>
+
+<div id="signPanel" hidden role="dialog" aria-modal="true" aria-labelledby="signName">
+  <div id="signHead">
+    <span id="signIcon"></span>
+    <div>
+      <b id="signName"></b>
+      <span id="signPlace"></span>
+    </div>
+    <span id="signDone" hidden>✓ 읽음</span>
+  </div>
+  <div id="signBody">
+    <p id="signLead"></p>
+    <div id="signRows"></div>
+  </div>
+  <div id="signFoot">
+    <span id="signProgress"></span>
+    <button id="signClose" type="button">닫기</button>
+  </div>
+</div>
+
+<!-- 팻말 5개를 다 읽었을 때 -->
+<div class="overlay soft" id="smartDone" hidden>
+  <div class="card">
+    <div class="gIcon" id="smartDoneIcon">🏙️</div>
+    <h2>스마트시티 탐험 완료!</h2>
+    <div id="smartDoneBig">5 / 5</div>
+    <ul class="rules" id="smartDoneList"></ul>
+    <div class="rowBtns">
+      <button class="bigBtn" id="smartDoneClose" type="button">🚶 탐험으로</button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ 게임 공통 HUD ═══ -->
@@ -137,13 +180,12 @@ if (typeof THREE === 'undefined') document.write('<script src="https://cdnjs.clo
 <script src="js/places.js"></script>
 <script src="js/explore.js"></script>
 <script src="js/hub.js"></script>
+<script src="js/smartcity.js"></script>
 <script src="js/games/fishing.js"></script>
 <script src="js/games/crossing.js"></script>
 <script src="js/games/dance.js"></script>
 <script src="js/games/obby.js"></script>
 <script src="js/games/boat.js"></script>
-<script src="js/games/quiz-data.js"></script>
-<script src="js/games/quiz.js"></script>
 <script src="js/main.js"></script>
 <script>
 /* 오프라인 캐시 — 한 번 열어 두면 그 뒤로 인터넷 없이 돌아간다.

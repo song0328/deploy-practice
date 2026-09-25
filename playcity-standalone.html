@@ -190,7 +190,7 @@ body.in-game.game-obby #mapDock{display:block;}
   body.walking #mapDock h2{display:none;}
   body.map-expanded #mapDock{width:calc(100vw - 16px);}
   .mapPlaces button{font-size:11px; min-height:32px;}
-  #prompt{bottom:auto; top:64px; padding:9px 10px; gap:10px;}
+  #prompt, #signPrompt{bottom:auto; top:64px; padding:9px 10px; gap:10px;}
   #promptIcon{width:44px; height:44px; font-size:24px;}
   #promptName{font-size:16px;}
   #promptCtl{display:none;}
@@ -203,13 +203,13 @@ body.in-game.game-obby #mapDock{display:block;}
   #hudStats .v{font-size:14.5px;}
   #hudFlash{font-size:38px;}
   #hudHint{font-size:12px; bottom:auto; top:62px;}
-  body.touch #prompt{top:auto; bottom:calc(160px + var(--safe-b));}
+  body.touch #prompt, body.touch #signPrompt{top:auto; bottom:calc(160px + var(--safe-b));}
 }
 @media (max-width:480px){
   #hubBtn b{display:none;}
   #hudTitle{display:none;}
 }
-body.touch.walking #prompt{bottom:calc(160px + var(--safe-b));}
+body.touch.walking #prompt, body.touch.walking #signPrompt{bottom:calc(160px + var(--safe-b));}
 
 /* ── 터치 기기: 아래쪽은 이동 버튼 자리라서 지도·알림을 위로 올린다 ── */
 body.touch #mapDock{top:62px; bottom:auto; left:8px; width:170px; padding:7px;}
@@ -243,63 +243,90 @@ body.touch #fishUi .fmeter{right:150px;}
 #intro .rowBtns{margin-top:16px;}
 
 
-/* ── 🌍 지구 지킴이 퀴즈 ──────────────────────────────────────────
-   옛 「에코시티 남산」 대화창(#chatDock)의 아래 가운데 배치를 가져왔다.
-   거기보다 넓게(720 → 900) 잡고, 보기 버튼은 손가락으로 누를 수 있게 키웠다. */
-#quizDock{
+/* ── 🏙️ 스마트시티 팻말 ──────────────────────────────────────
+   읽기 패널은 옛 「에코시티 남산」 대화창의 아래 가운데 배치를 이어받았다.
+   게임이 아니라 「읽는 것」이라 버튼은 닫기 하나뿐이다. */
+#signPrompt{
+  left:50%; bottom:66px; transform:translateX(-50%); z-index:31;
+  display:flex; gap:14px; align-items:center; padding:12px 14px 12px 12px;
+  width:min(520px, calc(100vw - 24px)); border-color:var(--info); animation:rise .25s ease;
+}
+#signPromptIcon{
+  flex:none; width:54px; height:54px; border-radius:16px;
+  display:flex; align-items:center; justify-content:center; font-size:30px;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.2);
+}
+#signPromptName{font-family:var(--font); font-weight:800; font-size:19px;}
+#signPromptSub{font-size:13px; color:var(--dim); margin-top:3px; word-break:keep-all;}
+#signPromptRead{
+  flex:none; background:var(--info); color:#06263a; border:none; border-radius:14px;
+  padding:12px 16px; font-size:17px; min-height:52px;
+}
+#signPromptRead kbd{background:rgba(0,0,0,.14); border-color:rgba(0,0,0,.2); color:#06263a; margin-right:3px;}
+#signPromptRead kbd:empty{display:none;}
+
+#signPanel{
+  --sign:var(--info);
   position:fixed; left:50%; transform:translateX(-50%);
-  bottom:calc(18px + var(--safe-b)); z-index:33;
-  width:min(900px, calc(100vw - 32px));
+  bottom:calc(18px + var(--safe-b)); z-index:34;
+  width:min(860px, calc(100vw - 32px));
   background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
   box-shadow:0 18px 48px rgba(0,0,0,.45); backdrop-filter:blur(6px);
-  overflow:hidden;
+  overflow:hidden; animation:rise .22s ease;
 }
-#quizHead{
-  display:flex; align-items:center; gap:10px; padding:11px 18px 10px;
-  border-bottom:1px solid var(--line-soft); font-size:14px; color:var(--dim);
+#signHead{
+  display:flex; align-items:center; gap:12px; padding:13px 18px;
+  border-bottom:1px solid var(--line-soft);
+  background:linear-gradient(180deg, rgba(255,255,255,.05), transparent);
 }
-#quizScore{margin-left:auto; color:var(--accent); font-weight:700; font-size:17px;}
-#quizScore.minus{color:var(--warn);}
-#quizBody{padding:16px 18px 6px;}
-#quizQ{
-  margin:0 0 14px; font-size:19px; line-height:1.55; color:var(--text);
-  word-break:keep-all; min-height:58px;
+#signIcon{
+  flex:none; width:46px; height:46px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center; font-size:26px;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.2);
 }
-#quizChoices{display:flex; flex-direction:column; gap:9px;}
-.quizChoice{
-  display:flex; align-items:center; gap:11px; width:100%;
-  min-height:64px; padding:12px 16px; text-align:left;
-  background:var(--chip); color:var(--text);
-  border:1px solid var(--line); border-radius:13px;
-  font-family:inherit; font-size:16.5px; line-height:1.45; word-break:keep-all;
-  transition:border-color .12s, background .12s, transform .08s;
+#signName{display:block; font-family:var(--font); font-weight:800; font-size:20px;}
+#signPlace{display:block; font-size:12.5px; color:var(--dim); margin-top:2px;}
+#signDone{
+  margin-left:auto; flex:none; color:var(--good); font-size:13px; font-weight:700;
+  background:rgba(62,212,126,.12); border:1px solid rgba(62,212,126,.4);
+  border-radius:99px; padding:5px 11px;
 }
-.quizChoice i{
-  flex:none; font-style:normal; font-size:19px; color:var(--dim); width:22px; text-align:center;
+#signBody{padding:15px 18px 4px;}
+#signLead{
+  margin:0 0 13px; font-size:17px; line-height:1.55; color:var(--text);
+  word-break:keep-all; padding-left:11px; border-left:3px solid var(--sign);
 }
-.quizChoice:not(:disabled):hover{border-color:var(--accent); transform:translateY(-1px);}
-.quizChoice:not(:disabled):active{transform:translateY(1px);}
-.quizChoice:disabled{opacity:.85;}
-.quizChoice.right{background:#12321F; border-color:#2E8B57; color:#C9F7D9;}
-.quizChoice.right i{color:var(--good);}
-.quizChoice.wrong{background:#3A1A1A; border-color:#8B3A3A; color:#FFD6D2;}
-.quizChoice.wrong i{color:var(--warn);}
-#quizFeed{
-  margin-top:13px; padding:12px 14px; border-radius:12px;
-  background:var(--panel2); border:1px solid var(--line-soft);
-  font-size:15px; line-height:1.6; color:var(--dim); word-break:keep-all;
+.signRow{
+  display:flex; gap:11px; align-items:flex-start;
+  padding:11px 13px; margin-bottom:8px;
+  background:var(--panel2); border:1px solid var(--line-soft); border-radius:12px;
 }
-#quizFeed b{display:block; margin-bottom:4px; font-size:16px;}
-#quizFeed b.right{color:var(--good);} #quizFeed b.wrong{color:var(--warn);}
-#quizFoot{padding:12px 18px 16px;}
-#quizNext{
-  width:100%; min-height:60px; border:none; border-radius:13px;
+.signRow i{flex:none; font-style:normal; font-size:19px; line-height:1.4;}
+.signRow b{display:block; font-size:12.5px; color:var(--sign); margin-bottom:3px; letter-spacing:.02em;}
+.signRow span{display:block; font-size:15px; line-height:1.6; color:var(--text); word-break:keep-all;}
+.signRow span + span{margin-top:3px;}
+#signFoot{
+  display:flex; align-items:center; gap:12px; padding:11px 18px 15px;
+}
+#signProgress{font-size:13px; color:var(--dim);}
+#signClose{
+  margin-left:auto; min-width:120px; min-height:48px; border:none; border-radius:13px;
   background:var(--accent); color:var(--accent-ink);
-  font-family:inherit; font-size:17px; font-weight:700;
-  transition:filter .12s;
+  font-family:inherit; font-size:16px; font-weight:700; transition:filter .12s;
 }
-#quizNext:hover{filter:brightness(1.07);}
+#signClose:hover{filter:brightness(1.07);}
+#smartDoneBig{font-size:44px; font-weight:800; color:var(--good); margin:6px 0 10px;}
 
+/* ── 🏙️ 진행 칩 (상단 바) ── */
+#smartWrap{
+  display:inline-flex; align-items:center; gap:5px; padding:5px 12px;
+  background:var(--chip); border:1px solid var(--line); border-radius:99px;
+  font-size:13px; color:var(--dim); white-space:nowrap;
+}
+#smartWrap b{color:var(--info);}
+#smartWrap.done{border-color:var(--good);}
+#smartWrap.done b{color:var(--good);}
+body.in-game #smartWrap{display:none;}
 
 /* ── 🏆 마을 점수 (모든 게임 합산) ── */
 #totalWrap{
@@ -348,19 +375,21 @@ body.dev-phone #toasts{top:auto; bottom:calc(270px + var(--safe-b)); left:50%; m
 body.dev-phone .tbtn.big{width:108px; height:108px;}
 
 /* ── 퀴즈: 기기별 ── */
-body.dev-tablet #quizDock{width:min(1000px, calc(100vw - 48px));}
-body.dev-tablet #quizQ{font-size:22px;}
-body.dev-tablet .quizChoice{min-height:72px; font-size:19px;}
-body.dev-tablet #quizNext{min-height:68px; font-size:19px;}
-body.dev-phone #quizDock{width:calc(100vw - 20px); bottom:calc(10px + var(--safe-b));}
-body.dev-phone #quizBody{padding:12px 13px 4px;}
-body.dev-phone #quizQ{font-size:16.5px; min-height:0; margin-bottom:11px;}
-body.dev-phone .quizChoice{min-height:58px; font-size:15px; padding:10px 12px;}
-body.dev-phone #quizFeed{font-size:13.5px;}
-body.dev-phone #quizFoot{padding:10px 13px 12px;}
-body.dev-phone #quizNext{min-height:54px; font-size:16px;}
-/* 퀴즈 중에는 조이스틱·점프 버튼이 필요 없다 (화면을 가리지 않게) */
-body.game-quiz #joy, body.game-quiz #jumpBtn{display:none !important;}
+body.dev-tablet #signPanel{width:min(960px, calc(100vw - 48px));}
+body.dev-tablet #signLead{font-size:20px;}
+body.dev-tablet .signRow span{font-size:17px;}
+body.dev-tablet #signClose{min-height:56px; font-size:18px;}
+body.dev-tablet #signPromptName{font-size:22px;} body.dev-tablet #signPromptSub{font-size:15px;}
+body.dev-tablet #signPromptRead{font-size:21px; padding:16px 22px;}
+body.dev-phone #signPanel{width:calc(100vw - 20px); bottom:calc(10px + var(--safe-b));}
+body.dev-phone #signBody{padding:12px 13px 2px;}
+body.dev-phone #signLead{font-size:15.5px; margin-bottom:10px;}
+body.dev-phone .signRow{padding:9px 11px; margin-bottom:7px;}
+body.dev-phone .signRow span{font-size:14px;}
+body.dev-phone #signName{font-size:17px;}
+body.dev-phone #signFoot{padding:9px 13px 12px;}
+body.dev-phone #signClose{min-height:46px; font-size:15px; min-width:96px;}
+body.dev-phone #signPrompt{top:auto; bottom:calc(150px + var(--safe-b)); padding:10px;}
 
 body.dev-tablet #totalWrap{font-size:15px; padding:7px 14px;}
 body.dev-tablet #totalScore{font-size:18px;}
@@ -386,6 +415,7 @@ body.in-game #totalWrap{display:none;}
   <span id="logo" class="jua">🏙️ <span id="logoText">놀이도시</span></span>
   <span class="divider"></span>
   <span id="totalWrap">🏆 <b id="totalScore">0점</b></span>
+  <span id="smartWrap" title="스마트시티 팻말">🏙️ <b id="smartCount">0/5</b></span>
   <button id="hubBtn" type="button" title="미니게임 수첩 (Tab)">🎮 미니게임 <b id="hubBtnCount">★ 0/0</b></button>
   <button id="walkBtn" type="button" title="걷기 ↔ 조망 (M)">🚶 걷기</button>
   <button id="soundBtn" type="button" aria-label="소리 끄기">🔊</button>
@@ -418,6 +448,48 @@ body.in-game #totalWrap{display:none;}
     <p id="promptRec"></p>
   </div>
   <button id="promptStart" type="button"><kbd id="promptKey">E</kbd> 시작</button>
+</div>
+
+<!-- ═══ 스마트시티 팻말 ═══ -->
+<div id="signPrompt" class="panel" hidden role="dialog" aria-live="polite">
+  <span id="signPromptIcon"></span>
+  <div class="pbody">
+    <b id="signPromptName"></b>
+    <p id="signPromptSub"></p>
+  </div>
+  <button id="signPromptRead" type="button"><kbd id="signPromptKey">E</kbd> 읽기</button>
+</div>
+
+<div id="signPanel" hidden role="dialog" aria-modal="true" aria-labelledby="signName">
+  <div id="signHead">
+    <span id="signIcon"></span>
+    <div>
+      <b id="signName"></b>
+      <span id="signPlace"></span>
+    </div>
+    <span id="signDone" hidden>✓ 읽음</span>
+  </div>
+  <div id="signBody">
+    <p id="signLead"></p>
+    <div id="signRows"></div>
+  </div>
+  <div id="signFoot">
+    <span id="signProgress"></span>
+    <button id="signClose" type="button">닫기</button>
+  </div>
+</div>
+
+<!-- 팻말 5개를 다 읽었을 때 -->
+<div class="overlay soft" id="smartDone" hidden>
+  <div class="card">
+    <div class="gIcon" id="smartDoneIcon">🏙️</div>
+    <h2>스마트시티 탐험 완료!</h2>
+    <div id="smartDoneBig">5 / 5</div>
+    <ul class="rules" id="smartDoneList"></ul>
+    <div class="rowBtns">
+      <button class="bigBtn" id="smartDoneClose" type="button">🚶 탐험으로</button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ 게임 공통 HUD ═══ -->
@@ -560,11 +632,11 @@ window.G = {};
   /* ── 기록 저장: 새 게임 전용 키. 저장이 막힌 브라우저에서도 게임은 된다 ── */
   const KEY = 'playcity-records-v1';
   G.store = {
-    data: { v: 1, games: {}, found: {}, muted: false },
+    data: { v: 1, games: {}, found: {}, smart: {}, muted: false },
     load() {
       try {
         const d = JSON.parse(localStorage.getItem(KEY) || 'null');
-        if (d && d.v === 1) this.data = { v: 1, games: d.games || {}, found: d.found || {}, muted: !!d.muted };
+        if (d && d.v === 1) this.data = { v: 1, games: d.games || {}, found: d.found || {}, smart: d.smart || {}, muted: !!d.muted };
       } catch (e) { /* 저장 불가 환경 */ }
     },
     save() {
@@ -1236,7 +1308,6 @@ window.G = {};
     dance: { x: 45.4, z: 74.5 },     // 학교 교실 맨 뒷자리 옆
     obby: { x: 7.5, z: -39.5 },      // 하늘언덕 공원 출발 발판
     boat: { x: -40, z: 41.4 },       // 남쪽 선착장 끝
-      // 퀴즈 자리들은 js/games/quiz-data.js 가 G.SPOTS 에 직접 넣는다
   };
   /** 조망 카메라 장소 버튼 */
   G.PLACES = {
@@ -1588,6 +1659,7 @@ window.G = {};
     near: null,           // 지금 가까이 있는 마커
     walkGame: false,      // 걷기 조작을 쓰는 미니게임(점프 챌린지) 중이면 true
   };
+  E.walk = walk;            // 팻말 등 다른 파일이 내 위치를 읽는다 (읽기 전용으로 쓸 것)
   const active = () => E.mode === 'orbit' || E.mode === 'walk' || (E.mode === 'game' && E.walkGame);
 
   /* ═══════════ 조망 카메라 ═══════════ */
@@ -1768,6 +1840,7 @@ window.G = {};
       return true;
     }
     if (E.mode === 'game') return false;
+    if (e.code === 'KeyE' && !e.repeat && G.smart?.near) { G.smart.open(); return true; }
     if (e.code === 'KeyE' && !e.repeat && E.near) { G.play.start(E.near.id); return true; }
     if (e.code === 'KeyM' && !e.repeat) { E.walking ? exitWalk() : enterWalk(); return true; }
     return false;
@@ -1957,6 +2030,7 @@ window.G = {};
       mctx.fillText(m.num, mx, my + 1);
       if (G.store.game(m.id).clears) { mctx.fillStyle = '#ffd23f'; mctx.font = '10px sans-serif'; mctx.fillText('★', mx + 7, my - 7); }
     }
+    G.smart?.paintMap?.(mctx, mapPoint, now);
     // 내 위치 (걷기) 또는 조망 중심
     if (E.walking) {
       const [px, py] = mapPoint(walk.pos.x, walk.pos.z);
@@ -2058,10 +2132,14 @@ window.G = {};
     let near = null;
     if (E.mode === 'walk') {
       const feet = walk.pos.y - WALK_CFG.eye;
+      let best = Infinity;
       for (const m of markers) {
-        const dx = walk.pos.x - m.x, dz = walk.pos.z - m.z;
-        if (dx * dx + dz * dz < m.r * m.r && Math.abs(feet - m.y) < 2.5) { near = m; break; }
+        const d = Math.hypot(walk.pos.x - m.x, walk.pos.z - m.z);
+        if (d < m.r && Math.abs(feet - m.y) < 2.5 && d < best) { best = d; near = m; }
       }
+      // 스마트시티 팻말이 더 가까우면 그쪽에 양보한다 (안내 카드는 한 번에 하나만)
+      const sn = G.smart?.near;
+      if (near && sn && Math.hypot(walk.pos.x - sn.x, walk.pos.z - sn.z) < best) near = null;
     }
     if (near === E.near) return;
     E.near = near;
@@ -2089,6 +2167,7 @@ window.G = {};
     $('jumpBtn').hidden = !touchWalk;
     if (!touchWalk) joyEnd();
     if (walking) E.near = undefined; else { E.near = null; $('prompt').hidden = true; }
+    if (!walking) G.smart?.clear?.();
   };
 
   /* ═══════════ 게임 시작/종료 때 탐험 상태 보관·복원 ═══════════ */
@@ -2102,6 +2181,7 @@ window.G = {};
     clearMovement(); stopCameraTrip();
     walk.vy = 0;
     E.near = null; $('prompt').hidden = true;
+    G.smart?.clear?.();
     if (document.pointerLockElement === canvas) document.exitPointerLock();
     document.body.classList.add('in-game');
     E.refreshUi();
@@ -2551,6 +2631,390 @@ window.G = {};
     if (P.current) P.onKey(e, false);
     E().onKey(e, false);
   });
+})(window.G);
+
+</script>
+<script>
+'use strict';
+/* ═══════════════════════════════════════════════════════════════
+   smartcity.js — 도시 곳곳의 「스마트시티 팻말」 5개
+
+   게임이 아니다. 걸어가서 읽기만 하면 된다.
+   팻말 하나 = 아래 SIGNS 배열의 덩이 하나. 덩이를 더하거나 빼면
+   구조물·팻말·미니맵 표시·진행 칩(0/5)이 전부 따라온다.
+
+   각 덩이가 채우는 것
+     id      기록 저장 키 (바꾸면 예전 「읽음」 기록과 끊긴다)
+     name    팻말 제목 · icon 이모지 · color 강조색
+     place   어디에 있는지 한 줄
+     sign    {x, z, yaw}  팻말이 설 자리. yaw 는 팻말이 바라보는 쪽(라디안)
+     lead    패널 맨 위 한 줄 설명
+     data    모으는 데이터 · issue 푸는 문제 · how 하는 일 (두 줄)
+     build() 그 자리에 세울 구조물 (없어도 된다)
+
+   자리를 옮기거나 새로 잡을 때는 반드시  node tests/probe.mjs  로
+   그 땅이 비어 있는지 먼저 확인한다. 겹침은 화면에서 잘 안 보인다.
+   ═══════════════════════════════════════════════════════════════ */
+(function (G) {
+  const T = THREE, scene = G.scene, city = G.cityBatch, $ = G.$;
+
+  /* ═══════════ 팻말 5개 ═══════════ */
+  const SIGNS = G.SMART_SIGNS = [
+    {
+      id: 'sc-cross', name: '스마트 횡단보도', icon: '🚸', color: '#FFD23F',
+      place: '학교 앞 횡단보도',
+      sign: { x: 29.5, z: 50.3, yaw: Math.PI * 0.25 },
+      lead: '길을 건너는 사람을 알아보고 신호를 맞춰 준다.',
+      data: '보행자 감지 — 횡단보도 위에 사람이 있는지',
+      issue: '보행자 사고. 특히 어린이·어르신은 초록불 안에 다 못 건널 때가 있다',
+      how: ['아직 건너는 사람이 있으면 초록불을 조금 더 준다',
+        '차가 다가오면 바닥 조명이 켜져 운전자에게 알린다'],
+      build: () => {
+        // 감지 센서 기둥 두 개 (횡단보도 양쪽) + 바닥 LED 띠
+        for (const [sx, sz] of [[28.2, 57.6], [43.8, 50.0]]) {
+          city.add(0.16, 2.8, 0.16, sx, 1.4, sz, 0x5d6670);
+          const eye = G.box(0.42, 0.3, 0.34, 0x1e2a36); eye.position.set(sx, 2.95, sz); scene.add(eye);
+          const lens = new T.Mesh(G.boxGeo(0.16, 0.16, 0.05), new T.MeshBasicMaterial({ color: 0x5AC8FA, transparent: true }));
+          lens.position.set(sx, 2.95, sz + (sz < 54 ? 0.19 : -0.19)); scene.add(lens);
+          G.blockArea(sx, sz, 0.3, 0.3);
+          blink.push(lens.material);
+        }
+        // 횡단보도 가장자리 조명 띠
+        for (const lz of [49.9, 57.3]) city.add(16, 0.03, 0.18, 36, 0.2, lz, 0xffe9a8);
+      },
+    },
+    {
+      id: 'sc-flood', name: '침수 예측 시스템', icon: '🌊', color: '#5AC8FA',
+      place: '다리 북쪽 강가',
+      sign: { x: -3.8, z: 28.6, yaw: Math.PI * 0.12 },
+      lead: '비가 얼마나 왔는지, 강물이 얼마나 찼는지 계속 잰다.',
+      data: '강수량과 하천 수위 — 시간마다 얼마나 올랐는지',
+      issue: '집중호우로 하천이 넘치는 것. 물은 순식간에 불어난다',
+      how: ['물이 빠르게 오르면 넘치기 전에 미리 알린다',
+        '위험해지면 강변길과 다리 아래를 먼저 막는다'],
+      build: () => {
+        // 강 안 수위 관측 기둥 (빨강·흰색 눈금 + 꼭대기 경보등)
+        const px = -2.6, pz = 33.5;
+        for (let i = 0; i < 8; i++) city.add(0.26, 0.5, 0.26, px, 0.25 + i * 0.5, pz, i % 2 ? 0xf4f1e6 : 0xd8493c);
+        const lampBase = G.box(0.4, 0.28, 0.4, 0x2b3138); lampBase.position.set(px, 4.3, pz); scene.add(lampBase);
+        const lamp = new T.Mesh(G.boxGeo(0.26, 0.26, 0.26), new T.MeshBasicMaterial({ color: 0xFF7A70, transparent: true }));
+        lamp.position.set(px, 4.58, pz); scene.add(lamp);
+        blink.push(lamp.material);
+        // 강가 계측함 + 빗물받이
+        city.add(0.9, 1.1, 0.7, -5.6, 0.55, 29.8, 0xcfd8de).add(1.0, 0.12, 0.8, -5.6, 1.16, 29.8, 0x8d97a0);
+        G.blockArea(-5.6, 29.8, 0.9, 0.7);
+        city.add(0.5, 0.06, 0.5, -2.0, 0.04, 29.2, 0x6f7b85);
+      },
+    },
+    {
+      id: 'sc-bin', name: '스마트 쓰레기통', icon: '🗑️', color: '#3ED47E',
+      place: '하늘언덕 공원 놀이터',
+      sign: { x: 2.0, z: -36.6, yaw: Math.PI * 1.0 },
+      lead: '통이 얼마나 찼는지 스스로 알리는 쓰레기통.',
+      data: '쓰레기 적재량 — 지금 몇 퍼센트 찼는지',
+      issue: '넘치는 쓰레기. 비어 있는 통까지 수거차가 매일 도는 낭비',
+      how: ['가득 찬 통만 골라서 수거한다',
+        '헛걸음이 줄어 수거차가 덜 다니고 매연도 줄어든다'],
+      build: () => {
+        // 적재량 표시등이 달린 쓰레기통 세 개
+        [[-0.4, -36.6, 0x3ED47E], [1.9, -41.4, 0xFFD23F], [4.4, -36.6, 0xFF7A70]].forEach(([bx, bz, c]) => {
+          city.add(0.62, 0.95, 0.62, bx, 0.48, bz, 0x2f5d46).add(0.7, 0.1, 0.7, bx, 1.0, bz, 0x24493a);
+          const led = new T.Mesh(G.boxGeo(0.3, 0.09, 0.04), new T.MeshBasicMaterial({ color: c }));
+          led.position.set(bx, 0.82, bz + 0.32); scene.add(led);
+          G.blockArea(bx, bz, 0.7, 0.7);
+        });
+      },
+    },
+    {
+      id: 'sc-park', name: '스마트 주차장', icon: '🅿️', color: '#5AC8FA',
+      place: '놀이초등학교 서쪽',
+      sign: { x: 20.4, z: 67.6, yaw: Math.PI * 1.15 },
+      lead: '칸마다 센서가 있어 빈자리를 바로 알려 준다.',
+      data: '주차 칸 센서 — 칸마다 차가 있는지 없는지',
+      issue: '빈자리를 찾느라 주차장을 빙빙 도는 것. 그만큼 시간과 기름이 든다',
+      how: ['입구 전광판에 남은 자리 수가 바로 뜬다',
+        '어느 줄이 비었는지 알려 주니 헤매지 않는다'],
+      build: () => {
+        const cx = 17, cz = 72, W = 7.5, D = 10;
+        city.add(W, 0.08, D, cx, 0.04, cz, 0x4a5058);                       // 아스팔트
+        for (let i = 0; i <= 4; i++) city.add(3.2, 0.02, 0.12, cx - 1.9, 0.09, cz - D / 2 + 1 + i * 2, 0xf2efe4);
+        city.add(0.12, 0.02, D - 1.4, cx + 0.2, 0.09, cz, 0xf2efe4);
+        // 주차된 차 두 대 + 빈 칸 센서 점
+        [[cx - 1.9, cz - 3.5, 0xe8533f], [cx - 1.9, cz + 0.5, 0xf2f2f2]].forEach(([carX, carZ, c]) => {
+          city.add(2.6, 0.75, 1.5, carX, 0.45, carZ, c).add(1.5, 0.45, 1.4, carX, 1.05, carZ, 0x2b3138);
+          G.blockArea(carX, carZ, 2.6, 1.5);
+        });
+        [[cx - 1.9, cz + 4.5], [cx - 1.9, cz + 2.5], [cx - 1.9, cz - 1.5]].forEach(([dx, dz]) => {
+          const dot = new T.Mesh(G.boxGeo(0.2, 0.02, 0.2), new T.MeshBasicMaterial({ color: 0x3ED47E }));
+          dot.position.set(dx, 0.1, dz); scene.add(dot);
+        });
+        // 입구 전광판
+        const tex = G.canvasTex(256, 128, g => {
+          g.fillStyle = '#0b1a26'; g.fillRect(0, 0, 256, 128);
+          g.fillStyle = '#5AC8FA'; g.font = `26px ${G.FONT}`; g.textAlign = 'center';
+          g.fillText('남은 자리', 128, 42);
+          g.fillStyle = '#3ED47E'; g.font = `bold 58px ${G.FONT}`; g.fillText('3', 128, 100);
+        });
+        const board = G.signBox(1.5, 0.85, 0.1, tex, 0x2b3138);
+        board.rotation.y = Math.PI * 1.15; board.position.set(20.9, 2.5, 69.6); scene.add(board);
+        city.add(0.14, 2.1, 0.14, 20.9, 1.05, 69.6, 0x5d6670);
+        G.blockArea(20.9, 69.6, 0.3, 0.3);
+        G.mapShapes.push({ x: cx, z: cz, w: W, d: D, color: '#6b737c' });
+      },
+    },
+    {
+      id: 'sc-station', name: '스마트 기차역', icon: '🚉', color: '#FF9F4A',
+      place: '모노레일 선로 옆 승강장',
+      sign: { x: -18.4, z: 17.6, yaw: Math.PI * 0.05 },
+      lead: '시간마다 몇 명이 타고 내리는지 세어 열차를 조절한다.',
+      data: '시간대별 승하차 인원 — 어느 때 가장 붐비는지',
+      issue: '출퇴근 시간에 너무 붐비는 것. 어떤 칸만 유독 꽉 찬다',
+      how: ['붐빌 시간을 미리 내다보고 열차를 늘린다',
+        '승강장 전광판에 칸마다 얼마나 찼는지 보여 준다'],
+      build: () => {
+        const px = -18.4, pz = 22, W = 3.4, D = 8;
+        city.add(W, 0.35, D, px, 0.175, pz, 0xd8d2c4);                        // 승강장
+        for (let z = pz - D / 2 + 0.4; z < pz + D / 2; z += 0.8) city.add(W - 0.3, 0.02, 0.1, px, 0.36, z, 0xc4bdad);
+        city.add(0.12, 0.02, D, px + W / 2 - 0.15, 0.36, pz, 0xffd23f);       // 안전선
+        G.platforms.push({ x: px, z: pz, w: W, d: D, top: 0.35, bottom: 0, name: 'station' });
+        // 지붕
+        for (const [qx, qz] of [[px - 1.3, pz - 3], [px + 1.3, pz - 3], [px - 1.3, pz + 3], [px + 1.3, pz + 3]]) {
+          city.add(0.14, 2.8, 0.14, qx, 1.75, qz, 0x8d97a0);
+          G.blockArea(qx, qz, 0.2, 0.2);
+        }
+        city.add(W + 0.6, 0.18, D - 0.6, px, 3.24, pz, 0xbfd9e6);
+        // 벤치
+        city.add(1.6, 0.1, 0.5, px - 0.8, 0.75, pz + 1.2, 0x966b47).add(0.12, 0.4, 0.5, px - 1.5, 0.55, pz + 1.2, 0x7a5230);
+        // 혼잡도 전광판
+        const tex = G.canvasTex(256, 128, g => {
+          g.fillStyle = '#0b1a26'; g.fillRect(0, 0, 256, 128);
+          g.fillStyle = '#EDF4FF'; g.font = `22px ${G.FONT}`; g.textAlign = 'center';
+          g.fillText('칸별 혼잡도', 128, 32);
+          [['#3ED47E', 36], ['#FFD23F', 100], ['#FF7A70', 164], ['#3ED47E', 228]].forEach(([c, x], i) => {
+            g.fillStyle = c; g.fillRect(x - 24, 52, 48, 40);
+            g.fillStyle = '#0b1a26'; g.font = `bold 20px ${G.FONT}`; g.fillText(String(i + 1), x, 80);
+          });
+        });
+        const board = G.signBox(2.0, 1.0, 0.1, tex, 0x2b3138);
+        board.rotation.y = Math.PI * 1.05; board.position.set(px, 2.5, pz + 3.6); scene.add(board);
+        G.mapShapes.push({ x: px, z: pz, w: W, d: D, color: '#cfd8de' });
+        G.mapLabels.push({ text: '기차역', x: px, z: pz + 6.5 });
+      },
+    },
+  ];
+
+  const byId = id => SIGNS.find(s => s.id === id);
+  const readSet = () => (G.store.data.smart || (G.store.data.smart = {}));
+  const isRead = id => !!readSet()[id];
+  const readCount = () => SIGNS.filter(s => isRead(s.id)).length;
+
+  /* ═══════════ 팻말 만들기 ═══════════ */
+  const blink = [];          // 깜빡이는 표시등 재질
+  const posts = [];          // {def, x, z, y, group, icon, stamp, ring}
+
+  /** 팻말 판에 그릴 그림 — 제목 띠 + 「모으는 데이터」 + 「푸는 문제」 두 줄 */
+  function boardTex(def) {
+    return G.canvasTex(640, 400, (g) => {
+      g.fillStyle = '#0E2233'; g.fillRect(0, 0, 640, 400);
+      g.strokeStyle = def.color; g.lineWidth = 10; g.strokeRect(5, 5, 630, 390);
+      // 제목 띠
+      g.fillStyle = def.color; g.fillRect(10, 10, 620, 96);
+      g.fillStyle = '#10202a'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.font = `bold 50px ${G.FONT}`;
+      g.fillText(`${def.icon} ${def.name}`, 320, 60);
+      // 본문 두 줄 — 꼬리표 폭은 글자를 재서 정한다 (고정 폭으로 뒀더니 잘렸다)
+      const row = (y, chip, chipColor, text) => {
+        g.font = `bold 24px ${G.FONT}`;
+        const cw = g.measureText(chip).width + 26;
+        g.fillStyle = chipColor; g.fillRect(34, y - 21, cw, 42);
+        g.fillStyle = '#10202a'; g.textAlign = 'center';
+        g.fillText(chip, 34 + cw / 2, y + 1);
+        g.fillStyle = '#EDF4FF'; g.font = `29px ${G.FONT}`; g.textAlign = 'left';
+        g.fillText(text, 34 + cw + 16, y + 1);
+      };
+      row(172, '모으는 데이터', '#9FC8E8', def.data.split(' — ')[0]);
+      row(244, '푸는 문제', '#F2B8B2', def.issue.split('.')[0]);
+      // 안내
+      g.fillStyle = '#8FA6C8'; g.font = `26px ${G.FONT}`; g.textAlign = 'center';
+      g.fillText(G.touch ? '가까이 와서 「읽기」를 눌러 보세요' : '가까이 와서 E 를 눌러 보세요', 320, 336);
+    });
+  }
+
+  function iconTex(def) {
+    return G.canvasTex(128, 128, (g) => {
+      g.fillStyle = def.color; g.beginPath(); g.arc(64, 60, 50, 0, Math.PI * 2); g.fill();
+      g.lineWidth = 8; g.strokeStyle = '#ffffff'; g.stroke();
+      g.beginPath(); g.moveTo(48, 104); g.lineTo(64, 124); g.lineTo(80, 104); g.fillStyle = '#ffffff'; g.fill();
+      g.font = '58px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+      g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(def.icon, 64, 62);
+    });
+  }
+
+  const ringGeo = new T.RingGeometry(0.95, 1.3, 30).rotateX(-Math.PI / 2);
+
+  G.buildSmartCity = () => {
+    for (const def of SIGNS) {
+      def.build?.();
+      const { x, z, yaw } = def.sign;
+      const y = G.groundHeight(x, z);
+      // 판 + 기둥 두 개
+      const board = G.signBox(3.0, 1.9, 0.14, boardTex(def), 0x243447);
+      board.position.set(x, y + 2.35, z); board.rotation.y = yaw; scene.add(board);
+      const ox = Math.cos(yaw) * 1.25, oz = -Math.sin(yaw) * 1.25;
+      city.add(0.15, 1.5, 0.15, x - ox, y + 0.75, z - oz, 0x6b4a2e);
+      city.add(0.15, 1.5, 0.15, x + ox, y + 0.75, z + oz, 0x6b4a2e);
+      G.blockArea(x, z, 1.4, 1.4);
+
+      // 바닥 고리 + 떠 있는 아이콘 + 읽음 도장
+      const group = new T.Group(); group.position.set(x, y + 0.05, z);
+      const color = new T.Color(def.color);
+      const ring = new T.Mesh(ringGeo, new T.MeshBasicMaterial({ color, transparent: true, opacity: 0.75, depthWrite: false }));
+      const icon = new T.Sprite(new T.SpriteMaterial({ map: iconTex(def), depthTest: false, transparent: true }));
+      icon.renderOrder = 10; icon.position.y = 4.4; icon.scale.set(1.6, 1.6, 1);
+      const stamp = G.labelSprite('✓ 읽음', { bg: 'rgba(18,50,31,.92)', border: '#3ED47E', scale: 0.62, font: 30, depthTest: false });
+      stamp.renderOrder = 11; stamp.position.y = 3.5; stamp.visible = isRead(def.id);
+      group.add(ring, icon, stamp);
+      scene.add(group);
+      posts.push({ def, x, z, y, r: 2.7, group, ring, icon, stamp });
+    }
+    paintCount();
+  };
+
+  /* ═══════════ 가까이 가면 뜨는 안내 · 읽기 패널 ═══════════ */
+  const S = G.smart = { near: null, posts, signs: SIGNS };
+
+  S.clear = () => { S.near = null; $('signPrompt').hidden = true; };
+
+  function checkNear() {
+    const E = G.explore;
+    let near = null;
+    if (E.mode === 'walk' && E.walking && $('signPanel').hidden) {
+      const p = E.walk.pos;
+      let best = Infinity;
+      for (const m of posts) {
+        const d = Math.hypot(p.x - m.x, p.z - m.z);
+        if (d < m.r && d < best) { best = d; near = m; }
+      }
+      // 게임 마커가 더 가까우면 그쪽에 양보한다 (카드 두 장이 겹쳐 뜨지 않게)
+      if (near && E.near && Math.hypot(p.x - E.near.x, p.z - E.near.z) < best) near = null;
+    }
+    if (near === S.near) return;
+    S.near = near;
+    const card = $('signPrompt');
+    if (!near) { card.hidden = true; return; }
+    const def = near.def;
+    $('signPromptIcon').textContent = def.icon;
+    $('signPromptIcon').style.background = def.color;
+    $('signPromptName').textContent = def.name;
+    $('signPromptSub').textContent = isRead(def.id) ? '✓ 읽은 팻말이에요' : def.lead;
+    $('signPromptKey').textContent = G.touch ? '' : 'E';
+    card.hidden = false;
+    G.sfx.play('ding');
+  }
+
+  S.open = (id) => {
+    const def = id ? byId(id) : S.near?.def;
+    if (!def) return;
+    G.sfx.unlock(); G.sfx.play('click');
+    $('signIcon').textContent = def.icon;
+    $('signIcon').style.background = def.color;
+    $('signName').textContent = def.name;
+    $('signPlace').textContent = `📍 ${def.place}`;
+    $('signLead').textContent = def.lead;
+    $('signRows').innerHTML =
+      row('📥', '모으는 데이터', def.data) +
+      row('❓', '푸는 문제', def.issue) +
+      row('💡', '이렇게 해결해요', def.how.map(h => `<span>${G.esc(h)}</span>`).join(''), true);
+    $('signPanel').hidden = false;
+    $('signPanel').style.setProperty('--sign', def.color);
+    S.clear();
+    mark(def.id);
+  };
+  const row = (icon, label, body, raw) =>
+    `<div class="signRow"><i>${icon}</i><div><b>${label}</b>${raw ? body : `<span>${G.esc(body)}</span>`}</div></div>`;
+
+  S.close = () => { $('signPanel').hidden = true; };
+
+  /** 읽음으로 표시하고 진행 상황을 갱신한다 (두 번 읽어도 한 번만 센다) */
+  function mark(id) {
+    const first = !isRead(id);
+    if (first) { readSet()[id] = true; G.store.save(); }
+    const m = posts.find(p => p.def.id === id);
+    if (m) m.stamp.visible = true;
+    paintCount();
+    $('signDone').hidden = !isRead(id);
+    $('signProgress').textContent = `🏙️ 스마트시티 ${readCount()} / ${SIGNS.length}`;
+    if (!first) return;
+    G.sfx.play('checkpoint');
+    if (readCount() === SIGNS.length) setTimeout(showAllDone, 500);
+    else G.toast(`🏙️ 스마트시티 ${readCount()}/${SIGNS.length} — ${SIGNS.length - readCount()}곳 더 있어요`, 2600);
+  }
+
+  function paintCount() {
+    const el = $('smartCount');
+    if (el) el.textContent = `${readCount()}/${SIGNS.length}`;
+    const wrap = $('smartWrap');
+    if (wrap) wrap.classList.toggle('done', readCount() === SIGNS.length);
+  }
+  S.paintCount = paintCount;
+  S.readCount = readCount;
+
+  function showAllDone() {
+    $('smartDoneList').innerHTML = SIGNS.map(s =>
+      `<li>${s.icon} <b>${G.esc(s.name)}</b> — ${G.esc(s.lead)}</li>`).join('');
+    $('smartDone').hidden = false;
+    G.sfx.play('win');
+  }
+
+  $('signPromptRead').addEventListener('click', () => S.open());
+  $('signClose').addEventListener('click', () => { S.close(); G.sfx.play('click'); });
+  $('smartDoneClose').addEventListener('click', () => { $('smartDone').hidden = true; G.sfx.play('click'); });
+  addEventListener('keydown', e => {
+    if (e.code === 'Escape' && !$('signPanel').hidden) { S.close(); e.preventDefault(); }
+    else if (e.code === 'Escape' && !$('smartDone').hidden) { $('smartDone').hidden = true; e.preventDefault(); }
+  });
+
+  /* ═══════════ 미니맵 ═══════════ */
+  S.paintMap = (ctx, mapPoint, now) => {
+    const pulse = 1 + Math.sin(now * 0.006) * 0.18;
+    for (const m of posts) {
+      const [mx, my] = mapPoint(m.x, m.z);
+      const done = isRead(m.def.id);
+      const s = 5.5 * (S.near === m ? pulse : 1);
+      ctx.fillStyle = done ? '#3ED47E' : m.def.color;
+      ctx.strokeStyle = '#0d1829'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(mx, my - s); ctx.lineTo(mx + s, my); ctx.lineTo(mx, my + s); ctx.lineTo(mx - s, my);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+      if (done) {
+        ctx.strokeStyle = '#0d1829'; ctx.lineWidth = 2; ctx.beginPath();
+        ctx.moveTo(mx - 2.6, my); ctx.lineTo(mx - 0.6, my + 2.2); ctx.lineTo(mx + 2.8, my - 2.4); ctx.stroke();
+      }
+    }
+  };
+
+  /* ═══════════ 매 프레임 ═══════════ */
+  let blinkOn = false;
+  G.ambient.push((dt, now) => {
+    checkNear();
+    const t = now * 0.001;
+    // 센서·경보등 깜빡임 (색을 바꾸지 않고 보였다 감췄다 한다 — 가장 싸다)
+    const on = Math.sin(t * 2.4) > -0.2;
+    if (on !== blinkOn) { blinkOn = on; for (const m of blink) m.opacity = on ? 1 : 0.25; }
+    // 고리·아이콘 움직임
+    const p = G.explore.walk.pos;
+    for (const m of posts) {
+      m.ring.scale.setScalar(1 + Math.sin(t * 3) * 0.06);
+      m.ring.material.opacity = S.near === m ? 1 : (isRead(m.def.id) ? 0.4 : 0.75);
+      const close = G.explore.walking && Math.hypot(p.x - m.x, p.z - m.z) < 3.2;
+      m.icon.visible = !close;
+      m.icon.position.y = 4.4 + Math.sin(t * 2 + m.x) * 0.12;
+      m.stamp.visible = isRead(m.def.id) && !close;
+    }
+  });
+
+  /* 도시를 합치기(main.js) 전에 구조물을 세워 둔다 */
+  G.buildSmartCity();
 })(window.G);
 
 </script>
@@ -4568,506 +5032,6 @@ window.G = {};
     ui.speed.classList.toggle('boost', st.boost > 0);
     placeCam(dt, now, false);
     if (ctx.hudDue(dt)) stats();
-  }
-})(window.G);
-
-</script>
-<script>
-'use strict';
-/* ═══════════════════════════════════════════════════════════════
-   📊 퀴즈 문제은행 — 주제: 데이터 분석
-   ★ 문제를 바꾸거나 늘리려면 이 파일만 고치면 된다. 3D·게임 코드는 건드릴 일이 없다.
-
-   가르치는 흐름 (사용자가 정한 것)
-     1) 데이터 = 판단을 하기 위해 모은 정보. 숫자만 데이터가 아니다
-     2) 데이터 분석을 한 단어로 하면 = 비교 (시간·지역·집단)
-     3) 그중 가장 중요한 것 = 비율 비교. 숫자가 크다고 많은 게 아니다
-
-   TOPICS 한 덩이 = 지도 위 퀴즈 장소 하나.
-     id       겹치지 않는 이름 (기록 저장 키 — 바꾸면 예전 기록과 끊긴다)
-     name     화면에 뜨는 이름 · icon 그림 · color 빛기둥 색
-     spot     지도 좌표 {x, z} — 걸어서 닿는 빈 땅이어야 한다
-     place    수첩에 뜨는 위치 설명
-     questions  문제들. 8개보다 많이 넣어도 되고 그중 CFG.ask 개를 매판 섞어 뽑는다
-
-   문제 한 덩이
-     question 문제 · choices 보기 4개 · answer 정답 번호(0부터) · explain 고른 뒤 한 줄
-   ※ 보기 순서는 판마다 섞인다. 「①번이 정답」 같은 문장은 쓰지 말 것.
-   ═══════════════════════════════════════════════════════════════ */
-(function (G) {
-  G.QUIZ_TOPICS = [
-    /* ────────────────────────────────────────────────────────
-       1. 데이터 첫걸음 — 무엇이 데이터인가
-       ──────────────────────────────────────────────────────── */
-    {
-      id: 'quiz', name: '데이터 첫걸음', icon: '📊', color: '#3ED47E',
-      spot: { x: 64, z: 71 },
-      place: '놀이초등학교 운동장 (학교 정문 → 운동장 입구)',
-      questions: [
-        {
-          question: '데이터를 한마디로 하면 무엇일까요?',
-          choices: ['판단을 하기 위해 모은 정보', '컴퓨터 안에만 있는 숫자',
-                    '어려운 수학 공식', '한 사람의 생각'],
-          answer: 0,
-          explain: '무언가를 정하려고 모은 것이면 전부 데이터예요. 숫자만 데이터인 게 아니에요.',
-        },
-        {
-          question: '다음 중 데이터라고 하기 어려운 것은?',
-          choices: ['우리 지역 청소년은 8,230명이다', '우리 동네는 재미없다',
-                    '청소년 100명 중 63명이 놀 공간이 부족하다고 답했다',
-                    '우리 지역 문화시설 위치를 지도에 표시했다'],
-          answer: 1,
-          explain: '「재미없다」는 한 사람의 생각이에요. 여러 사람에게 같은 질문으로 물으면 데이터가 돼요.',
-        },
-        {
-          question: '「우리 동네는 재미없다」를 데이터로 만들려면 어떻게 해야 할까요?',
-          choices: ['더 크게 말한다', '여러 사람에게 같은 질문으로 물어 답을 센다',
-                    '글로 예쁘게 쓴다', '그냥 둔다'],
-          answer: 1,
-          explain: '같은 질문을 여러 사람에게 물어 세면 「100명 중 63명」 같은 데이터가 돼요.',
-        },
-        {
-          question: '버스정류장 위치를 지도에 표시한 것은 어떤 데이터일까요?',
-          choices: ['위치 데이터', '설문 데이터', '시간 데이터', '데이터가 아니다'],
-          answer: 0,
-          explain: '어디에 있는지를 담으면 위치 데이터예요. 지도에 찍어 보면 빈 곳이 보여요.',
-        },
-        {
-          question: '「매우 만족 / 보통 / 불만」처럼 물어서 모은 답은 어떤 데이터일까요?',
-          choices: ['설문 데이터', '위치 데이터', '시간 데이터', '데이터가 아니다'],
-          answer: 0,
-          explain: '사람들에게 물어 모은 것도 훌륭한 데이터예요. 숫자로 세어 비교할 수 있어요.',
-        },
-        {
-          question: '2021년부터 2026년까지 해마다 관광객 수를 적어 두었습니다. 이런 데이터를 무엇이라 할까요?',
-          choices: ['시간에 따른 데이터', '위치 데이터', '문자 데이터', '설문 데이터'],
-          answer: 0,
-          explain: '해마다 쌓인 데이터는 「늘고 있나 줄고 있나」를 볼 수 있어요.',
-        },
-        {
-          question: '「숫자가 아니면 데이터가 아니다」 — 맞을까요?',
-          choices: ['맞다', '아니다. 글·위치·사진도 데이터가 된다',
-                    '맞다. 숫자만 계산할 수 있으니까', '설문만 예외다'],
-          answer: 1,
-          explain: '학생들의 의견(글), 시설 위치, 사진도 모으면 데이터예요.',
-        },
-        {
-          question: '데이터를 모으기 전에 가장 먼저 정해야 할 것은?',
-          choices: ['무엇을 알고 싶은지', '어떤 색으로 그릴지',
-                    '몇 장으로 발표할지', '누가 발표할지'],
-          answer: 0,
-          explain: '알고 싶은 것이 정해져야 무엇을 모을지도 정해져요. 질문이 먼저예요.',
-        },
-      ],
-    },
-
-    /* ────────────────────────────────────────────────────────
-       2. 비교해 보기 — 시간·지역·집단
-       ──────────────────────────────────────────────────────── */
-    {
-      id: 'quiz-compare', name: '비교해 보기', icon: '📈', color: '#5AC8FA',
-      spot: { x: -8, z: 26 },
-      place: '강 건너는 다리 남쪽 끝 (선착장에서 동쪽)',
-      questions: [
-        {
-          question: '데이터 분석을 딱 한 단어로 말하면 무엇일까요?',
-          choices: ['비교', '계산', '저장', '그림'],
-          answer: 0,
-          explain: '무언가와 견주어 봐야 많은지 적은지, 늘었는지 줄었는지 알 수 있어요.',
-        },
-        {
-          question: '2021년 청소년 10,000명 → 2026년 8,000명. 무엇을 알 수 있나요?',
-          choices: ['5년 동안 2,000명 줄었다', '5년 동안 2,000명 늘었다',
-                    '변화가 없다', '알 수 없다'],
-          answer: 0,
-          explain: '10,000에서 8,000이니 2,000명 감소예요. 이렇게 과거와 지금을 견주는 게 시간 비교예요.',
-        },
-        {
-          question: '2019년과 2026년의 관광객 수를 나란히 놓고 견주어 보았습니다. 이런 비교를 무엇이라 할까요?',
-          choices: ['시간 비교', '지역 비교', '집단 비교', '비율 비교'],
-          answer: 0,
-          explain: '같은 것을 다른 때와 견주면 늘었는지 줄었는지 흐름이 보여요.',
-        },
-        {
-          question: 'A동 공원 8개, B동 2개, C동 7개. 여기서 무엇을 말할 수 있을까요?',
-          choices: ['B동 공원이 상대적으로 적다', 'A동에 사람이 가장 많다',
-                    'C동이 가장 살기 좋다', '세 동네가 비슷하다'],
-          answer: 0,
-          explain: '옆 동네와 견주니 B동이 눈에 띄게 적어요. 이게 지역 비교예요.',
-        },
-        {
-          question: '같은 시설을 두고 청소년은 48%, 성인은 71%가 만족한다고 답했습니다. 이렇게 무리를 나눠 견주는 것을 무엇이라 할까요?',
-          choices: ['집단 비교', '시간 비교', '지역 비교', '비교가 아니다'],
-          answer: 0,
-          explain: '나이·성별처럼 무리를 나눠 견주면 누구에게 더 필요한지가 보여요.',
-        },
-        {
-          question: '올해 방문자 수 하나만 보고 「관광객이 줄고 있다」고 말해도 될까요?',
-          choices: ['된다', '안 된다. 예전 해와 견주어야 알 수 있다',
-                    '된다. 올해가 가장 중요하니까', '방문자 수는 원래 못 센다'],
-          answer: 1,
-          explain: '한 해 숫자만으로는 늘었는지 줄었는지 알 수 없어요. 비교할 대상이 있어야 해요.',
-        },
-        {
-          question: '두 동네를 견줄 때 한쪽은 여름에, 다른 쪽은 겨울에 조사했다면?',
-          choices: ['괜찮다', '조사한 때가 달라 공평한 비교가 아니다',
-                    '평균을 내면 된다', '더 정확해진다'],
-          answer: 1,
-          explain: '비교하려면 기준이 같아야 해요. 시기나 방법이 다르면 결과가 어긋나요.',
-        },
-        {
-          question: '어느 동네에 청소년 공간을 먼저 만들지 정하려면 무엇을 해야 할까요?',
-          choices: ['동네끼리 데이터를 견주어 본다', '가장 큰 동네에 만든다',
-                    '가장 가까운 곳에 만든다', '다 같이 하나씩 만든다'],
-          answer: 0,
-          explain: '어디가 더 부족한지는 견주어 봐야 알 수 있어요. 비교가 곧 판단의 근거예요.',
-        },
-      ],
-    },
-
-    /* ────────────────────────────────────────────────────────
-       3. 비율로 따져보기 — 숫자가 크다고 많은 게 아니다
-       ──────────────────────────────────────────────────────── */
-    {
-      id: 'quiz-ratio', name: '비율로 따져보기', icon: '🔍', color: '#FFD23F',
-      spot: { x: -22, z: -30 },
-      place: '하늘언덕 공원 남쪽 잔디밭 (점프 챌린지에서 서쪽)',
-      questions: [
-        {
-          question: 'A지역에 공원 10개, B지역에 5개가 있어요. A지역이 무조건 더 잘 갖춰진 걸까요?',
-          choices: ['그렇다. 개수가 두 배니까', '사는 사람 수를 함께 봐야 알 수 있다',
-                    'B지역이 더 좋다', '공원 크기만 보면 된다'],
-          answer: 1,
-          explain: '개수만 보면 안 돼요. 몇 명이 나눠 쓰는지를 함께 봐야 해요.',
-        },
-        {
-          question: 'A지역 50,000명에 공원 10개, B지역 10,000명에 5개. 인구 1만 명당 공원은 각각 몇 개일까요?',
-          choices: ['A 2개 · B 5개', 'A 5개 · B 2개', 'A 10개 · B 5개', '둘 다 같다'],
-          answer: 0,
-          explain: 'A는 5만 명에 10개라 1만 명당 2개, B는 1만 명에 5개예요.',
-        },
-        {
-          question: 'A학교는 학생 1,000명 중 50명이, B학교는 200명 중 20명이 대회에 나갔어요. 참가 비율이 더 높은 학교는?',
-          choices: ['B학교 (10%)', 'A학교 (5%)', '두 학교가 같다', '알 수 없다'],
-          answer: 0,
-          explain: '나간 사람 수는 A가 많지만 비율은 B가 두 배예요. 전체 크기가 다르면 비율로 봐야 해요.',
-        },
-        {
-          question: '개수 대신 「1만 명당」처럼 비율로 바꿔 보는 이유는 무엇일까요?',
-          choices: ['크기가 다른 것을 공평하게 견주기 위해', '숫자를 작게 만들려고',
-                    '계산 연습을 하려고', '보기 좋게 하려고'],
-          answer: 0,
-          explain: '큰 도시와 작은 도시를 그냥 견주면 큰 쪽이 늘 이겨요. 기준을 맞춰야 공평해요.',
-        },
-        {
-          question: '「우리 시 도서관 이용자가 이웃 시보다 많다」는 말을 들었어요. 무엇을 더 봐야 할까요?',
-          choices: ['두 시의 인구', '도서관 색깔', '도서관이 지어진 해', '사서 선생님 수'],
-          answer: 0,
-          explain: '인구가 두 배면 이용자가 많은 게 당연해요. 인구로 나눠 봐야 진짜 비교예요.',
-        },
-        {
-          question: '청소년 100명 중 63명이 「놀 공간이 부족하다」고 답했어요. 이 63명을 비율로 하면?',
-          choices: ['63%', '6.3%', '37%', '163%'],
-          answer: 0,
-          explain: '100명 중 63명이니 63%예요. 비율로 바꾸면 다른 조사와도 견줄 수 있어요.',
-        },
-        {
-          question: '3명에게 물어 2명이 좋다고 했어요. 「67%가 만족한다」고 발표해도 될까요?',
-          choices: ['된다. 계산이 맞으니까', '사람 수가 너무 적어 믿기 어렵다',
-                    '된다. 비율이니까', '100명을 채우면 안 된다'],
-          answer: 1,
-          explain: '비율이 맞아도 조사한 사람이 적으면 우연에 크게 흔들려요. 수가 충분해야 해요.',
-        },
-        {
-          question: '아이스크림이 많이 팔린 날에 물놀이 사고도 많았어요. 「아이스크림이 사고를 일으킨다」고 할 수 있을까요?',
-          choices: ['없다. 더운 날씨 때문에 둘 다 늘었을 수 있다', '있다. 같이 늘었으니까',
-                    '있다. 숫자가 크니까', '아이스크림을 금지하면 된다'],
-          answer: 0,
-          explain: '함께 움직인다고 원인은 아니에요. 숨은 다른 이유(더위)가 둘 다 밀어올릴 수 있어요.',
-        },
-      ],
-    },
-  ];
-})(window.G);
-
-</script>
-<script>
-'use strict';
-/* ═══════════════════════════════════════════════════════════════
-   📊 퀴즈 (객관식 4지선다) — 장소마다 한 판
-   · AI 채팅이 아니다. 문제를 내고 보기를 고르면 맞고 틀림이 바로 나온다.
-   · 맞히면 점수 +, 틀리면 점수 −. 마지막에 합계로 기록을 남긴다.
-   · 화면 아래 가운데 큰 카드는 옛 「에코시티 남산」 대화창 배치를 가져왔다.
-     (초록이·연습 모드·힌트·자유 입력은 전부 뺐다)
-
-   ★ 문제와 장소는 js/games/quiz-data.js 의 G.QUIZ_TOPICS 에 있다. 이 파일은 진행만 맡는다.
-     주제를 하나 더 넣고 싶으면 거기에 덩이를 하나 더 붙이면 지도에 자리가 생긴다.
-   ═══════════════════════════════════════════════════════════════ */
-(function (G) {
-  const T = THREE, $ = G.$;
-
-  /* ── 난이도 (모든 퀴즈 장소가 함께 쓴다) ── */
-  const CFG = {
-    ask: 8,              // 한 판에 낼 문제 수 (문제은행에서 섞어 뽑는다)
-    right: 150,          // 맞혔을 때
-    wrong: -60,          // 틀렸을 때
-    stars: [900, 550],   // ★★★ / ★★ 기준 점수
-  };
-  /* 점수를 크게 잡은 이유: 다른 미니게임의 최고 기록이 250~700점대라
-     퀴즈가 10점짜리면 아이들이 굳이 풀 이유가 없다. 8문제 다 맞히면 1200점으로
-     이 도시에서 가장 큰 숫자가 나오게 했다. 대신 틀리면 60점씩 깎인다. */
-
-  /** 장소마다 그 자리를 남쪽에서 바라본다 */
-  function camFor(spot) {
-    return {
-      pos: new T.Vector3(spot.x, 7.2, spot.z + 17),
-      look: new T.Vector3(spot.x - 2, 2.2, spot.z - 1),
-    };
-  }
-
-  let st = null;         // 지금 진행 중인 판 (퀴즈는 한 번에 하나만 돈다)
-  let cam = null;        // 지금 장소의 카메라
-  const ui = {};
-  let uiBuilt = false;
-
-  /* ═══════════ 화면 ═══════════ */
-  function buildUi(ctx) {
-    if (uiBuilt) return;   // 장소가 여럿이어도 카드는 하나만 만든다
-    uiBuilt = true;
-    const wrap = document.createElement('div');
-    wrap.id = 'quizDock';
-    wrap.hidden = true;
-    wrap.innerHTML =
-      '<div id="quizHead">' +
-        '<span id="quizNo"></span>' +
-        '<span id="quizScore"></span>' +
-      '</div>' +
-      '<div id="quizBody">' +
-        '<p id="quizQ"></p>' +
-        '<div id="quizChoices"></div>' +
-        '<div id="quizFeed" hidden><b id="quizVerdict"></b><span id="quizWhy"></span></div>' +
-      '</div>' +
-      '<div id="quizFoot"><button id="quizNext" type="button"></button></div>';
-    ctx.layer.appendChild(wrap);
-
-    ui.wrap = wrap;
-    ui.no = $('quizNo'); ui.score = $('quizScore');
-    ui.q = $('quizQ'); ui.choices = $('quizChoices');
-    ui.feed = $('quizFeed'); ui.verdict = $('quizVerdict'); ui.why = $('quizWhy');
-    ui.foot = $('quizFoot'); ui.next = $('quizNext');
-
-    // 보기 버튼 4개를 미리 만들어 두고 글자만 갈아 끼운다 (프레임마다 DOM을 만들지 않는다)
-    ui.btns = [];
-    for (let i = 0; i < 4; i++) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'quizChoice';
-      b.innerHTML = '<i></i><span></span>';
-      // click 은 손가락이 조금 미끄러지면 취소된다 → 누르는 순간 반응
-      b.addEventListener('pointerdown', ev => { ev.preventDefault(); pick(i, ctx); });
-      b.addEventListener('keydown', ev => {
-        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); pick(i, ctx); }
-      });
-      ui.choices.appendChild(b);
-      ui.btns.push(b);
-    }
-    ui.next.addEventListener('pointerdown', ev => { ev.preventDefault(); next(ctx); });
-    ui.next.addEventListener('keydown', ev => {
-      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); next(ctx); }
-    });
-  }
-
-  /** 배열을 섞는다 (원본은 건드리지 않는다) */
-  const shuffled = arr => {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = (Math.random() * (i + 1)) | 0;
-      const t = a[i]; a[i] = a[j]; a[j] = t;
-    }
-    return a;
-  };
-
-  /** 한 판에 낼 문제를 뽑고, 보기 순서도 섞는다 */
-  function makeRound(bank) {
-    return shuffled(bank).slice(0, Math.min(CFG.ask, bank.length)).map(q => {
-      const order = shuffled(q.choices.map((c, i) => i));
-      return {
-        question: q.question,
-        explain: q.explain,
-        choices: order.map(i => q.choices[i]),
-        answer: order.indexOf(q.answer),   // 섞인 뒤의 정답 자리
-      };
-    });
-  }
-
-  const NUM = ['①', '②', '③', '④'];
-
-  function paint(ctx) {
-    const q = st.list[st.i];
-    ui.no.textContent = `문제 ${st.i + 1} / ${st.list.length}`;
-    ui.score.textContent = `${st.score}점`;
-    ui.score.className = st.score < 0 ? 'minus' : '';
-    ui.q.textContent = q.question;
-
-    ui.btns.forEach((b, i) => {
-      const has = i < q.choices.length;
-      b.hidden = !has;
-      if (!has) return;
-      b.firstChild.textContent = NUM[i];
-      b.lastChild.textContent = q.choices[i];
-      b.className = 'quizChoice';
-      b.disabled = false;
-    });
-
-    ui.feed.hidden = true;
-    ui.foot.hidden = true;
-    stats(ctx);
-  }
-
-  function pick(i, ctx) {
-    if (!st || st.locked) return;          // 한 문제당 한 번만 채점한다
-    const q = st.list[st.i];
-    if (i >= q.choices.length) return;
-    st.locked = true;
-
-    const ok = i === q.answer;
-    st.score += ok ? CFG.right : CFG.wrong;
-    if (ok) st.right++; else st.wrong++;
-
-    ui.btns.forEach((b, k) => {
-      b.disabled = true;
-      if (k === q.answer) b.classList.add('right');
-      else if (k === i) b.classList.add('wrong');
-      b.blur();                            // 초점이 남으면 Space 가 이 버튼으로 먹힌다
-    });
-
-    ui.score.textContent = `${st.score}점`;
-    ui.score.className = st.score < 0 ? 'minus' : '';
-
-    ui.verdict.textContent = ok ? '맞았어요!' : '아쉬워요';
-    ui.verdict.className = ok ? 'right' : 'wrong';
-    ui.why.textContent = q.explain;
-    ui.feed.hidden = false;
-
-    ui.next.textContent = st.i + 1 >= st.list.length
-      ? '결과 보기'
-      : (G.touch ? '다음 문제 ▶' : '다음 문제 ▶ (Space)');
-    ui.foot.hidden = false;
-    setTimeout(() => { if (st && st.locked) ui.next.focus({ preventScroll: true }); }, 30);
-
-    G.sfx.play(ok ? 'ding' : 'hmm');
-    ctx.flash(ok ? `+${CFG.right}` : `${CFG.wrong}`, ok ? 'good' : 'bad', 700);
-    stats(ctx);
-  }
-
-  function next(ctx) {
-    if (!st || !st.locked) return;
-    ui.next.blur();
-    if (st.i + 1 >= st.list.length) { done(ctx); return; }
-    st.i++;
-    st.locked = false;
-    paint(ctx);
-  }
-
-  function done(ctx) {
-    const stars = st.score >= CFG.stars[0] ? 3 : st.score >= CFG.stars[1] ? 2 : 1;
-    const max = st.list.length * CFG.right;
-    // finish 는 숫자가 아니라 객체를 받는다 (record/success 가 없으면 기록이 안 남는다)
-    ctx.finish({
-      success: stars >= 2,
-      record: st.score,
-      // 마을 점수: 틀려서 깎인 만큼 그대로 반영된다 (음수면 0)
-      progress: st.score / max,
-      big: `${st.score}점`,
-      title: stars === 3 ? `척척박사! ${'★'.repeat(stars)}`
-           : stars === 2 ? `잘했어요! ${'★'.repeat(stars)}☆`
-           : '다시 한 번! ★☆☆',
-      lines: [
-        `맞힌 문제 <b>${st.right}</b> / ${st.list.length}   (만점 ${max}점)`,
-        st.wrong ? `틀린 문제 ${st.wrong}개 — 설명을 다시 읽어 보면 다음엔 쉬워요` : '하나도 안 틀렸어요! 대단해요',
-        stars < 3 ? `★★★까지: ${CFG.stars[0]}점` : '문제와 보기는 판마다 섞여요. 한 번 더?',
-      ],
-    });
-  }
-
-  function stats(ctx) {
-    ctx.setStats([
-      { label: '점수', value: `${st.score}점`, warn: st.score < 0 },
-      { label: '맞힘', value: `${st.right}` },
-      { label: '문제', value: `${st.i + 1}/${st.list.length}` },
-    ]);
-  }
-
-  /* ═══════════ 등록 — 문제은행 한 덩이 = 지도 위 자리 하나 ═══════════ */
-  const topics = G.QUIZ_TOPICS || [];
-  if (!topics.length) console.warn('[quiz] 문제은행이 없습니다 — js/games/quiz-data.js 를 먼저 불러오세요');
-
-  for (const topic of topics) {
-    // 장소마다 좌표를 마커 표에 넣어 준다 (places.js 에 일일이 적지 않아도 되게)
-    G.SPOTS[topic.id] = topic.spot;
-
-    G.registerGame({
-      id: topic.id,
-      name: topic.name,
-      icon: topic.icon,
-      color: topic.color,
-      place: topic.place,
-      tagline: '보기 넷 중 하나! 맞히면 점수가 오르고 틀리면 깎여요.',
-      rules: [
-        `한 판에 <b>${CFG.ask}문제</b> — 문제와 보기는 <b>판마다 섞여요</b>`,
-        `맞히면 <b>+${CFG.right}점</b>, 틀리면 <b>${CFG.wrong}점</b>`,
-        '고르면 바로 <b>정답과 한 줄 설명</b>이 나와요',
-        `합계 <b>${CFG.stars[0]}점</b>이면 ★★★, <b>${CFG.stars[1]}점</b>이면 ★★`,
-      ],
-      controlsKey: '숫자 1~4 또는 클릭 = 보기 고르기 · Space = 다음 문제 · Esc 잠깐 멈춤',
-      controlsTouch: '보기를 손가락으로 톡 · 「다음 문제」 누르기',
-      format: v => `${v}점`,
-      better: (a, b) => a > b,
-      world: 'city',
-      spotRadius: 3.0,
-      cfg: CFG,                 // 시험·문서가 숫자를 베끼지 않고 여기서 읽어 간다
-      maxPts: 1500,             // 다른 게임(1000)보다 크게 — 퀴즈를 풀 이유를 만든다
-      bank: topic.questions,    // 이 자리의 문제은행
-      debug: () => st,
-
-      init(ctx) { buildUi(ctx); },
-
-      enter(ctx) {
-        ui.wrap.hidden = false;
-        G.explore.setMarkersVisible(false);
-        cam = camFor(topic.spot);
-        ctx.snapCamera(cam.pos, cam.look);
-        st = null;
-      },
-
-      start(ctx) {
-        st = { list: makeRound(topic.questions), i: 0, score: 0, right: 0, wrong: 0, locked: false };
-        paint(ctx);
-        ctx.hint('');   // 카드만 봐도 아는 화면이라 아래 안내줄은 쓰지 않는다 (버튼을 가린다)
-      },
-
-      update(dt, now, ctx) {
-        // 카메라만 천천히 자리를 잡는다. 퀴즈는 프레임마다 할 일이 없다
-        if (cam) ctx.easeCamera(cam.pos, cam.look, dt, 3);
-      },
-
-      onKey(e, down, ctx) {
-        if (!down || !st) return;
-        if (e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') {
-          if (st.locked) { e.preventDefault(); next(ctx); }
-          return;
-        }
-        const m = /^(?:Digit|Numpad)([1-4])$/.exec(e.code);
-        if (m) { e.preventDefault(); pick(Number(m[1]) - 1, ctx); }
-      },
-
-      exit(ctx) {
-        ui.wrap.hidden = true;
-        G.explore.setMarkersVisible(true);
-        st = null;
-        cam = null;
-      },
-    });
   }
 })(window.G);
 

@@ -181,7 +181,7 @@ body.in-game.game-obby #mapDock{display:block;}
   body.walking #mapDock h2{display:none;}
   body.map-expanded #mapDock{width:calc(100vw - 16px);}
   .mapPlaces button{font-size:11px; min-height:32px;}
-  #prompt{bottom:auto; top:64px; padding:9px 10px; gap:10px;}
+  #prompt, #signPrompt{bottom:auto; top:64px; padding:9px 10px; gap:10px;}
   #promptIcon{width:44px; height:44px; font-size:24px;}
   #promptName{font-size:16px;}
   #promptCtl{display:none;}
@@ -194,13 +194,13 @@ body.in-game.game-obby #mapDock{display:block;}
   #hudStats .v{font-size:14.5px;}
   #hudFlash{font-size:38px;}
   #hudHint{font-size:12px; bottom:auto; top:62px;}
-  body.touch #prompt{top:auto; bottom:calc(160px + var(--safe-b));}
+  body.touch #prompt, body.touch #signPrompt{top:auto; bottom:calc(160px + var(--safe-b));}
 }
 @media (max-width:480px){
   #hubBtn b{display:none;}
   #hudTitle{display:none;}
 }
-body.touch.walking #prompt{bottom:calc(160px + var(--safe-b));}
+body.touch.walking #prompt, body.touch.walking #signPrompt{bottom:calc(160px + var(--safe-b));}
 
 /* ── 터치 기기: 아래쪽은 이동 버튼 자리라서 지도·알림을 위로 올린다 ── */
 body.touch #mapDock{top:62px; bottom:auto; left:8px; width:170px; padding:7px;}
@@ -234,63 +234,90 @@ body.touch #fishUi .fmeter{right:150px;}
 #intro .rowBtns{margin-top:16px;}
 
 
-/* ── 🌍 지구 지킴이 퀴즈 ──────────────────────────────────────────
-   옛 「에코시티 남산」 대화창(#chatDock)의 아래 가운데 배치를 가져왔다.
-   거기보다 넓게(720 → 900) 잡고, 보기 버튼은 손가락으로 누를 수 있게 키웠다. */
-#quizDock{
+/* ── 🏙️ 스마트시티 팻말 ──────────────────────────────────────
+   읽기 패널은 옛 「에코시티 남산」 대화창의 아래 가운데 배치를 이어받았다.
+   게임이 아니라 「읽는 것」이라 버튼은 닫기 하나뿐이다. */
+#signPrompt{
+  left:50%; bottom:66px; transform:translateX(-50%); z-index:31;
+  display:flex; gap:14px; align-items:center; padding:12px 14px 12px 12px;
+  width:min(520px, calc(100vw - 24px)); border-color:var(--info); animation:rise .25s ease;
+}
+#signPromptIcon{
+  flex:none; width:54px; height:54px; border-radius:16px;
+  display:flex; align-items:center; justify-content:center; font-size:30px;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.2);
+}
+#signPromptName{font-family:var(--font); font-weight:800; font-size:19px;}
+#signPromptSub{font-size:13px; color:var(--dim); margin-top:3px; word-break:keep-all;}
+#signPromptRead{
+  flex:none; background:var(--info); color:#06263a; border:none; border-radius:14px;
+  padding:12px 16px; font-size:17px; min-height:52px;
+}
+#signPromptRead kbd{background:rgba(0,0,0,.14); border-color:rgba(0,0,0,.2); color:#06263a; margin-right:3px;}
+#signPromptRead kbd:empty{display:none;}
+
+#signPanel{
+  --sign:var(--info);
   position:fixed; left:50%; transform:translateX(-50%);
-  bottom:calc(18px + var(--safe-b)); z-index:33;
-  width:min(900px, calc(100vw - 32px));
+  bottom:calc(18px + var(--safe-b)); z-index:34;
+  width:min(860px, calc(100vw - 32px));
   background:var(--panel); border:1px solid var(--line); border-radius:var(--r);
   box-shadow:0 18px 48px rgba(0,0,0,.45); backdrop-filter:blur(6px);
-  overflow:hidden;
+  overflow:hidden; animation:rise .22s ease;
 }
-#quizHead{
-  display:flex; align-items:center; gap:10px; padding:11px 18px 10px;
-  border-bottom:1px solid var(--line-soft); font-size:14px; color:var(--dim);
+#signHead{
+  display:flex; align-items:center; gap:12px; padding:13px 18px;
+  border-bottom:1px solid var(--line-soft);
+  background:linear-gradient(180deg, rgba(255,255,255,.05), transparent);
 }
-#quizScore{margin-left:auto; color:var(--accent); font-weight:700; font-size:17px;}
-#quizScore.minus{color:var(--warn);}
-#quizBody{padding:16px 18px 6px;}
-#quizQ{
-  margin:0 0 14px; font-size:19px; line-height:1.55; color:var(--text);
-  word-break:keep-all; min-height:58px;
+#signIcon{
+  flex:none; width:46px; height:46px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center; font-size:26px;
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.2);
 }
-#quizChoices{display:flex; flex-direction:column; gap:9px;}
-.quizChoice{
-  display:flex; align-items:center; gap:11px; width:100%;
-  min-height:64px; padding:12px 16px; text-align:left;
-  background:var(--chip); color:var(--text);
-  border:1px solid var(--line); border-radius:13px;
-  font-family:inherit; font-size:16.5px; line-height:1.45; word-break:keep-all;
-  transition:border-color .12s, background .12s, transform .08s;
+#signName{display:block; font-family:var(--font); font-weight:800; font-size:20px;}
+#signPlace{display:block; font-size:12.5px; color:var(--dim); margin-top:2px;}
+#signDone{
+  margin-left:auto; flex:none; color:var(--good); font-size:13px; font-weight:700;
+  background:rgba(62,212,126,.12); border:1px solid rgba(62,212,126,.4);
+  border-radius:99px; padding:5px 11px;
 }
-.quizChoice i{
-  flex:none; font-style:normal; font-size:19px; color:var(--dim); width:22px; text-align:center;
+#signBody{padding:15px 18px 4px;}
+#signLead{
+  margin:0 0 13px; font-size:17px; line-height:1.55; color:var(--text);
+  word-break:keep-all; padding-left:11px; border-left:3px solid var(--sign);
 }
-.quizChoice:not(:disabled):hover{border-color:var(--accent); transform:translateY(-1px);}
-.quizChoice:not(:disabled):active{transform:translateY(1px);}
-.quizChoice:disabled{opacity:.85;}
-.quizChoice.right{background:#12321F; border-color:#2E8B57; color:#C9F7D9;}
-.quizChoice.right i{color:var(--good);}
-.quizChoice.wrong{background:#3A1A1A; border-color:#8B3A3A; color:#FFD6D2;}
-.quizChoice.wrong i{color:var(--warn);}
-#quizFeed{
-  margin-top:13px; padding:12px 14px; border-radius:12px;
-  background:var(--panel2); border:1px solid var(--line-soft);
-  font-size:15px; line-height:1.6; color:var(--dim); word-break:keep-all;
+.signRow{
+  display:flex; gap:11px; align-items:flex-start;
+  padding:11px 13px; margin-bottom:8px;
+  background:var(--panel2); border:1px solid var(--line-soft); border-radius:12px;
 }
-#quizFeed b{display:block; margin-bottom:4px; font-size:16px;}
-#quizFeed b.right{color:var(--good);} #quizFeed b.wrong{color:var(--warn);}
-#quizFoot{padding:12px 18px 16px;}
-#quizNext{
-  width:100%; min-height:60px; border:none; border-radius:13px;
+.signRow i{flex:none; font-style:normal; font-size:19px; line-height:1.4;}
+.signRow b{display:block; font-size:12.5px; color:var(--sign); margin-bottom:3px; letter-spacing:.02em;}
+.signRow span{display:block; font-size:15px; line-height:1.6; color:var(--text); word-break:keep-all;}
+.signRow span + span{margin-top:3px;}
+#signFoot{
+  display:flex; align-items:center; gap:12px; padding:11px 18px 15px;
+}
+#signProgress{font-size:13px; color:var(--dim);}
+#signClose{
+  margin-left:auto; min-width:120px; min-height:48px; border:none; border-radius:13px;
   background:var(--accent); color:var(--accent-ink);
-  font-family:inherit; font-size:17px; font-weight:700;
-  transition:filter .12s;
+  font-family:inherit; font-size:16px; font-weight:700; transition:filter .12s;
 }
-#quizNext:hover{filter:brightness(1.07);}
+#signClose:hover{filter:brightness(1.07);}
+#smartDoneBig{font-size:44px; font-weight:800; color:var(--good); margin:6px 0 10px;}
 
+/* ── 🏙️ 진행 칩 (상단 바) ── */
+#smartWrap{
+  display:inline-flex; align-items:center; gap:5px; padding:5px 12px;
+  background:var(--chip); border:1px solid var(--line); border-radius:99px;
+  font-size:13px; color:var(--dim); white-space:nowrap;
+}
+#smartWrap b{color:var(--info);}
+#smartWrap.done{border-color:var(--good);}
+#smartWrap.done b{color:var(--good);}
+body.in-game #smartWrap{display:none;}
 
 /* ── 🏆 마을 점수 (모든 게임 합산) ── */
 #totalWrap{
@@ -339,19 +366,21 @@ body.dev-phone #toasts{top:auto; bottom:calc(270px + var(--safe-b)); left:50%; m
 body.dev-phone .tbtn.big{width:108px; height:108px;}
 
 /* ── 퀴즈: 기기별 ── */
-body.dev-tablet #quizDock{width:min(1000px, calc(100vw - 48px));}
-body.dev-tablet #quizQ{font-size:22px;}
-body.dev-tablet .quizChoice{min-height:72px; font-size:19px;}
-body.dev-tablet #quizNext{min-height:68px; font-size:19px;}
-body.dev-phone #quizDock{width:calc(100vw - 20px); bottom:calc(10px + var(--safe-b));}
-body.dev-phone #quizBody{padding:12px 13px 4px;}
-body.dev-phone #quizQ{font-size:16.5px; min-height:0; margin-bottom:11px;}
-body.dev-phone .quizChoice{min-height:58px; font-size:15px; padding:10px 12px;}
-body.dev-phone #quizFeed{font-size:13.5px;}
-body.dev-phone #quizFoot{padding:10px 13px 12px;}
-body.dev-phone #quizNext{min-height:54px; font-size:16px;}
-/* 퀴즈 중에는 조이스틱·점프 버튼이 필요 없다 (화면을 가리지 않게) */
-body.game-quiz #joy, body.game-quiz #jumpBtn{display:none !important;}
+body.dev-tablet #signPanel{width:min(960px, calc(100vw - 48px));}
+body.dev-tablet #signLead{font-size:20px;}
+body.dev-tablet .signRow span{font-size:17px;}
+body.dev-tablet #signClose{min-height:56px; font-size:18px;}
+body.dev-tablet #signPromptName{font-size:22px;} body.dev-tablet #signPromptSub{font-size:15px;}
+body.dev-tablet #signPromptRead{font-size:21px; padding:16px 22px;}
+body.dev-phone #signPanel{width:calc(100vw - 20px); bottom:calc(10px + var(--safe-b));}
+body.dev-phone #signBody{padding:12px 13px 2px;}
+body.dev-phone #signLead{font-size:15.5px; margin-bottom:10px;}
+body.dev-phone .signRow{padding:9px 11px; margin-bottom:7px;}
+body.dev-phone .signRow span{font-size:14px;}
+body.dev-phone #signName{font-size:17px;}
+body.dev-phone #signFoot{padding:9px 13px 12px;}
+body.dev-phone #signClose{min-height:46px; font-size:15px; min-width:96px;}
+body.dev-phone #signPrompt{top:auto; bottom:calc(150px + var(--safe-b)); padding:10px;}
 
 body.dev-tablet #totalWrap{font-size:15px; padding:7px 14px;}
 body.dev-tablet #totalScore{font-size:18px;}

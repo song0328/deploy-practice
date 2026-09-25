@@ -13,7 +13,7 @@
    파일을 고친 뒤에는 반드시 아래 VERSION 을 올린다.
    안 올리면 학생 기기가 옛 버전을 계속 쓴다.
    ═══════════════════════════════════════════════════════════════ */
-const VERSION = 'playcity-v3';          // ★ 파일을 고치면 이 숫자를 올린다
+const VERSION = 'playcity-v4';          // ★ 파일을 고치면 이 숫자를 올린다
 const ASSETS = [
   './',
   './index.html',
@@ -26,15 +26,13 @@ const ASSETS = [
   './js/people.js',
   './js/places.js',
   './js/explore.js',
-  './js/hub.js',
+  './js/hub.js', './js/smartcity.js',
   './js/games/fishing.js',
   './js/games/crossing.js',
   './js/games/dance.js',
   './js/games/obby.js',
   './js/games/boat.js',
-  './js/games/quiz-data.js',
-  './js/games/quiz.js',
-  './js/main.js',
+      './js/main.js',
 ];
 
 self.addEventListener('install', e => {

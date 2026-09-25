@@ -26,6 +26,7 @@
     near: null,           // 지금 가까이 있는 마커
     walkGame: false,      // 걷기 조작을 쓰는 미니게임(점프 챌린지) 중이면 true
   };
+  E.walk = walk;            // 팻말 등 다른 파일이 내 위치를 읽는다 (읽기 전용으로 쓸 것)
   const active = () => E.mode === 'orbit' || E.mode === 'walk' || (E.mode === 'game' && E.walkGame);
 
   /* ═══════════ 조망 카메라 ═══════════ */
@@ -206,6 +207,7 @@
       return true;
     }
     if (E.mode === 'game') return false;
+    if (e.code === 'KeyE' && !e.repeat && G.smart?.near) { G.smart.open(); return true; }
     if (e.code === 'KeyE' && !e.repeat && E.near) { G.play.start(E.near.id); return true; }
     if (e.code === 'KeyM' && !e.repeat) { E.walking ? exitWalk() : enterWalk(); return true; }
     return false;
@@ -395,6 +397,7 @@
       mctx.fillText(m.num, mx, my + 1);
       if (G.store.game(m.id).clears) { mctx.fillStyle = '#ffd23f'; mctx.font = '10px sans-serif'; mctx.fillText('★', mx + 7, my - 7); }
     }
+    G.smart?.paintMap?.(mctx, mapPoint, now);
     // 내 위치 (걷기) 또는 조망 중심
     if (E.walking) {
       const [px, py] = mapPoint(walk.pos.x, walk.pos.z);
@@ -496,10 +499,14 @@
     let near = null;
     if (E.mode === 'walk') {
       const feet = walk.pos.y - WALK_CFG.eye;
+      let best = Infinity;
       for (const m of markers) {
-        const dx = walk.pos.x - m.x, dz = walk.pos.z - m.z;
-        if (dx * dx + dz * dz < m.r * m.r && Math.abs(feet - m.y) < 2.5) { near = m; break; }
+        const d = Math.hypot(walk.pos.x - m.x, walk.pos.z - m.z);
+        if (d < m.r && Math.abs(feet - m.y) < 2.5 && d < best) { best = d; near = m; }
       }
+      // 스마트시티 팻말이 더 가까우면 그쪽에 양보한다 (안내 카드는 한 번에 하나만)
+      const sn = G.smart?.near;
+      if (near && sn && Math.hypot(walk.pos.x - sn.x, walk.pos.z - sn.z) < best) near = null;
     }
     if (near === E.near) return;
     E.near = near;
@@ -527,6 +534,7 @@
     $('jumpBtn').hidden = !touchWalk;
     if (!touchWalk) joyEnd();
     if (walking) E.near = undefined; else { E.near = null; $('prompt').hidden = true; }
+    if (!walking) G.smart?.clear?.();
   };
 
   /* ═══════════ 게임 시작/종료 때 탐험 상태 보관·복원 ═══════════ */
@@ -540,6 +548,7 @@
     clearMovement(); stopCameraTrip();
     walk.vy = 0;
     E.near = null; $('prompt').hidden = true;
+    G.smart?.clear?.();
     if (document.pointerLockElement === canvas) document.exitPointerLock();
     document.body.classList.add('in-game');
     E.refreshUi();

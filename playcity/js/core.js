@@ -55,11 +55,11 @@ window.G = {};
   /* ── 기록 저장: 새 게임 전용 키. 저장이 막힌 브라우저에서도 게임은 된다 ── */
   const KEY = 'playcity-records-v1';
   G.store = {
-    data: { v: 1, games: {}, found: {}, muted: false },
+    data: { v: 1, games: {}, found: {}, smart: {}, muted: false },
     load() {
       try {
         const d = JSON.parse(localStorage.getItem(KEY) || 'null');
-        if (d && d.v === 1) this.data = { v: 1, games: d.games || {}, found: d.found || {}, muted: !!d.muted };
+        if (d && d.v === 1) this.data = { v: 1, games: d.games || {}, found: d.found || {}, smart: d.smart || {}, muted: !!d.muted };
       } catch (e) { /* 저장 불가 환경 */ }
     },
     save() {
