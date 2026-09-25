@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>놀이도시 — 걸어서 찾는 미니게임</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="3D 도시를 걸어 다니며 미니게임을 찾아 도전하는 가벼운 웹 게임">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="stage"></canvas>
+
+<!-- ═══ 시작 화면 ═══ -->
+<div class="overlay" id="title">
+  <div class="card">
+    <h1><span class="yellow">놀이</span>도시 🏙️</h1>
+    <button class="bigBtn" id="startBtn" type="button">🚶 탐험 시작</button>
+  </div>
+</div>
+
+<!-- ═══ 상단 바 ═══ -->
+<div id="topbar" class="panel" hidden>
+  <span id="logo" class="jua">🏙️ <span id="logoText">놀이도시</span></span>
+  <span class="divider"></span>
+  <button id="hubBtn" type="button" title="미니게임 수첩 (Tab)">🎮 미니게임 <b id="hubBtnCount">★ 0/0</b></button>
+  <button id="walkBtn" type="button" title="걷기 ↔ 조망 (M)">🚶 걷기</button>
+  <button id="soundBtn" type="button" aria-label="소리 끄기">🔊</button>
+</div>
+<div id="viewLabel" hidden>놀이도시 전체 · 마커를 찾아가 보세요</div>
+
+<!-- ═══ 지도 ═══ -->
+<aside id="mapDock" class="panel" hidden aria-label="지도">
+  <h2>우리 동네 지도 <button id="mapBig" type="button" aria-pressed="false">지도 크게</button></h2>
+  <canvas id="miniMap" width="240" height="180" aria-label="지도를 누르면 그곳을 바라봐요"></canvas>
+  <div class="mapPlaces" id="mapPlaces"></div>
+  <div class="mapTools">
+    <button id="zoomIn" type="button" aria-label="확대">＋</button>
+    <button id="zoomOut" type="button" aria-label="축소">−</button>
+    <button id="resetView" type="button" aria-label="도시 전체 보기">전체 보기</button>
+  </div>
+  <p id="mapHint">드래그: 회전 · 우클릭 드래그: 이동 · 휠: 확대<br>지도를 누르면 그곳을 봐요 · 숫자 원 = 미니게임</p>
+</aside>
+
+<!-- ═══ 걷기 도구 ═══ -->
+<div id="walkHelp" hidden></div>
+<div id="crosshair" hidden></div>
+<div id="joy" hidden aria-hidden="true"><i id="joyKnob"></i></div>
+<div id="joyHint" hidden>👆 왼쪽을 누르고 끌면 이동<br>👉 오른쪽을 밀면 둘러보기</div>
+<button id="jumpBtn" type="button" hidden aria-label="점프">점프</button>
+
+<!-- ═══ 마커 가까이에서 뜨는 안내 ═══ -->
+<div id="prompt" class="panel" hidden role="dialog" aria-live="polite">
+  <span id="promptIcon"></span>
+  <div class="pbody">
+    <b id="promptName"></b>
+    <p id="promptDesc"></p>
+    <p id="promptCtl"></p>
+    <p id="promptRec"></p>
+  </div>
+  <button id="promptStart" type="button"><kbd id="promptKey">E</kbd> 시작</button>
+</div>
+
+<!-- ═══ 게임 공통 HUD ═══ -->
+<div id="gameHud" hidden>
+  <div id="hudBar" class="panel"><span id="hudTitle"></span><div id="hudStats"></div><button id="hudPause" type="button" aria-label="일시정지 (Esc)">⏸</button></div>
+  <div id="hudFlash"></div>
+  <div id="hudHint" hidden></div>
+</div>
+<div id="gameLayer"></div>
+
+<!-- 게임 설명 -->
+<div class="overlay soft" id="intro" hidden>
+  <div class="card">
+    <div class="gIcon" id="introIcon"></div>
+    <h2 id="introName"></h2>
+    <p class="rec" id="introRec"></p>
+    <div class="rowBtns">
+      <button class="bigBtn ghost" id="introBack" type="button">← 탐험으로 (Esc)</button>
+      <button class="bigBtn" id="introGo" type="button">▶ 시작</button>
+    </div>
+  </div>
+</div>
+
+<!-- 결과 -->
+<div class="overlay soft" id="result" hidden>
+  <div class="card">
+    <div class="gIcon" id="resIcon"></div>
+    <h2 id="resTitle"></h2>
+    <div id="resBig"></div>
+    <p class="rec"><span id="resBest"></span><span id="resNew" hidden>NEW!</span></p>
+    <ul class="rules" id="resLines"></ul>
+    <div class="rowBtns">
+      <button class="bigBtn" id="resRetry" type="button">↻ 다시 도전 (R)</button>
+    </div>
+    <div class="rowBtns">
+      <button class="bigBtn ghost" id="resHub" type="button">🎮 미니게임 수첩</button>
+      <button class="bigBtn ghost" id="resExit" type="button">🚶 탐험으로 (Esc)</button>
+    </div>
+  </div>
+</div>
+
+<!-- 일시정지 -->
+<div class="overlay soft" id="pause" hidden>
+  <div class="card">
+    <h2>⏸ 잠깐 멈춤</h2>
+    <button class="bigBtn" id="pauseResume" type="button">▶ 계속하기 (Esc)</button>
+    <button class="bigBtn ghost" id="pauseRetry" type="button">↻ 처음부터 (R)</button>
+    <button class="bigBtn ghost" id="pauseExit" type="button">🚶 탐험으로 나가기 (Q)</button>
+  </div>
+</div>
+
+<!-- 미니게임 수첩 -->
+<div class="overlay" id="hub" hidden>
+  <div class="card">
+    <div class="hubHead">
+      <h1>🎮 미니게임 수첩</h1>
+      <span id="hubProgress"></span>
+      <button id="hubClose" type="button">탐험으로 (Tab)</button>
+    </div>
+    <div id="hubList"></div>
+    <div class="hubFoot">
+      <span>📍 위치 보기: 조망 카메라가 그 장소로 날아가요 · ▶ 하기: 한 번 찾아간 게임은 여기서 바로 다시 할 수 있어요 · 게임 중 Esc: 잠깐 멈춤</span>
+      <button id="hubReset" type="button">기록 지우기</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+<div id="fade"></div>
+
+<script src="vendor/three.min.js"></script>
+<script>
+if (typeof THREE === 'undefined') document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+</script>
+<!-- 빌드 없이 순서대로 불리는 역할별 스크립트 -->
+<script src="js/core.js"></script>
+<script src="js/world.js"></script>
+<script src="js/people.js"></script>
+<script src="js/places.js"></script>
+<script src="js/explore.js"></script>
+<script src="js/hub.js"></script>
+<script src="js/games/fishing.js"></script>
+<script src="js/games/crossing.js"></script>
+<script src="js/games/dance.js"></script>
+<script src="js/games/obby.js"></script>
+<script src="js/games/boat.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
