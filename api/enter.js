@@ -11,6 +11,7 @@ const codes = require('./_lib/codes');
 const store = require('./_lib/store');
 
 const GATE_HTML = fs.readFileSync(path.join(__dirname, '_private', '_ui', 'gate.html'), 'utf8');
+const SPLASH_HTML = fs.readFileSync(path.join(__dirname, '_private', '_ui', 'splash.html'), 'utf8');
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'application/javascript; charset=utf-8', '.mjs': 'application/javascript; charset=utf-8',
@@ -77,15 +78,29 @@ function resolveFile(app, rel) {
 }
 
 const fileCache = new Map();
-function load(full) {
+/* 게임 첫 화면(index.html)에는 따숨교육 저작권 안내 화면을 끼워 넣는다 (게임 파일 자체는 고치지 않는다) */
+function withSplash(buf, app) {
+  const html = buf.toString('utf8');
+  const i = html.lastIndexOf('</body>');
+  if (i < 0) return buf;                       // phone.html 처럼 본문이 없는 이동용 파일은 그대로
+  const splash = SPLASH_HTML.replace('{{TITLE}}', esc(app.title));
+  return Buffer.from(html.slice(0, i) + splash + html.slice(i), 'utf8');
+}
+
+function load(full, app) {
   let e = fileCache.get(full);
-  if (!e) { e = { buf: fs.readFileSync(full), gz: null }; fileCache.set(full, e); }
+  if (!e) {
+    let buf = fs.readFileSync(full);
+    if (path.basename(full) === 'index.html') buf = withSplash(buf, app);
+    e = { buf, gz: null };
+    fileCache.set(full, e);
+  }
   return e;
 }
 
-function serveFile(req, res, full) {
+function serveFile(req, res, full, app) {
   const ext = path.extname(full).toLowerCase();
-  const e = load(full);
+  const e = load(full, app);
   U.noStore(res);
   res.setHeader('Content-Type', MIME[ext] || 'application/octet-stream');
   /* 화면(html)은 저장하지 않고, 나머지 파일은 이 기기에서만 10분 기억 */
@@ -160,5 +175,5 @@ module.exports = async function handler(req, res) {
 
   const full = resolveFile(app, rel);
   if (!full) return U.sendText(res, 404, 'Not found');
-  return serveFile(req, res, full);
+  return serveFile(req, res, full, app);
 };

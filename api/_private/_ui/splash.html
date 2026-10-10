@@ -1,0 +1,54 @@
+<!-- 입장 직후 첫 화면: 따숨교육 저작권 안내. 누르면 사라지고 게임이 시작된다. (enter.js 가 게임 화면 맨 끝에 끼워 넣는다) -->
+<style>
+  #pc-splash { position: fixed; inset: 0; z-index: 2147483647; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center; padding: 24px; cursor: pointer; user-select: none; -webkit-user-select: none;
+    background: radial-gradient(120% 100% at 50% 30%, #fff3d6 0%, #ffd9a0 55%, #ffb866 100%); color: #3a2410;
+    font-family: 'Jua', -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
+    transition: opacity .45s ease, transform .45s ease; }
+  #pc-splash.bye { opacity: 0; transform: scale(1.04); pointer-events: none; }
+  #pc-splash .pc-brand { font-size: clamp(64px, 21vw, 220px); line-height: 1.05; font-weight: 900; letter-spacing: -.03em;
+    background: linear-gradient(180deg, #ff9a2e 0%, #e65100 100%); -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: #e65100; filter: drop-shadow(0 6px 0 rgba(120, 50, 0, .18)); }
+  #pc-splash .pc-sub { margin-top: clamp(10px, 2vh, 22px); font-size: clamp(16px, 3.4vw, 30px); color: #7a4a1a; }
+  #pc-splash .pc-line { width: min(70vw, 520px); height: 4px; border-radius: 4px; margin: clamp(18px, 4vh, 40px) 0;
+    background: linear-gradient(90deg, transparent, #e65100, transparent); opacity: .55; }
+  #pc-splash .pc-copy { font-size: clamp(15px, 2.6vw, 24px); line-height: 1.7; font-family: inherit; }
+  #pc-splash .pc-copy b { color: #c62828; }
+  #pc-splash .pc-go { margin-top: clamp(24px, 6vh, 56px); font-size: clamp(16px, 2.8vw, 26px); color: #fff; background: #e65100;
+    padding: 12px 28px; border-radius: 999px; box-shadow: 0 6px 0 #a63c00; animation: pcPulse 1.6s ease-in-out infinite; }
+  @keyframes pcPulse { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  @media (prefers-reduced-motion: reduce) { #pc-splash .pc-go { animation: none; } #pc-splash { transition: none; } }
+</style>
+<div id="pc-splash" role="dialog" aria-modal="true" aria-label="따숨교육 안내" tabindex="0">
+  <div class="pc-brand">따숨교육</div>
+  <div class="pc-sub">{{TITLE}}</div>
+  <div class="pc-line"></div>
+  <div class="pc-copy">
+    이 놀이도시의 저작권은 <b>따숨교육</b>에 있습니다.<br>
+    허락 없는 복제·배포·무단 사용을 <b>금지</b>합니다.
+  </div>
+  <div class="pc-go">화면을 누르면 시작해요 ▶</div>
+</div>
+<script>
+(function () {
+  var el = document.getElementById('pc-splash');
+  if (!el) return;
+  var seen = false;
+  try { seen = sessionStorage.getItem('pc-splash-seen') === '1'; } catch (e) {}
+  if (seen) { el.parentNode.removeChild(el); return; }
+  var done = false;
+  function close(ev) {
+    if (done) return; done = true;
+    if (ev && ev.preventDefault) ev.preventDefault();
+    try { sessionStorage.setItem('pc-splash-seen', '1'); } catch (e) {}
+    el.classList.add('bye');
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 480);
+    document.removeEventListener('keydown', onKey, true);
+  }
+  function onKey(ev) { if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Escape') { ev.stopPropagation(); close(ev); } }
+  el.addEventListener('click', close);
+  el.addEventListener('touchend', close);
+  document.addEventListener('keydown', onKey, true);
+  try { el.focus(); } catch (e) {}
+})();
+</script>

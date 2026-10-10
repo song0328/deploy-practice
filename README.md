@@ -31,6 +31,7 @@ GitHub에 파일을 올리면 Vercel이 자동으로 배포하기 때문에, **�
 - 학생이 `/ai-ethics-city/` 나 `/playcity/` 를 열면 코드 입력 화면이 먼저 뜹니다.
 - 코드는 **정해 둔 수업 날짜(한국 시간) 하루 동안만** 쓸 수 있습니다.
 - 한 번 입장한 기기는 그날 자정까지 다시 입력하지 않아도 됩니다.
+- 입장하면 첫 장면에 **따숨교육 저작권 안내 화면**이 크게 뜨고, 화면을 누르거나 Enter를 누르면 사라지며 시작합니다. (같은 탭에서는 다시 안 뜸. 문구는 `api/_private/_ui/splash.html`)
 - 게임 파일은 `api/_private/` 안에 있어서 주소로 바로 받아 갈 수 없고, 입장 확인을 통과해야만 내려갑니다.
 
 ### 코드 발급 (송 전용)
@@ -62,7 +63,7 @@ GitHub에 파일을 올리면 Vercel이 자동으로 배포하기 때문에, **�
 - AI 윤리 놀이도시 → `api/_private/ai-ethics-city/index.html`
 - 스마트 놀이도시 → `api/_private/playcity/` (여러 파일), 한 파일 버전은 `api/_private/playcity-standalone/index.html`
 - GitHub에서 해당 폴더로 들어가 Add file → Upload files → 같은 이름으로 올리고 Commit
-- `api/_private/_ui/` 는 코드 입력 화면(`gate.html`)과 관리 화면(`admin.html`)입니다
+- `api/_private/_ui/` 는 코드 입력 화면(`gate.html`), 관리 화면(`admin.html`), 따숨교육 안내 화면(`splash.html`)입니다. 안내 화면은 게임 파일을 고치지 않고 내보낼 때 끼워 넣습니다.
 
 ### 알아 둘 점
 
