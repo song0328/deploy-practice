@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>{{TITLE}} · 수업 코드</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root { --bg1:#fff8e1; --bg2:#ffe0b2; --card:#ffffff; --ink:#2b2118; --muted:#7a6a58;
+          --accent:#ff7a1a; --accent2:#e65f00; --line:#f0d9b8; --bad:#c62828; --ok:#2e7d32; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg1:#201a14; --bg2:#2b2118; --card:#2f261d; --ink:#fbeedd; --muted:#c9b69e;
+            --accent:#ffa040; --accent2:#ff8f1f; --line:#4a3a29; --bad:#ff8a80; --ok:#81c784; }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
+         color: var(--ink); background: linear-gradient(160deg, var(--bg1), var(--bg2)); display: grid; place-items: center;
+         padding: 16px; }
+  .card { width: 100%; max-width: 420px; background: var(--card); border: 1px solid var(--line); border-radius: 24px;
+          padding: 28px 22px 22px; box-shadow: 0 12px 40px rgba(120, 70, 10, .15); text-align: center; }
+  .emoji { font-size: 44px; line-height: 1; }
+  h1 { font-size: 22px; margin: 10px 0 4px; letter-spacing: -.02em; }
+  p.sub { margin: 0 0 18px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+  .note { margin: 0 0 14px; padding: 10px 12px; border-radius: 12px; font-size: 14px; line-height: 1.45;
+          background: color-mix(in srgb, var(--bad) 12%, transparent); color: var(--bad); }
+  input { width: 100%; font: 700 34px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .18em;
+          text-align: center; text-transform: uppercase; padding: 14px 8px; border-radius: 16px; color: var(--ink);
+          background: transparent; border: 2px solid var(--line); outline: none; }
+  input:focus { border-color: var(--accent); }
+  input::placeholder { color: var(--line); letter-spacing: .18em; }
+  button { width: 100%; margin-top: 12px; font-family: inherit; font-weight: 700; font-size: 18px; line-height: 1; padding: 16px; border: 0; border-radius: 16px; cursor: pointer;
+           color: #fff; background: var(--accent2); }
+  button:disabled { opacity: .55; cursor: default; }
+  .msg { min-height: 22px; margin-top: 12px; font-size: 14.5px; line-height: 1.45; }
+  .msg.bad { color: var(--bad); }
+  .msg.ok { color: var(--ok); }
+  .foot { margin-top: 14px; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="emoji">🏙️</div>
+  <h1>{{TITLE}}</h1>
+  <p class="sub">선생님이 알려준<br>수업 코드를 입력해 주세요</p>
+  {{NOTE}}
+  <form id="f" autocomplete="off">
+    <input id="code" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false"
+           maxlength="7" placeholder="ABC-DEF" aria-label="수업 코드" autofocus>
+    <button id="go" type="submit">입장하기</button>
+  </form>
+  <div id="msg" class="msg" role="status" aria-live="polite"></div>
+  <div class="foot">수업 코드는 수업이 있는 날에만 쓸 수 있어요.</div>
+</main>
+<script>
+(function () {
+  var APP = {{APP_JSON}};
+  var $code = document.getElementById('code');
+  var $go = document.getElementById('go');
+  var $msg = document.getElementById('msg');
+
+  function clean(v) { return v.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); }
+  function pretty(v) { return v.length > 3 ? v.slice(0, 3) + '-' + v.slice(3) : v; }
+  $code.addEventListener('input', function () { $code.value = pretty(clean($code.value)); $msg.textContent = ''; });
+
+  document.getElementById('f').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var code = clean($code.value);
+    if (code.length < 6) { say('코드는 6자리예요. 칠판에 적힌 코드를 다시 확인해 주세요.', 'bad'); return; }
+    $go.disabled = true; say('확인하는 중…', '');
+    fetch('/api/code', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: code, app: APP })
+    }).then(function (r) { return r.json().catch(function () { return {}; }); })
+      .then(function (j) {
+        if (j && j.ok) { say('입장해요! 🎉', 'ok'); location.reload(); return; }
+        say((j && j.msg) || '입장하지 못했어요. 잠시 뒤 다시 해 보세요.', 'bad'); $go.disabled = false;
+      })
+      .catch(function () { say('인터넷 연결을 확인하고 다시 눌러 주세요.', 'bad'); $go.disabled = false; });
+  });
+
+  function say(t, cls) { $msg.textContent = t; $msg.className = 'msg ' + cls; }
+})();
+</script>
+</body>
+</html>
