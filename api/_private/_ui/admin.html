@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>놀이도시 입장 관리</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root { --bg:#f6f3ee; --card:#ffffff; --ink:#241d16; --muted:#7b6f61; --line:#e6ddd0; --accent:#e65f00; --accent-ink:#ffffff;
+          --ok:#2e7d32; --okbg:#e8f5e9; --warn:#b26a00; --warnbg:#fff3e0; --bad:#c62828; --badbg:#ffebee; --mid:#546e7a; --midbg:#eceff1; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#17130f; --card:#221c16; --ink:#f4eadb; --muted:#b9a993; --line:#3a3027; --accent:#ff9533; --accent-ink:#1b1209;
+            --ok:#81c784; --okbg:#1c2c1e; --warn:#ffb74d; --warnbg:#33260f; --bad:#ef9a9a; --badbg:#35181a; --mid:#90a4ae; --midbg:#22292d; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); line-height: 1.5;
+         font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 16px 16px 60px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0 14px; }
+  h1 { font-size: 20px; margin: 0; letter-spacing: -.02em; }
+  h2 { font-size: 16px; margin: 0 0 12px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 4px; }
+  input[type=text], input[type=password], input[type=date], input[type=number] {
+    width: 100%; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line);
+    background: transparent; color: var(--ink); }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 0; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .field { margin-bottom: 10px; }
+  .checks { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .checks label { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 8px 12px; border: 1px solid var(--line);
+                  border-radius: 999px; color: var(--ink); font-size: 14px; cursor: pointer; }
+  button { font: inherit; font-weight: 700; font-size: 15px; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--line);
+           background: transparent; color: var(--ink); cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  button.danger { color: var(--bad); }
+  button.small { font-size: 13px; padding: 7px 11px; font-weight: 600; }
+  button:disabled { opacity: .5; cursor: default; }
+  .help { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+  .err { color: var(--bad); font-size: 14px; margin-top: 8px; min-height: 20px; }
+  .warns .w { display: flex; gap: 8px; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; font-size: 14px; background: var(--warnbg); color: var(--warn); }
+  .warns .w.good { background: var(--okbg); color: var(--ok); }
+  .code { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 14px 0; border-top: 1px solid var(--line); }
+  .code:first-of-type { border-top: 0; padding-top: 0; }
+  .code .big { font: 800 26px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .08em; min-width: 124px; }
+  .code .info { flex: 1 1 200px; min-width: 0; }
+  .code .name { font-weight: 700; }
+  .code .meta { font-size: 13px; color: var(--muted); }
+  .code .btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-right: 4px; vertical-align: 2px; }
+  .chip.today { background: var(--okbg); color: var(--ok); }
+  .chip.upcoming { background: var(--warnbg); color: var(--warn); }
+  .chip.expired { background: var(--midbg); color: var(--mid); }
+  .chip.revoked { background: var(--badbg); color: var(--bad); }
+  .over { color: var(--bad); font-weight: 700; }
+  details summary { cursor: pointer; font-weight: 700; padding: 4px 0; }
+  .ev { font-size: 13.5px; padding: 6px 0; border-top: 1px solid var(--line); display: flex; gap: 10px; }
+  .ev time { color: var(--muted); flex: none; width: 44px; font-variant-numeric: tabular-nums; }
+  .ev small { color: var(--muted); }
+  .empty { color: var(--muted); font-size: 14px; padding: 6px 0; }
+  .login { max-width: 360px; margin: 14vh auto 0; }
+  /* 칠판용 크게 보기 */
+  #board { position: fixed; inset: 0; z-index: 10; background: #fff8e1; color: #2b2118; display: none; flex-direction: column;
+           align-items: center; justify-content: center; text-align: center; padding: 24px; }
+  #board.on { display: flex; }
+  #board .l1 { font-size: clamp(18px, 3.2vw, 32px); font-weight: 700; margin-bottom: 8px; }
+  #board .l2 { font-size: clamp(14px, 2.4vw, 24px); color: #7a6a58; margin-bottom: 4vh; }
+  #board .c { font: 800 clamp(48px, 17vw, 220px)/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .08em; color: #e65f00; white-space: nowrap; }
+  #board .l3 { margin-top: 5vh; font-size: clamp(14px, 2.2vw, 22px); color: #5b4a38; word-break: break-all; }
+  #board button { margin-top: 5vh; background: #fff; color: #2b2118; border-color: #e0cfa8; }
+  #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #2b2118; color: #fff; padding: 10px 16px;
+           border-radius: 999px; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 20; }
+  #toast.on { opacity: 1; }
+  .hide { display: none !important; }
+  @media (max-width: 520px) { .row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 로그인 -->
+  <section id="loginView" class="hide login">
+    <div class="card">
+      <h1>놀이도시 입장 관리</h1>
+      <p class="help" style="margin:6px 0 14px">관리자 비밀번호를 입력하세요.</p>
+      <form id="loginForm">
+        <div class="field"><input id="pw" type="password" autocomplete="current-password" placeholder="관리자 비밀번호" aria-label="관리자 비밀번호"></div>
+        <button class="primary" style="width:100%" type="submit">들어가기</button>
+        <div id="loginErr" class="err" role="alert"></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- 관리 -->
+  <section id="mainView" class="hide">
+    <header>
+      <h1>🏙️ 놀이도시 입장 관리</h1>
+      <button class="small" id="logout">나가기</button>
+    </header>
+
+    <div id="setup" class="card hide" style="border-color:var(--bad)"></div>
+
+    <div class="card">
+      <h2>새 수업 코드 발급</h2>
+      <form id="createForm">
+        <div class="field"><label for="label">반 이름</label><input id="label" type="text" maxlength="40" placeholder="예: 석전중 3학년 3반" required></div>
+        <div class="row">
+          <div><label for="teacher">담당 강사 (선택)</label><input id="teacher" type="text" maxlength="30" placeholder="예: 김강사"></div>
+          <div><label for="date">수업 날짜</label><input id="date" type="date" required></div>
+        </div>
+        <div class="field"><label for="limit">예상 인원 (선택)</label><input id="limit" type="number" min="0" max="999" inputmode="numeric" placeholder="예: 30">
+          <div class="help">들어온 기기 수가 이 숫자를 넘으면 아래 경고에 떠요.</div></div>
+        <label>쓸 수 있는 놀이도시</label>
+        <div class="checks" id="appChecks"></div>
+        <button class="primary" type="submit" id="createBtn">코드 발급</button>
+        <div id="createErr" class="err" role="alert"></div>
+      </form>
+    </div>
+
+    <div class="card warns">
+      <h2>살펴볼 것</h2>
+      <div id="warns"></div>
+    </div>
+
+    <div class="card">
+      <h2>수업 코드</h2>
+      <div id="active"></div>
+      <details id="pastBox" class="hide" style="margin-top:8px"><summary id="pastSum"></summary><div id="past"></div></details>
+    </div>
+
+    <div class="card">
+      <details><summary>최근 입장·시도 기록</summary><div id="events" style="margin-top:8px"></div></details>
+    </div>
+  </section>
+</div>
+
+<!-- 칠판용 크게 보기 -->
+<div id="board" role="dialog" aria-modal="true" aria-label="수업 코드 크게 보기">
+  <div class="l1" id="bL1"></div>
+  <div class="l2" id="bL2"></div>
+  <div class="c" id="bCode"></div>
+  <div class="l3" id="bUrl"></div>
+  <button id="bClose">닫기 (Esc)</button>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+(function () {
+  var API = '/api/admin';
+  var GRANTS = { 'ai-ethics-city': 'AI 윤리 놀이도시', 'playcity': '스마트 놀이도시' };
+  var REASONS = { format: '6자리가 아닌 입력', unknown: '없는 코드', revoked: '중지된 코드', early: '아직 안 열린 코드', expired: '날짜 지난 코드', app: '허용 안 된 놀이도시' };
+  var S = null, timer = null;
+
+  function $(id) { return document.getElementById(id); }
+  function h(tag, attrs) {
+    var el = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === 'class') el.className = attrs[k];
+      else if (k === 'text') el.textContent = attrs[k];
+      else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), attrs[k]);
+      else el.setAttribute(k, attrs[k]);
+    });
+    for (var i = 2; i < arguments.length; i++) {
+      var c = arguments[i]; if (c == null) continue;
+      el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    }
+    return el;
+  }
+  function pretty(c) { return c.slice(0, 3) + '-' + c.slice(3); }
+  function kstTime(t) { return new Date(t).toLocaleTimeString('ko-KR', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', hour12: false }); }
+  function dayLabel(d) {
+    var p = d.split('-'); var dt = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+    return Number(p[1]) + '월 ' + Number(p[2]) + '일 (' + '일월화수목금토'[dt.getDay()] + ')';
+  }
+  function toast(t) { var el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(function () { el.classList.remove('on'); }, 1800); }
+
+  function call(action, data) {
+    return fetch(API, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ action: action }, data || {})) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._status = r.status; return j; }); });
+  }
+
+  /* ── 화면 전환 ── */
+  function showLogin() { $('mainView').classList.add('hide'); $('loginView').classList.remove('hide'); clearInterval(timer); $('pw').focus(); }
+  function showMain() { $('loginView').classList.add('hide'); $('mainView').classList.remove('hide'); }
+
+  $('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault(); $('loginErr').textContent = '';
+    call('login', { password: $('pw').value }).then(function (j) {
+      if (j.ok) { $('pw').value = ''; load(true); } else { $('loginErr').textContent = j.msg || '로그인하지 못했어요.'; }
+    });
+  });
+  $('logout').addEventListener('click', function () { call('logout').then(showLogin); });
+
+  /* ── 불러오기 ── */
+  function load(first) {
+    call('state').then(function (j) {
+      if (j.login) { showLogin(); return; }
+      if (!j.ok) { toast(j.msg || '불러오지 못했어요'); return; }
+      S = j; showMain(); render(first);
+      clearInterval(timer); timer = setInterval(function () { if (!document.hidden) load(false); }, 30000);
+    }).catch(function () { toast('인터넷 연결을 확인해 주세요'); });
+  }
+
+  /* ── 그리기 ── */
+  function render(first) {
+    var setup = $('setup');
+    if (S.store === 'none') {
+      setup.classList.remove('hide');
+      setup.textContent = '코드를 저장할 저장소(Upstash Redis)가 아직 연결되지 않았어요. Vercel 프로젝트의 Storage 탭에서 연결해 주세요.';
+    } else setup.classList.add('hide');
+
+    if (first || !$('date').value) $('date').value = S.today;
+    $('date').min = S.today;
+    if (!$('appChecks').children.length) {
+      Object.keys(GRANTS).forEach(function (k, i) {
+        var cb = h('input', { type: 'checkbox', value: k }); if (i === 0) cb.checked = true;
+        $('appChecks').appendChild(h('label', null, cb, GRANTS[k]));
+      });
+    }
+
+    var w = $('warns'); w.textContent = '';
+    if (!S.warnings.length) w.appendChild(h('div', { class: 'w good', text: '✅ 지금은 이상한 점이 없어요.' }));
+    S.warnings.forEach(function (x) { w.appendChild(h('div', { class: 'w' }, h('span', { text: '⚠️' }), h('span', { text: x }))); });
+
+    var act = $('active'), past = $('past'); act.textContent = ''; past.textContent = '';
+    var nAct = 0, nPast = 0;
+    S.codes.forEach(function (c) {
+      if (c.status === 'expired') { past.appendChild(codeRow(c)); nPast++; } else { act.appendChild(codeRow(c)); nAct++; }
+    });
+    if (!nAct) act.appendChild(h('div', { class: 'empty', text: '아직 발급한 코드가 없어요. 위에서 새로 발급해 보세요.' }));
+    $('pastBox').classList.toggle('hide', !nPast);
+    $('pastSum').textContent = '지난 코드 ' + nPast + '개';
+
+    var ev = $('events'); ev.textContent = '';
+    if (!S.events.length) ev.appendChild(h('div', { class: 'empty', text: '아직 기록이 없어요.' }));
+    S.events.slice(0, 40).forEach(function (e) {
+      var line;
+      if (e.k === 'ok') line = h('span', null, '✅ ' + pretty(e.c) + ' 입장' + (e.n ? ' (새 기기)' : ' (다시 입장)'), h('small', { text: '  · ' + (GRANTS[e.a] || e.a || '') }));
+      else line = h('span', null, '⚠️ 입장 실패 — ' + (REASONS[e.r] || e.r), h('small', { text: '  · 접속지 ' + (e.ip || '') }));
+      ev.appendChild(h('div', { class: 'ev' }, h('time', { text: kstTime(e.t) }), line));
+    });
+  }
+
+  var STATUS = { today: '오늘 유효', upcoming: '예정', expired: '만료', revoked: '중지됨' };
+
+  function codeRow(c) {
+    var over = c.limit > 0 && c.devices !== null && c.devices > c.limit;
+    var meta = [dayLabel(c.date)];
+    if (c.teacher) meta.push(c.teacher);
+    meta.push(c.apps.map(function (a) { return GRANTS[a] || a; }).join(' · '));
+    var dev = c.devices === null ? null : h('span', null, '기기 ', h('b', { class: over ? 'over' : '', text: String(c.devices) }), c.limit > 0 ? ' / 예상 ' + c.limit : '');
+    var sub = h('div', { class: 'meta' }, dev, c.lastEntry ? '  · 마지막 입장 ' + kstTime(c.lastEntry) : '');
+    var btns = h('div', { class: 'btns' },
+      h('button', { class: 'small', text: '크게 보기', onclick: function () { board(c); } }),
+      h('button', { class: 'small', text: '복사', onclick: function () { copy(c); } }),
+      c.revoked
+        ? h('button', { class: 'small', text: '다시 켜기', onclick: function () { act('restore', c, '다시 켰어요'); } })
+        : (c.status !== 'expired' ? h('button', { class: 'small danger', text: '중지', onclick: function () {
+            if (confirm(pretty(c.code) + ' (' + c.label + ') 코드를 지금 중지할까요?\n이미 들어온 학생도 새로고침하면 막혀요.')) act('revoke', c, '중지했어요');
+          } }) : null));
+    return h('div', { class: 'code' },
+      h('div', { class: 'big', text: pretty(c.code) }),
+      h('div', { class: 'info' },
+        h('div', { class: 'name' }, h('span', { class: 'chip ' + c.status, text: STATUS[c.status] }), c.label),
+        h('div', { class: 'meta', text: meta.join(' · ') }), sub),
+      btns);
+  }
+
+  function act(action, c, done) {
+    call(action, { code: c.code }).then(function (j) { if (j.ok) { toast(done); load(false); } else toast(j.msg || '실패했어요'); });
+  }
+
+  function copy(c) {
+    var text = pretty(c.code) + '  (' + c.label + ', ' + dayLabel(c.date) + ')';
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { toast('복사했어요'); }, function () { prompt('복사해서 쓰세요', text); });
+    else prompt('복사해서 쓰세요', text);
+  }
+
+  /* ── 칠판용 ── */
+  function board(c) {
+    $('bL1').textContent = c.label + (c.teacher ? ' · ' + c.teacher : '');
+    $('bL2').textContent = dayLabel(c.date) + ' 수업 코드';
+    $('bCode').textContent = pretty(c.code);
+    $('bUrl').textContent = c.apps.map(function (a) { return location.origin.replace(/^https?:\/\//, '') + '/' + a + '/'; }).join('\n');
+    $('bUrl').style.whiteSpace = 'pre-line';
+    $('board').classList.add('on');
+  }
+  $('bClose').addEventListener('click', function () { $('board').classList.remove('on'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') $('board').classList.remove('on'); });
+
+  /* ── 발급 ── */
+  $('createForm').addEventListener('submit', function (e) {
+    e.preventDefault(); $('createErr').textContent = '';
+    var apps = Array.prototype.filter.call($('appChecks').querySelectorAll('input'), function (i) { return i.checked; }).map(function (i) { return i.value; });
+    if (!apps.length) { $('createErr').textContent = '쓸 수 있는 놀이도시를 하나 이상 골라 주세요.'; return; }
+    $('createBtn').disabled = true;
+    call('create', { label: $('label').value.trim(), teacher: $('teacher').value.trim(), date: $('date').value, limit: Number($('limit').value) || 0, apps: apps })
+      .then(function (j) {
+        $('createBtn').disabled = false;
+        if (j.login) { showLogin(); return; }
+        if (!j.ok) { $('createErr').textContent = j.msg || '발급하지 못했어요.'; return; }
+        $('label').value = ''; $('teacher').value = ''; $('limit').value = '';
+        toast('코드를 발급했어요'); board(j.code); load(false);
+      }).catch(function () { $('createBtn').disabled = false; $('createErr').textContent = '인터넷 연결을 확인해 주세요.'; });
+  });
+
+  load(true);
+})();
+</script>
+</body>
+</html>

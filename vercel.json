@@ -1,30 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "headers": [
-    {
-      "source": "/playcity/vendor/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
-    },
-    {
-      "source": "/playcity/(js|css)/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
-      ]
-    },
-    {
-      "source": "/playcity/sw.js",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache" },
-        { "key": "Service-Worker-Allowed", "value": "/playcity/" }
-      ]
-    },
-    {
-      "source": "/playcity/(index|phone|tablet).html",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache" }
-      ]
-    }
+  "functions": {
+    "api/enter.js": { "includeFiles": "api/_private/**" },
+    "api/admin.js": { "includeFiles": "api/_private/_ui/**" }
+  },
+  "rewrites": [
+    { "source": "/ai-ethics-city", "destination": "/api/enter?app=ai-ethics-city" },
+    { "source": "/ai-ethics-city/:path*", "destination": "/api/enter?app=ai-ethics-city&p=:path*" },
+    { "source": "/playcity", "destination": "/api/enter?app=playcity" },
+    { "source": "/playcity/:path*", "destination": "/api/enter?app=playcity&p=:path*" },
+    { "source": "/playcity-standalone.html", "destination": "/api/enter?app=playcity-standalone" },
+    { "source": "/class-admin", "destination": "/api/admin" }
   ]
 }
