@@ -6,10 +6,13 @@
   },
   "rewrites": [
     { "source": "/ai-ethics-city", "destination": "/api/enter?app=ai-ethics-city" },
+    { "source": "/ai-ethics-city/", "destination": "/api/enter?app=ai-ethics-city" },
     { "source": "/ai-ethics-city/:path*", "destination": "/api/enter?app=ai-ethics-city&p=:path*" },
     { "source": "/playcity", "destination": "/api/enter?app=playcity" },
+    { "source": "/playcity/", "destination": "/api/enter?app=playcity" },
     { "source": "/playcity/:path*", "destination": "/api/enter?app=playcity&p=:path*" },
     { "source": "/playcity-standalone.html", "destination": "/api/enter?app=playcity-standalone" },
-    { "source": "/class-admin", "destination": "/api/admin" }
+    { "source": "/class-admin", "destination": "/api/admin" },
+    { "source": "/class-admin/", "destination": "/api/admin" }
   ]
 }
