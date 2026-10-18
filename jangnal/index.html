@@ -1,4 +1,5 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="청도 장날 — 집터 경매와 가게 운영으로 겨루는 교실용 장사 전략 게임 (따숨교육)"><style>html,body{margin:0}*{box-sizing:border-box}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>청도 장날 놀이도시</title>
+<meta name="author" content="따숨교육"><meta name="copyright" content="© 2026 따숨교육. All rights reserved.">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
 <style>
@@ -27,7 +28,7 @@ body{background:#BFE0EE;color:var(--ink);font-family:var(--sans);font-size:15px;
 .brand{padding:10px 16px;display:flex;align-items:center;gap:12px}
 .brand .mk{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#F59A4E,#D9531E 70%);box-shadow:inset 0 -2px 0 rgba(0,0,0,.12);position:relative}
 .brand .mk::after{content:"";position:absolute;top:-4px;left:12px;width:7px;height:7px;background:#4E7A3A;border-radius:2px 6px}
-.brand b{font-family:var(--serif);font-size:20px;letter-spacing:.02em}
+.brand b{font-family:var(--serif);font-size:20px;letter-spacing:.02em;text-shadow:0 0 3px rgba(255,255,255,.9),0 0 6px rgba(255,255,255,.7)}
 .brand span{font-size:13px;color:var(--ink3);border-left:1px solid var(--rule);padding-left:12px}
 .news{padding:10px 18px;display:flex;align-items:center;gap:10px;max-width:46vw}
 .news i{font-style:normal;font-size:12px;font-weight:700;color:#fff;background:var(--jjok);border-radius:6px;padding:3px 8px;white-space:nowrap}
@@ -225,12 +226,13 @@ label.note input:focus{outline:none;border-color:var(--jjok)}
 .hud .cnt small{font-weight:500;font-size:12px;color:var(--ink3);margin-left:4px}
 .toast{position:fixed;left:50%;top:84px;transform:translateX(-50%);padding:10px 18px;font-weight:700;animation:pop .25s ease-out;z-index:4;pointer-events:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.hero .cr{margin-top:14px;font-size:11px;line-height:1.6;color:var(--ink3);opacity:.85}
+.copy{position:fixed;right:14px;bottom:8px;font-size:11px;color:rgba(40,30,20,.55);pointer-events:none;z-index:5;letter-spacing:.02em;text-shadow:0 0 3px rgba(255,255,255,.9),0 0 6px rgba(255,255,255,.7)}
 </style>
 
 <canvas id="stage"></canvas>
 <div id="tags"></div>
 <div id="ui"></div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // ===== 장날 엔진 (화면과 분리된 규칙) =====
@@ -314,7 +316,6 @@ function attribution(ev,teams,seed){const base=simulate(ev,teams,seed).res,n=tea
 function nextRep(t,r){if(r.star==null)return{rep:t.rep,conf:t.repConf*.6};return{rep:t.rep*.4+r.star*.6,conf:Math.min(1,r.n/10)};}
 return{START,PRODUCTS,PK,TYPES,GOOD,PACK,PROMOS,EVENTS,SPOT_STEP,rng,pickEvents,unitCost,crowd,planCost,simulate,nextRep,repEff,attribution,PASS,REACH_BONUS};
 })();
-
 
 /* ===== 3D 장터 (Three.js r128). 움직이지 않는 풍경은 메시 하나로 합쳐 가볍게 ===== */
 const W3=(function(){
@@ -601,7 +602,7 @@ function frame(dock,{side=false}={}){
    ${k>=0?`<div class="panel steps">${STEPS.map(([,s],i)=>`<span class="${i===k?'on':i<k?'done':''}">${s}</span>`).join('')}</div>`:'<span></span>'}</div>
   ${side?`<div class="panel side" id="side">${sideHTML()}</div>`:''}
   <div class="panel cam"><button title="왼쪽으로" id="c1">↺</button><button title="확대" id="c2">＋</button><button title="오른쪽으로" id="c3">↻</button><button title="전체 보기" id="c4">⌂</button><button title="축소" id="c5">－</button><button title="위에서" id="c6">▣</button></div>
-  ${dock?`<div class="panel dock" id="dock">${dock}</div>`:''}`;
+  ${dock?`<div class="panel dock" id="dock">${dock}</div>`:''}<div class="copy">© 2026 따숨교육</div>`;
   $('#c1').onclick=()=>W.spin(.5);$('#c3').onclick=()=>W.spin(-.5);$('#c2').onclick=()=>W.zoom(.75);$('#c5').onclick=()=>W.zoom(1.3);$('#c4').onclick=()=>W.view.all();$('#c6').onclick=()=>W.flyTo({pitch:1.35});
   bindSide();}
 function bindSide(){const f=$('#fold');if(f)f.onclick=()=>{G.fold=!G.fold;$('#side').innerHTML=sideHTML();bindSide();};document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{G.tab=b.dataset.tab;G.fold=false;$('#side').innerHTML=sideHTML();bindSide();});}
@@ -639,7 +640,7 @@ let orbitOn=true;W.tickers.push(dt=>{if(orbitOn)W.want.yaw+=dt*.04;});
 function title(){orbitOn=true;W.view.all();W.flyTo({dist:110,pitch:.55});
   ui.innerHTML=`<div class="panel hero"><h1>청도 <em>장날</em></h1><p>사흘 동안 장사해서, 가장 많이 남긴 팀이 이깁니다.</p>
    <div style="font-size:13px;color:var(--ink3);margin-bottom:8px">참여하는 팀을 눌러 주세요 · 나머지는 컴퓨터가 맡아요</div><div class="seg" id="seg">${G.teams.map((t,i)=>`<button data-n="${i}" class="${t.ai?'':'on'}" style="${t.ai?'':'color:'+t.col}">${t.name}</button>`).join('')}</div>
-   <div class="row"><button class="line" id="rules">장날 규칙</button><button class="go" id="start">장터 열기</button></div></div>`;
+   <div class="row"><button class="line" id="rules">장날 규칙</button><button class="go" id="start">장터 열기</button></div><div class="cr">© 2026 따숨교육 · 청도 장날 놀이도시는 따숨교육이 기획·제작한 교육용 게임입니다.<br>무단 복제·배포·수정을 금합니다.</div></div><div class="copy">© 2026 따숨교육</div>`;
   document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>{const i=+b.dataset.n,set=G.teams.map((t,k)=>t.ai?-1:k).filter(k=>k>=0);const nx=set.includes(i)?set.filter(k=>k!==i):[...set,i];if(!nx.length)return;newTeams(nx);title();});
   $('#rules').onclick=showRules;$('#start').onclick=()=>{orbitOn=false;go('open');};}
 function showRules(){const s=sheet(`<h3>장날 규칙</h3><p class="sub">경기 전에 한 번 읽어 주세요.</p><div class="rules">
