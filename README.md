@@ -12,6 +12,7 @@ GitHub에 파일을 올리면 Vercel이 자동으로 배포하기 때문에, **�
 | `api/_private/ai-ethics-city/` | https://deploy-practice-wine.vercel.app/ai-ethics-city/ | AI 윤리 놀이도시 — 석전중 3학년 3교시(2026-10-14), 패들렛 링크 |
 | `api/_private/playcity/` | https://deploy-practice-wine.vercel.app/playcity/ | 스마트 놀이도시 |
 | `api/_private/playcity-standalone/` | https://deploy-practice-wine.vercel.app/playcity-standalone.html | 스마트 놀이도시 한 파일 버전 |
+| `jangnal/` | https://deploy-practice-wine.vercel.app/jangnal/ | 청도 장날 놀이도시 — 청도교육지원청 창업교실 4차시 장사 게임 (입장 코드 없이 열림) |
 | `vercel.json` | | 주소 연결(rewrites)과 배포 설정 |
 
 나머지(`index.html`)도 확실하지 않으면 그대로 두세요.
