@@ -58,6 +58,12 @@ function memRun(args) {
     case 'LPUSH': { let e = memGet(key); if (!e) { e = { v: [], exp: 0 }; mem.set(key, e); } rest.forEach(m => e.v.unshift(String(m))); return e.v.length; }
     case 'LTRIM': { const e = memGet(key); if (e) e.v = e.v.slice(Number(rest[0]), Number(rest[1]) + 1); return 'OK'; }
     case 'LRANGE': { const e = memGet(key); if (!e) return []; const s = Number(rest[0]); const t = Number(rest[1]); return e.v.slice(s, t === -1 ? undefined : t + 1); }
+    /* 해시 (청도 장날 온라인판이 씀) */
+    case 'HSET': { let e = memGet(key); if (!e) { e = { v: new Map(), exp: 0 }; mem.set(key, e); } let n = 0; for (let i = 0; i + 1 < rest.length; i += 2) { if (!e.v.has(String(rest[i]))) n++; e.v.set(String(rest[i]), String(rest[i + 1])); } return n; }
+    case 'HGET': { const e = memGet(key); return e && e.v.has(String(rest[0])) ? e.v.get(String(rest[0])) : null; }
+    case 'HMGET': { const e = memGet(key); return rest.map(f => (e && e.v.has(String(f)) ? e.v.get(String(f)) : null)); }
+    case 'HGETALL': { const e = memGet(key); if (!e) return []; const out = []; e.v.forEach((v, k) => out.push(k, v)); return out; }
+    case 'HDEL': { const e = memGet(key); if (!e) return 0; let n = 0; rest.forEach(f => { if (e.v.delete(String(f))) n++; }); return n; }
     default: throw new Error('시험용 저장소가 모르는 명령: ' + C);
   }
 }

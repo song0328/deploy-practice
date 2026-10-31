@@ -1,0 +1,423 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="청도 장날 온라인판 — 팀 태블릿 화면 (따숨교육)"><meta name="robots" content="noindex">
+<title>청도 장날 · 우리 팀</title>
+<meta name="author" content="따숨교육"><meta name="copyright" content="© 2026 따숨교육. All rights reserved.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{
+  --ink:#24211D; --ink2:#5F584F; --ink3:#958C80;
+  --paper:#FFFCF5; --paper2:#F4EEE2; --rule:#E6DDCB;
+  --gam:#E2622A; --gamDeep:#C24E1C; --jjok:#264B73; --gold:#E7A623;
+  --good:#2E8A5B; --bad:#C8402F; --team:#E2622A;
+  --serif:"Gowun Batang","Nanum Myeongjo",serif;
+  --sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:#EFE6D4;color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+button{font:inherit;border:0;border-radius:12px;padding:12px 18px;background:var(--paper2);color:var(--ink);cursor:pointer;font-weight:700;touch-action:manipulation}
+button:active{transform:translateY(1px)}
+button.go{background:var(--gam);color:#fff;box-shadow:0 2px 0 var(--gamDeep)}
+button.line{background:transparent;border:1.5px solid var(--rule)}
+button:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+input{font:inherit}
+.wrap{max-width:860px;margin:0 auto;padding:12px 14px 40px}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:10px 0;background:linear-gradient(#EFE6D4 70%,rgba(239,230,212,0));}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--serif);font-size:20px}
+.brand .mk{width:12px;height:12px;border-radius:4px;background:var(--gam);transform:rotate(45deg)}
+.brand span{font-family:var(--sans);font-size:13px;color:var(--ink3);font-weight:500}
+.me{margin-left:auto;display:flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:6px 12px 6px 8px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.me i{width:14px;height:14px;border-radius:5px;background:var(--team)}
+.me small{font-weight:500;color:var(--ink3)}
+.card{background:var(--paper);border:1px solid var(--rule);border-radius:18px;padding:18px;margin:10px 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.card h2{font-family:var(--serif);font-size:22px;margin:0 0 4px}
+.card h3{font-size:16px;margin:0 0 8px}
+.card .sub{color:var(--ink3);font-size:14px;margin:0 0 12px}
+.steps{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0 2px}
+.steps span{font-size:12px;padding:4px 9px;border-radius:999px;background:var(--paper2);color:var(--ink3)}
+.steps span.on{background:var(--ink);color:#fff}
+.steps span.done{color:var(--ink2);text-decoration:line-through;opacity:.6}
+.news{display:flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--rule);border-radius:12px;padding:8px 12px;font-size:14px;margin:8px 0}
+.news i{font-style:normal;font-size:11px;color:var(--gam);font-weight:700}
+.wait{display:flex;align-items:center;gap:12px;color:var(--ink2);font-size:15px}
+.wait .dot{width:12px;height:12px;border-radius:50%;background:var(--gam);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.1)}}
+/* 입장 */
+.join{max-width:460px;margin:40px auto 0}
+.join h1{font-family:var(--serif);font-size:40px;margin:0 0 4px;line-height:1.1}
+.join h1 em{color:var(--gam);font-style:normal}
+.join .maker{font-size:13px;color:var(--ink3);display:flex;align-items:center;gap:6px;margin-bottom:12px}
+.join .maker .mk2{width:9px;height:9px;border-radius:3px;background:var(--gam);transform:rotate(45deg)}
+.code{width:100%;font-size:42px;letter-spacing:.3em;text-align:center;font-family:var(--serif);padding:12px;border:2px solid var(--rule);border-radius:16px;background:#fff;outline:none}
+.code:focus{border-color:var(--gam)}
+.teamgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0}
+.teamgrid button{padding:14px 4px;font-size:15px;background:#fff;border:2px solid var(--rule);color:var(--ink2)}
+.teamgrid button.on{border-color:var(--c);color:var(--c);background:#fff}
+.teamgrid button.taken{opacity:.4;text-decoration:line-through}
+.join input.name{width:100%;padding:12px 14px;border:2px solid var(--rule);border-radius:12px;background:#fff;font-size:17px;outline:none}
+.join input.name:focus{border-color:var(--gam)}
+.err{color:var(--bad);font-size:14px;margin:8px 0;min-height:1.2em}
+.cr{font-size:12px;color:var(--ink3);margin-top:24px;line-height:1.5}
+/* 조사 탭 */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{padding:9px 14px;font-size:14px;background:var(--paper2);color:var(--ink2)}
+.tabs button.on{background:var(--ink);color:#fff}
+table.crowd{width:100%;border-collapse:collapse;font-size:14px}
+.crowd th,.crowd td{padding:8px 6px;border-bottom:1px solid var(--rule);text-align:center;vertical-align:top}
+.crowd th{font-size:12px;color:var(--ink3);font-weight:500}
+.crowd td:first-child,.crowd th:first-child{text-align:left}
+.crowd td.n{font-family:var(--serif)}
+.who{display:inline-flex;align-items:center;gap:6px;font-weight:700}
+.who i{width:10px;height:10px;border-radius:3px}
+.likes{display:block;font-size:12px;color:var(--ink3);font-weight:500}
+.hint{font-size:13px;color:var(--ink3);margin:8px 0 0}
+.costs{display:flex;gap:14px;font-size:13px;color:var(--ink2);margin-top:8px}
+.costs b{font-family:var(--serif)}
+/* 입찰 */
+.lot{display:flex;align-items:baseline;gap:10px}
+.lot b{font-family:var(--serif);font-size:28px}
+.lot small{color:var(--ink3)}
+.bigstep{display:flex;align-items:center;gap:12px;justify-content:center;margin:14px 0}
+.bigstep button{width:64px;height:64px;font-size:30px;border-radius:50%;background:var(--paper2)}
+.bigstep output{font-family:var(--serif);font-size:40px;min-width:200px;text-align:center}
+.bigstep output small{display:block;font-family:var(--sans);font-size:13px;color:var(--ink3);font-weight:500}
+.quick{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
+.quick button{padding:8px 12px;font-size:14px;background:#fff;border:1.5px solid var(--rule);font-weight:500}
+.ok{display:flex;align-items:center;gap:10px;background:#EAF5EE;border:1px solid #BFE1CC;color:#1F6B44;border-radius:12px;padding:12px 14px;font-size:15px;font-weight:700}
+.ok small{font-weight:500;color:#3C7A58}
+.hist{display:grid;gap:6px;margin-top:10px}
+.hrow{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;background:var(--paper2);font-size:14px}
+.hrow i{width:10px;height:10px;border-radius:3px}
+.hrow .amt{margin-left:auto;font-family:var(--serif);font-size:16px}
+.hrow.me{outline:2px solid var(--team)}
+/* 가게 준비 */
+.prods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+@media (max-width:640px){.prods{grid-template-columns:1fr}.teamgrid{grid-template-columns:repeat(3,1fr)}}
+.prod{background:#fff;border:1px solid var(--rule);border-radius:14px;padding:12px}
+.prod .pn{font-weight:700;font-size:16px;display:flex;justify-content:space-between;align-items:baseline}
+.prod .pn small{font-weight:500;color:var(--ink3);font-size:12px}
+.stp{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.stp label{font-size:13px;color:var(--ink2)}
+.stepper{display:flex;align-items:center;gap:4px}
+.stepper button{width:44px;height:44px;padding:0;font-size:22px;border-radius:10px}
+.stepper output{min-width:84px;text-align:center;font-family:var(--serif);font-size:20px}
+.be{font-size:12.5px;color:var(--ink2);margin-top:8px;background:var(--paper2);border-radius:8px;padding:6px 8px}
+.be b{font-family:var(--serif)}
+.be.bad{background:#FBE8E4;color:var(--bad)}
+.opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media (max-width:640px){.opts{grid-template-columns:1fr}}
+.opt h5{margin:0 0 6px;font-size:13px;color:var(--ink2)}
+.chips{display:flex;flex-direction:column;gap:6px}
+.chips button{padding:10px 12px;text-align:left;background:#fff;border:1.5px solid var(--rule);font-weight:700;font-size:14px}
+.chips button small{display:block;font-weight:500;color:var(--ink3);font-size:12px}
+.chips button.on{border-color:var(--gam);background:#FFF3EA;color:var(--gamDeep)}
+label.note{display:block;margin-top:12px;font-size:13px;color:var(--ink2)}
+label.note input{display:block;width:100%;margin-top:4px;padding:10px 12px;border:1.5px solid var(--rule);border-radius:10px;background:#fff;font-size:15px;outline:none}
+.wallet{margin-top:12px;background:var(--paper2);border-radius:12px;padding:10px 12px}
+.wallet .nums{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2)}
+.wallet .nums b{display:block;font-family:var(--serif);font-size:17px;color:var(--ink)}
+.wallet .nums b.neg{color:var(--bad)}
+.bar{height:6px;border-radius:3px;background:#E6DDCB;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gam)}
+.bar.over i{background:var(--bad)}
+.foot{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;align-items:center}
+.summ{display:flex;flex-wrap:wrap;gap:8px}
+.pill{font-size:13px;padding:5px 10px;border-radius:999px;background:var(--paper2)}
+/* 장 열기·결산 */
+.live{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.live div{background:#fff;border:1px solid var(--rule);border-radius:12px;padding:12px;text-align:center}
+.live b{display:block;font-family:var(--serif);font-size:30px}
+.live small{color:var(--ink3)}
+.big{font-family:var(--serif);font-size:34px}
+.pos{color:var(--good)}.neg{color:var(--bad)}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.kv div{background:#fff;border:1px solid var(--rule);border-radius:12px;padding:10px;text-align:center;font-size:12.5px;color:var(--ink3)}
+.kv b{display:block;font-family:var(--serif);font-size:20px;color:var(--ink)}
+.rank div{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--rule);font-size:15px}
+.rank .n{width:26px;height:26px;border-radius:50%;background:var(--paper2);display:grid;place-items:center;font-weight:700;font-size:13px}
+.rank i{width:10px;height:10px;border-radius:3px}
+.rank b{margin-left:auto;font-family:var(--serif)}
+.rank div.me{background:#FFF3EA;margin:0 -8px;padding:8px}
+.echips{display:flex;flex-wrap:wrap;gap:6px}
+.echip{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:6px 10px;font-size:13px}
+.echip b{display:block}.echip em{font-style:normal;color:var(--ink3);margin-left:6px}
+.echip.up{border-color:#BFE1CC;background:#EAF5EE}.echip.down{border-color:#F3C9C2;background:#FBE8E4}
+.ecard{background:#fff;border:1px solid var(--rule);border-radius:12px;padding:12px;margin-top:8px}
+.ecard .k{font-size:11px;color:var(--gam);font-weight:700}
+.ecard b{display:block;margin:2px 0 4px}
+.ecard p{margin:0;font-size:14px;color:var(--ink2)}
+.awards{display:grid;gap:8px}
+.award{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--rule);border-radius:12px;padding:12px 14px}
+.award .t{font-size:13px;color:var(--ink3);min-width:90px}
+.award .w{font-weight:700;font-size:18px}
+.award .d{margin-left:auto;font-size:13px;color:var(--ink2)}
+.award.me{border-color:var(--gold);background:#FFF8E1}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;z-index:20}
+.net{position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:30;background:var(--bad);color:#fff;padding:6px 14px;border-radius:999px;font-size:13px;display:none}
+.net.on{display:block}
+.copy{text-align:center;font-size:11px;color:var(--ink3);margin-top:20px}
+</style></head><body>
+<div class="net" id="net"></div>
+<div class="wrap" id="app"></div>
+<script>
+// ===== 장날 엔진 (화면과 분리된 규칙) =====
+const ENGINE=(function(){
+const START=150000;
+const PRODUCTS={gam:{name:'감말랭이',cost:1200},ice:{name:'아이스홍시',cost:1300}};
+const PK=['gam','ice'];
+const TYPES={
+  어르신:{n:38,wtp:{gam:[1800,3400],ice:[800,1800]}},
+  주민:{n:26,wtp:{gam:[1500,2900],ice:[1200,2500]}},
+  학생:{n:22,wtp:{gam:[600,1500],ice:[1400,2800]}},
+  관광객:{n:16,wtp:{gam:[2400,4800],ice:[2400,4400]}}
+};
+const GOOD=1.4;
+const QUAL=1.1;          // 좋은 재료는 보기에도 좋아 조금 더 낼 마음              // 좋은 재료 원가 배수
+const PACK={basic:{cost:0,eff:{}},pretty:{cost:300,eff:{관광객:1.35,주민:1.2,학생:1.12,어르신:1.08}}};
+const PROMOS={
+  insta:{name:'인스타',cost:10000,eff:{},reach:{학생:.4,관광객:.4}},     // 학생·관광객 10명 중 4명이 먼저 찾아옴
+  flyer:{name:'전단',cost:7000,eff:{},reach:{어르신:.35,주민:.35}},         // 어르신·주민 약 3명 중 1명이 먼저 찾아옴
+  taste:{name:'시식',cost:8000,eff:{어르신:1.05,주민:1.05,학생:1.05,관광객:1.05},reach:{}}
+};
+const SPOT_STEP=0;
+const PASS=[1,.9,.75,.75,.55,.5];   // 집터별로 손님이 지나가며 볼 확률
+const REACH_BONUS=700;        // 홍보를 보고 찾아온 손님은 그 가게를 조금 더 좋게 본다(원)
+const hf=(a,b,c)=>{const h=Math.sin(a*9137.1+b*71.3+c*13.7)*43758.5453;return h-Math.floor(h);};
+const TEMP=700;              // 손님 취향의 폭(원): 클수록 고르게 나뉨
+const EVENTS=[
+  {id:'normal',t:'평범한 장날',mul:{},wmul:{},cost:{}},
+  {id:'bus',t:'관광버스 도착! 관광객 2.5배',mul:{관광객:2.5},wmul:{},cost:{}},
+  {id:'cold',t:'찬 바람… 아이스홍시 인기 뚝',mul:{},wmul:{ice:.65},cost:{}},
+  {id:'fest',t:'청도 축제! 학생 2배',mul:{학생:2,주민:1.2},wmul:{},cost:{}},
+  {id:'gamup',t:'감 흉년, 감말랭이 원가 +300원',mul:{},wmul:{},cost:{gam:300}},
+  {id:'rain',t:'비 오는 날, 손님 40% 감소',mul:{어르신:.6,주민:.6,학생:.6,관광객:.6},wmul:{},cost:{}}
+];
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function pickEvents(seed){const r=rng(seed);const pool=EVENTS.slice(1);const out=[EVENTS[0]];for(let i=0;i<2;i++)out.push(pool.splice(Math.floor(r()*pool.length),1)[0]);return out;}
+function unitCost(ev,p,quality){return Math.round((PRODUCTS[p].cost+(ev.cost[p]||0))*(quality==='good'?GOOD:1))+0;}
+const CROWD=2.8;             // 손님 규모 (하루 약 290명)
+function crowd(ev){const o={};for(const k in TYPES)o[k]=Math.round(TYPES[k].n*CROWD*(ev.mul[k]||1));return o;}
+function planCost(ev,d){let c=d.bid||0;for(const p of PK)c+=d.p[p].qty*(unitCost(ev,p,d.quality)+PACK[d.pack].cost);for(const k of d.promo)c+=PROMOS[k].cost;return c;}
+function repEff(rep,conf){return 1+Math.max(-.1,Math.min(.18,(rep-3)*.1))*conf;}
+// teams: [{spot, p:{gam:{price,qty},ice:{...}}, quality, pack, promo:[], bid, rep, repConf}]
+function simulate(ev,teams,seed){
+  const r=rng(seed),c0=crowd(ev),fr=rng(seed*7+3),c={},list=[];let real=0,expect=0;
+  // 예상 손님은 미리 알려 주지만, 실제로는 종류마다 ±25% 안에서 더 오거나 덜 온다
+  for(const k in c0){c[k]=Math.round(c0[k]*(0.75+fr()*0.5));real+=c[k];expect+=c0[k];}
+  for(const k in c)for(let i=0;i<c[k];i++){const w={};for(const p of PK){const [a,b]=TYPES[k].wtp[p];w[p]=(a+(b-a)*r())*(ev.wmul[p]||1);}list.push({type:k,w,o:r()});}
+  list.sort((a,b)=>a.o-b.o);
+  const st=teams.map(t=>({left:{gam:t.p.gam.qty,ice:t.p.ice.qty},sold:{gam:0,ice:0},sales:0,face:[0,0,0,0],sat:[]}));
+  for(const cu of list){
+    let best=null;const seen=new Set(),opts=[];
+    teams.forEach((t,i)=>{
+      // 지나가며 볼지(자리) + 홍보를 보고 일부러 찾아올지
+      let came=false;t.promo.forEach((k,j)=>{const rc=PROMOS[k].reach[cu.type]||0;if(rc&&hf(cu.o,i+1,j+5)<rc)came=true;});
+      if(!came&&hf(cu.o,t.spot+11,3)>=PASS[t.spot])return;
+      let b=(PACK[t.pack].eff[cu.type]||1)*repEff(t.rep,t.repConf)*(t.quality==='good'?QUAL:1);for(const k of t.promo)b*=PROMOS[k].eff[cu.type]||1;
+      for(const p of PK){if(st[i].left[p]<=0)continue;const v=cu.w[p]*b,pr=t.p[p].price;
+        if(v>=pr)opts.push({i,p,v,u:v-pr+(came?REACH_BONUS:0)});else seen.add(i);}});
+    // 손님마다 취향이 달라, 비슷한 조건이면 여러 가게로 고르게 나뉜다 (차이가 클수록 좋은 곳에 몰림)
+    if(opts.length){const mx=Math.max(...opts.map(o=>o.u));let sum=0;opts.forEach(o=>{o.w=Math.exp((o.u-mx)/TEMP);sum+=o.w;});let bs=-1;for(const o of opts){const h=Math.sin(cu.o*9137.1+o.i*71.3+(o.p==='gam'?0:13.7))*43758.5453,s=o.w/(1+st[o.i].sold[o.p])*(1+(h-Math.floor(h))*.4);if(s>bs){bs=s;best=o;}}}
+    if(!best)seen.forEach(i=>st[i].face[3]++);
+    if(!best){cu.buy=-1;cu.face=seen.size?3:-1;continue;}
+    const t=teams[best.i],pr=t.p[best.p].price,ratio=pr/best.v,face=ratio<.6?0:ratio<.85?1:2;
+    cu.buy=best.i;cu.prod=best.p;cu.face=face;
+    const s=st[best.i];s.face[face]++;s.left[best.p]--;s.sold[best.p]++;s.sales+=pr;
+    s.sat.push(Math.max(1,Math.min(5,3+(t.quality==='good'?1.2:0)+[1,.4,-1][face])));
+  }
+  const res=teams.map((t,i)=>{const s=st[i],cost=planCost(ev,t),n=s.sat.length,star=n?s.sat.reduce((a,b)=>a+b,0)/n:null,waste=s.left.gam+s.left.ice;
+    return{...s,cost,profit:s.sales-cost,star,n,waste};});
+  return{list,res,real,expect};
+}
+// 무엇이 얼마나 통했나: 한 팀의 한 가지 선택만 빼고 같은 장날을 다시 돌려 비교한다
+function attribution(ev,teams,seed){const base=simulate(ev,teams,seed).res,n=teams.length,sold=x=>x.sold.gam+x.sold.ice;
+  return teams.map((t,i)=>{const out=[];const test=(label,mod)=>{const alt=teams.map((u,j)=>j===i?mod(JSON.parse(JSON.stringify(u))):u);const r=simulate(ev,alt,seed).res[i];out.push({label,dSold:sold(base[i])-sold(r),dProfit:base[i].profit-r.profit});};
+    if(t.spot<n-1)test('자리',u=>{u.spot=n-1;u.bid=0;return u;});
+    if(t.quality==='good')test('좋은 재료',u=>{u.quality='normal';return u;});
+    if(t.pack==='pretty')test('선물 포장',u=>{u.pack='basic';return u;});
+    t.promo.forEach(k=>test(PROMOS[k].name,u=>{u.promo=u.promo.filter(x=>x!==k);return u;}));
+    if(t.repConf>0&&Math.abs(t.rep-3)>.05)test('별점',u=>{u.rep=3;u.repConf=0;return u;});
+    return out;});}
+function nextRep(t,r){if(r.star==null)return{rep:t.rep,conf:t.repConf*.6};return{rep:t.rep*.4+r.star*.6,conf:Math.min(1,r.n/10)};}
+return{START,PRODUCTS,PK,TYPES,GOOD,PACK,PROMOS,EVENTS,SPOT_STEP,rng,pickEvents,unitCost,crowd,planCost,simulate,nextRep,repEff,attribution,PASS,REACH_BONUS};
+})();
+
+/* ===== 팀 태블릿 화면 ===== */
+(function(){
+const E=ENGINE,$=s=>document.querySelector(s),app=$('#app');
+const won=n=>Math.round(n).toLocaleString('ko-KR');
+const TCOL=['#E2622A','#2D6FB8','#2E8A5B','#8A55C9','#C99A12','#D2467A'];
+const TYPE_COL={어르신:'#8C7462',주민:'#3F8F8A',학생:'#2E3E66',관광객:'#E46D8C'};
+const FACES=[{say:'와, 싸다!',col:'#2E8A5B',lab:'아주 쌈'},{say:'좋아요',col:'#2D6FB8',lab:'만족'},{say:'좀 비싼데…',col:'#D88A1C',lab:'투덜'},{say:'너무 비싸요',col:'#C8402F',lab:'안 삼'}];
+const DAY=['첫째 날','둘째 날','셋째 날'],PN={gam:'감말랭이',ice:'아이스홍시'};
+const STEPS=[['open','장터 보기'],['meet','회의'],['auction','경매'],['decide','가게 준비'],['market','장 열기'],['result','결산']];
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const stars=v=>{const k=Math.round(v);return '★'.repeat(k)+'☆'.repeat(5-k);};
+
+/* 상태 */
+const S={code:'',token:'',me:-1,name:'',snap:null,plan:null,bid:null,tab:'crowd',view:null,draft:null,bidAmt:0,sentBid:null,sentPlan:null,fails:0,joinTeam:-1};
+const ev=()=>{const id=S.snap&&S.snap.events?S.snap.events[S.snap.day]:'normal';return E.EVENTS.find(e=>e.id===id)||E.EVENTS[0];};
+const myTeam=()=>S.snap&&S.snap.teams&&S.snap.teams[S.me]||null;
+const n=()=>S.snap&&S.snap.n||5;
+
+async function api(body){const r=await fetch('/api/jangnal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json().catch(()=>({ok:false,msg:'서버 응답이 이상해요'}));if(!j.ok){const e=new Error(j.msg||'오류');e.status=r.status;throw e;}return j;}
+function netWarn(msg){const el=$('#net');if(msg){el.textContent=msg;el.classList.add('on');}else el.classList.remove('on');}
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1800);}
+function save(){try{localStorage.setItem('jn-team',JSON.stringify({code:S.code,token:S.token,me:S.me,name:S.name,at:Date.now()}));}catch(_){}}
+function forget(){try{localStorage.removeItem('jn-team');}catch(_){}}
+
+/* ---------- 입장 ---------- */
+function joinScreen(err){S.view='join';
+  app.innerHTML=`<div class="join"><div class="maker"><span class="mk2"></span>따숨교육</div><h1>청도 <em>장날</em></h1><p class="sub" style="color:var(--ink3);margin:0 0 18px">선생님 화면에 뜬 방 코드 4자리를 넣고, 우리 팀을 고르세요.</p>
+   <input class="code" id="code" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="0000" value="${esc(S.code)}" autocomplete="off">
+   <div class="teamgrid" id="tg">${[...Array(5).keys()].map(i=>`<button data-i="${i}" style="--c:${TCOL[i]}" class="${S.joinTeam===i?'on':''}">${i+1}모둠</button>`).join('')}</div>
+   <input class="name" id="name" maxlength="12" placeholder="팀 이름 (안 적으면 ○모둠)" value="${esc(S.name)}">
+   <div class="err" id="err">${esc(err||'')}</div>
+   <button class="go" id="go" style="width:100%;font-size:18px;padding:14px">입장하기</button>
+   <div class="cr"><b>© 2026 따숨교육</b> · 청도 장날 놀이도시는 따숨교육이 기획·제작한 교육용 게임입니다. 무단 복제·배포·수정을 금합니다.</div></div>`;
+  $('#tg').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.joinTeam=+b.dataset.i;$('#tg').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));});
+  $('#go').onclick=async()=>{const code=$('#code').value.replace(/\D/g,'');S.name=$('#name').value.trim();S.code=code;
+    if(code.length!==4){$('#err').textContent='방 코드는 숫자 4자리예요.';return;}if(S.joinTeam<0){$('#err').textContent='우리 팀을 골라 주세요.';return;}
+    const b=$('#go');b.disabled=true;b.textContent='들어가는 중…';
+    try{const j=await api({a:'join',code,team:S.joinTeam,name:S.name});S.token=j.token;S.me=j.team;S.name=j.name;save();S.view=null;await poll();}
+    catch(e){joinScreen(e.message);}};}
+
+/* ---------- 화면 틀 ---------- */
+function frame(inner,{steps=true}={}){const t=myTeam(),sn=S.snap,k=STEPS.findIndex(s=>s[0]===sn.phase);
+  document.documentElement.style.setProperty('--team',TCOL[S.me]||'#E2622A');
+  app.innerHTML=`<div class="top"><div class="brand"><span class="mk"></span>청도 장날 ${sn.phase!=='lobby'&&sn.phase!=='title'?`<span>${DAY[sn.day]}</span>`:''}</div>
+   <div class="me"><i></i>${esc(t?t.name:S.name)}${t&&t.spot!=null?`<small>${t.spot+1}번 집터</small>`:''}</div></div>
+   ${steps&&k>=0?`<div class="steps">${STEPS.map(([,s],i)=>`<span class="${i===k?'on':i<k?'done':''}">${s}</span>`).join('')}</div>`:''}
+   ${sn.phase!=='lobby'&&sn.phase!=='title'&&sn.phase!=='awards'?`<div class="news"><i>오늘 소식</i><b>${esc(ev().t)}</b></div>`:''}
+   ${inner}<div class="copy">© 2026 따숨교육 · 방 ${esc(S.code)}</div>`;}
+
+/* ---------- 조사 자료 ---------- */
+const pct=v=>v>=.99?'거의 모두':'약 '+Math.round(v*100)+'%';
+function research(){const tabs=[['crowd','손님'],['spot','자리'],['promo','홍보'],['goods','상품']].concat(S.snap.day>0?[['prev','지난 장날']]:[]);if(!tabs.some(t=>t[0]===S.tab))S.tab='crowd';
+  return `<div class="card"><h3>조사 자료 <small style="font-weight:500;color:var(--ink3)">회의 때 근거로 쓰세요</small></h3><div class="tabs">${tabs.map(([k,nm])=>`<button data-tab="${k}" class="${S.tab===k?'on':''}">${nm}</button>`).join('')}</div><div id="tabbody">${({crowd:crowdHTML,spot:spotHTML,promo:promoHTML,goods:goodsHTML,prev:prevHTML})[S.tab]()}</div></div>`;}
+function bindTabs(){document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;render(true);});}
+function spotHTML(){const tot=Object.values(E.crowd(ev())).reduce((a,b)=>a+b,0);
+  return `<table class="crowd"><tr><th>집터</th><th>보는 손님</th><th>예상</th><th>자리값</th></tr>${[...Array(n()).keys()].map(s=>`<tr><td><b>${s+1}번</b> <span class="likes">${['입구 명당','입구길','마당','마당','골목 끝','골목'][s]}</span></td><td>${pct(E.PASS[s])}</td><td class="n">${Math.round(tot*E.PASS[s])}명</td><td>${s===n()-1?'무료':'비밀 입찰'}</td></tr>`).join('')}</table>
+   <p class="hint">홍보를 보고 일부러 찾아오는 손님은 자리와 상관없이 들러요.</p>`;}
+function promoHTML(){const c=E.crowd(ev());const P=E.PROMOS,reachN=k=>Object.entries(P[k].reach).reduce((a,[t,v])=>a+c[t]*v,0);
+  return `<table class="crowd"><tr><th>방법</th><th>비용</th><th>누구에게 · 효과</th></tr>
+   <tr><td><b>인스타</b></td><td>${won(P.insta.cost)}</td><td>학생·관광객의 약 ${Math.round(P.insta.reach.학생*100)}%가 먼저 찾아옴<span class="likes">오늘 약 ${Math.round(reachN('insta'))}명</span></td></tr>
+   <tr><td><b>전단</b></td><td>${won(P.flyer.cost)}</td><td>어르신·주민의 약 ${Math.round(P.flyer.reach.어르신*100)}%가 먼저 찾아옴<span class="likes">오늘 약 ${Math.round(reachN('flyer'))}명</span></td></tr>
+   <tr><td><b>시식</b></td><td>${won(P.taste.cost)}</td><td>들른 손님 모두 약 ${Math.round((P.taste.eff.어르신-1)*100)}% 더 내도 삼</td></tr></table>
+   <p class="hint">찾아온 손님도 값이 맞아야 사요. 다른 팀과 같은 홍보를 하면 손님이 나뉠 수 있어요.</p>`;}
+function goodsHTML(){const pk=E.PACK.pretty;
+  return `<table class="crowd"><tr><th></th><th>감말랭이</th><th>아이스홍시</th></tr>
+   <tr><td>보통 재료 원가</td><td class="n">${won(E.unitCost(ev(),'gam','normal'))}</td><td class="n">${won(E.unitCost(ev(),'ice','normal'))}</td></tr>
+   <tr><td>좋은 재료 원가</td><td class="n">${won(E.unitCost(ev(),'gam','good'))}</td><td class="n">${won(E.unitCost(ev(),'ice','good'))}</td></tr></table>
+   <table class="crowd" style="margin-top:6px"><tr><th>선물 포장 (개당 +${won(pk.cost)})</th><th>더 내도 사는 정도</th></tr>${Object.keys(E.TYPES).map(k=>`<tr><td><span class="who"><i style="background:${TYPE_COL[k]}"></i>${k}</span></td><td>약 ${Math.round((pk.eff[k]-1)*100)}%</td></tr>`).join('')}</table>
+   <p class="hint">좋은 재료는 손님이 약 10% 더 내도 사고, 별점이 올라 다음 날 손님이 더 와요.</p>`;}
+function prevHTML(){const s=S.snap.prevSum;if(!s)return '<p class="hint">아직 지난 장날이 없어요.</p>';
+  return `<p class="sub">${esc(s.ev)}</p><table class="crowd"><tr><th></th><th>평균 값</th><th>평균 판매율</th><th>다 팔린 가게</th></tr>${E.PK.map(p=>`<tr><td><b>${E.PRODUCTS[p].name}</b></td><td class="n">${won(s[p].avg)}</td><td>${s[p].rate}%</td><td>${s[p].out}곳</td></tr>`).join('')}</table>
+   <p class="hint">실제 손님 ${s.real}명 (예상 ${s.expect}명) · 가장 많이 남긴 팀: ${esc(s.best)}</p>`;}
+function crowdHTML(){const c=E.crowd(ev());const likes={어르신:'전단',주민:'전단 · 선물포장',학생:'인스타',관광객:'인스타 · 선물포장'};const tot=Object.values(c).reduce((a,b)=>a+b,0);
+  return `<p class="sub"><b>예상 손님 약 ${tot}명</b> · 실제로는 더 오거나 덜 올 수 있어요</p><table class="crowd"><tr><th>손님</th><th>예상</th><th>감말랭이</th><th>아이스홍시</th></tr>${
+   Object.keys(E.TYPES).map(k=>`<tr><td><span class="who"><i style="background:${TYPE_COL[k]}"></i>${k}</span><span class="likes">${likes[k]}</span></td><td class="n">${c[k]}</td>${E.PK.map(p=>{const [a,b]=E.TYPES[k].wtp[p],m=ev().wmul[p]||1;return `<td>${won(Math.round(a*m/100)*100)}~${won(Math.round(b*m/100)*100)}</td>`}).join('')}</tr>`).join('')}</table>
+   <div class="costs"><span>원가 · 감말랭이 <b>${won(E.unitCost(ev(),'gam','normal'))}</b></span><span>아이스홍시 <b>${won(E.unitCost(ev(),'ice','normal'))}</b></span></div>`;}
+
+/* ---------- 각 단계 ---------- */
+function lobby(){frame(`<div class="card"><h2>들어왔어요 👋</h2><p class="sub">선생님이 장터를 열면 이 화면이 저절로 바뀌어요.</p><div class="wait"><span class="dot"></span>기다리는 중…</div></div>
+  <div class="card"><h3>장날 규칙</h3><ul style="margin:0;padding-left:18px;font-size:14.5px;line-height:1.7"><li>날마다 모든 팀이 같은 밑천 <b>150,000원</b>으로 시작해요.</li><li>집터는 <b>비밀 입찰</b>로 정해요. 가장 높은 금액을 써낸 팀이 가져가요. 끝자리는 무료예요.</li><li>손님은 가격·재료·포장·홍보·별점·자리를 보고 하나씩만 사요.</li><li>팔고 남은 물건은 그날 모두 버려요.</li><li>오늘 손님의 후기(별점)가 내일 손님을 불러와요.</li><li>장날은 사흘. 가장 많이 남긴 팀이 이겨요.</li></ul></div>
+  <div style="text-align:center;margin-top:10px"><button class="line" id="leave">다른 팀으로 바꾸기</button></div>`,{steps:false});
+  $('#leave').onclick=async()=>{try{await api({a:'leave',code:S.code,token:S.token});}catch(_){}forget();S.token='';S.me=-1;joinScreen();};}
+
+function openOrMeet(){const meet=S.snap.phase==='meet';
+  frame(`<div class="card"><h2>${meet?'회의 시간':'장터를 살펴보세요'}</h2><p class="sub">${meet?'조사 자료를 보고 어느 집터에 얼마를 쓸지, 무엇을 얼마에 팔지 정해 두세요. 선생님이 경매를 시작하면 입찰 화면이 열려요.':'큰 화면의 장터와 아래 조사 자료를 보세요. 회의가 시작되면 알려 드릴게요.'}</p><div class="wait"><span class="dot"></span>${meet?'회의 중':'장터 보는 중'}</div></div>${research()}`);bindTabs();}
+
+function auction(){const t=myTeam(),a=S.snap.auction||{},spot=a.spot,done=a.done||[];
+  const hist=done.length?`<div class="card"><h3>개봉 결과</h3><div class="hist">${done.map(r=>`<div class="hrow ${r.winner===S.me?'me':''}"><b>${r.spot+1}번</b>${r.winner!=null?`<i style="background:${TCOL[r.winner]}"></i>${esc(S.snap.teams[r.winner].name)}<span class="amt">${won(r.amount)}원</span>`:'<span style="color:var(--ink3)">비어 있음</span>'}</div>`).join('')}</div></div>`:'';
+  if(t&&t.spot!=null){frame(`<div class="card"><h2>${t.spot+1}번 집터 확정</h2><p class="sub">${t.bid?won(t.bid)+'원에 낙찰됐어요.':'무료로 들어갔어요.'} 나머지 집터 경매가 끝나면 가게 준비로 넘어가요.</p><div class="wait"><span class="dot"></span>다른 팀 경매 진행 중</div></div>${hist}${research()}`);bindTabs();return;}
+  if(!a.open||typeof spot!=='number'){frame(`<div class="card"><h2>경매</h2><p class="sub">선생님이 개봉하는 중이에요. 큰 화면을 보세요.</p><div class="wait"><span class="dot"></span>개봉 중</div></div>${hist}${research()}`);bindTabs();return;}
+  const sent=S.bid&&typeof S.bid.amount==='number'?S.bid.amount:null;
+  if(S.bidKey!==S.snap.day+':'+spot){S.bidKey=S.snap.day+':'+spot;S.bidAmt=sent!=null?sent:0;}
+  const max=S.snap.start||E.START;
+  frame(`<div class="card"><div class="lot"><small>비밀 입찰</small><b>${spot+1}번 집터${spot===0?' · 명당':''}</b></div>
+   <p class="sub">얼마를 쓸지 몰래 정해서 보내세요. 가장 높은 팀이 가져가요. 0원이면 이번 집터는 포기예요. 개봉 전까지는 다시 보내서 바꿀 수 있어요.</p>
+   <div class="bigstep"><button id="m">−</button><output id="amt">${won(S.bidAmt)}원<small>${S.bidAmt?'밑천 '+won(max)+'원 중':'포기'}</small></output><button id="p">+</button></div>
+   <div class="quick">${[0,10000,20000,30000,50000].map(v=>`<button data-v="${v}">${v?won(v):'포기'}</button>`).join('')}</div>
+   ${sent!=null?`<div class="ok">✓ ${won(sent)}원 보냈어요<small>· 바꾸려면 금액을 고치고 다시 보내세요</small></div>`:''}
+   <div class="foot"><button class="go" id="send" style="font-size:17px;padding:14px 26px">${sent!=null?'다시 보내기':'입찰 보내기'}</button></div></div>${hist}${research()}`);bindTabs();
+  const draw=()=>{$('#amt').innerHTML=`${won(S.bidAmt)}원<small>${S.bidAmt?'밑천 '+won(max)+'원 중':'포기'}</small>`;};
+  $('#m').onclick=()=>{S.bidAmt=Math.max(0,S.bidAmt-5000);draw();};$('#p').onclick=()=>{S.bidAmt=Math.min(max,S.bidAmt+5000);draw();};
+  document.querySelectorAll('.quick button').forEach(b=>b.onclick=()=>{S.bidAmt=+b.dataset.v;draw();});
+  $('#send').onclick=async()=>{const b=$('#send');b.disabled=true;try{await api({a:'bid',code:S.code,token:S.token,day:S.snap.day,spot,amount:S.bidAmt});S.bid={amount:S.bidAmt};toast(S.bidAmt?won(S.bidAmt)+'원을 보냈어요':'포기로 보냈어요');render(true);}catch(e){toast(e.message);b.disabled=false;}};}
+
+function decide(){const t=myTeam();if(!t)return;
+  if(!S.draft||S.draftKey!==S.snap.day){S.draftKey=S.snap.day;const base=S.plan||S.lastPlan||{p:{gam:{price:2500,qty:15},ice:{price:2500,qty:10}},quality:'normal',pack:'basic',promo:[],note:''};S.draft={p:{gam:{...base.p.gam},ice:{...base.p.ice}},quality:base.quality,pack:base.pack,promo:(base.promo||[]).slice(),note:base.note||''};}
+  const d=S.draft,bid=t.bid||0,cost=E.planCost(ev(),{...d,bid}),left=E.START-cost,over=left<0,rev=E.PK.reduce((a,p)=>a+d.p[p].qty*d.p[p].price,0);
+  const uc=p=>E.unitCost(ev(),p,d.quality)+E.PACK[d.pack].cost;const itemCost=E.PK.reduce((a,p)=>a+d.p[p].qty*uc(p),0),fixedAll=bid+d.promo.reduce((a,k)=>a+E.PROMOS[k].cost,0);
+  const sent=S.plan?`<div class="ok">✓ 가게 준비를 보냈어요<small>· 선생님이 장을 열기 전까지는 고쳐서 다시 보낼 수 있어요</small></div>`:'';
+  frame(`<div class="card"><h2>가게 준비 <small style="font-size:14px;color:var(--ink3);font-weight:500">${t.spot+1}번 집터 · 다른 팀은 보지 않기</small></h2>
+   <div class="prods">${E.PK.map(p=>`<div class="prod"><div class="pn">${PN[p]}<small>1개 원가 ${won(uc(p))}원</small></div>
+     <div class="stp"><label>판매 가격</label><div class="stepper"><button data-a="${p}.price.-100">−</button><output>${won(d.p[p].price)}</output><button data-a="${p}.price.100">+</button></div></div>
+     <div class="stp"><label>준비 개수</label><div class="stepper"><button data-a="${p}.qty.-5">−</button><output>${d.p[p].qty}</output><button data-a="${p}.qty.5">+</button></div></div>${(()=>{const q=d.p[p].qty,pr=d.p[p].price;if(!q)return '<div class="be">이 상품은 팔지 않아요</div>';const share=fixedAll*(q*uc(p))/Math.max(1,itemCost),need=Math.ceil((q*uc(p)+share)/Math.max(1,pr));return need>q?`<div class="be bad">다 팔아도 손해예요 · 본전 ${need}개</div>`:`<div class="be"><b>${need}개</b> 이상 팔면 본전 (${q}개 중)</div>`;})()}</div>`).join('')}</div>
+   <div class="opts"><div class="opt"><h5>재료</h5><div class="chips"><button data-q="normal" class="${d.quality==='normal'?'on':''}">보통 재료<small>원가 그대로</small></button><button data-q="good" class="${d.quality==='good'?'on':''}">좋은 재료<small>원가 +40% · 별점 상승</small></button></div></div>
+    <div class="opt"><h5>포장</h5><div class="chips"><button data-k="basic" class="${d.pack==='basic'?'on':''}">기본 봉투<small>추가 비용 없음</small></button><button data-k="pretty" class="${d.pack==='pretty'?'on':''}">선물 포장<small>개당 +${won(E.PACK.pretty.cost)}원</small></button></div></div>
+    <div class="opt"><h5>홍보 · 여러 개 가능</h5><div class="chips">${Object.entries(E.PROMOS).map(([k,x])=>`<button data-m="${k}" class="${d.promo.includes(k)?'on':''}">${x.name}<small>${won(x.cost)}원</small></button>`).join('')}</div></div></div>
+   <label class="note"><span>오늘 우리 팀 전략 한 줄</span><input id="note" maxlength="40" placeholder="예) 관광객이 많으니 선물 포장으로 비싸게" value="${esc(d.note)}"></label>
+   <div class="wallet"><div class="nums"><span>밑천<b>${won(E.START)}</b></span><span>자리값<b>${won(bid)}</b></span><span>쓸 돈<b>${won(cost)}</b></span><span>남는 돈<b class="${over?'neg':''}">${won(left)}</b></span><span>다 팔면 매출<b>${won(rev)}</b></span></div>
+    <div class="bar ${over?'over':''}"><i style="width:${Math.min(100,cost/E.START*100)}%"></i></div></div>
+   ${sent}
+   <div class="foot">${over?`<span style="margin-right:auto;color:var(--bad);font-size:14px">${won(-left)}원 넘었어요. 개수를 줄이거나 선택을 빼 주세요.</span><button class="line" id="fit">개수 자동 맞추기</button>`:''}<button class="go" id="ok" ${over?'disabled':''} style="font-size:17px;padding:14px 26px">${S.plan?'고친 걸로 다시 보내기':'확정해서 보내기'}</button></div></div>${research()}`);bindTabs();
+  document.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const [p,f,v]=b.dataset.a.split('.');d.p[p][f]=Math.max(0,Math.min(f==='price'?9900:200,d.p[p][f]+ +v));render(true);});
+  document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{d.quality=b.dataset.q;render(true);});
+  document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{d.pack=b.dataset.k;render(true);});
+  document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const k=b.dataset.m;d.promo=d.promo.includes(k)?d.promo.filter(x=>x!==k):[...d.promo,k];render(true);});
+  const fit=$('#fit');if(fit)fit.onclick=()=>{let guard=200;while(guard--&&E.START<E.planCost(ev(),{...d,bid})){const p=d.p.gam.qty>=d.p.ice.qty?'gam':'ice';if(d.p.gam.qty+d.p.ice.qty===0)break;d.p[p].qty=Math.max(0,d.p[p].qty-5);}render(true);};
+  const ni=$('#note');ni.oninput=()=>{d.note=ni.value;};
+  $('#ok').onclick=async()=>{d.note=ni.value.trim();const b=$('#ok');b.disabled=true;try{await api({a:'plan',code:S.code,token:S.token,day:S.snap.day,d});S.plan=JSON.parse(JSON.stringify(d));toast('보냈어요. 선생님이 장을 열 때까지 기다려요');render(true);}catch(e){toast(e.message);b.disabled=false;}};}
+
+function market(){const t=myTeam(),lv=S.snap.live,s=lv&&lv.sold&&lv.sold[S.me]||{gam:0,ice:0},d=S.plan||{p:{gam:{qty:0},ice:{qty:0}}};
+  frame(`<div class="card"><h2>장이 열렸어요</h2><p class="sub">큰 화면에서 손님들이 장터를 돌아다녀요. 우리 가게에서 얼마나 팔리는지 보세요.</p>
+   <div class="live"><div><small>감말랭이</small><b>${s.gam}<span style="font-size:16px;color:var(--ink3)"> / ${d.p.gam.qty}</span></b></div><div><small>아이스홍시</small><b>${s.ice}<span style="font-size:16px;color:var(--ink3)"> / ${d.p.ice.qty}</span></b></div></div>
+   <div class="wait"><span class="dot"></span>손님 ${lv?lv.n:0} / ${lv?lv.all:'?'}명 지나감</div></div>`);}
+
+function result(){const t=myTeam(),P=(S.snap.pub||[])[S.snap.day];if(!P){frame(`<div class="card"><h2>결산 중</h2><div class="wait"><span class="dot"></span>장부를 정리하는 중</div></div>`);return;}
+  const r=P.res[S.me],teams=S.snap.teams,order=teams.map((x,i)=>i).sort((a,b)=>P.res[b].profit-P.res[a].profit),myRank=order.indexOf(S.me)+1,tot=teams.map((x,i)=>i).sort((a,b)=>teams[b].total-teams[a].total);
+  const strat=d=>[d.quality==='good'?'좋은 재료':'',d.pack==='pretty'?'선물 포장':'',...d.promo.map(k=>E.PROMOS[k].name)].filter(Boolean).map(x=>`<span class="pill">${x}</span>`).join('')||'<span class="pill">기본</span>';
+  frame(`<div class="card"><h2>${DAY[S.snap.day]} 우리 장부 <small style="font-size:14px;color:var(--ink3);font-weight:500">${esc(P.ev)} · 실제 손님 ${P.real}명 (예상 ${P.expect}명)</small></h2>
+   <div style="display:flex;align-items:baseline;gap:12px;margin:6px 0"><span class="big ${r.profit>=0?'pos':'neg'}">${r.profit>=0?'+':''}${won(r.profit)}원</span><span style="color:var(--ink3)">오늘 ${myRank}위 / ${teams.length}팀${r.auto?' · 컴퓨터가 대신 정했어요':''}</span></div>
+   <div class="kv"><div>매출<b>${won(r.sales)}</b></div><div>쓴 돈<b>${won(r.cost)}</b></div><div>후기<b>${r.star==null?'—':stars(r.star)}</b></div>
+    ${E.PK.map(p=>`<div>${PN[p]}<b>${r.d.p[p].qty?`${r.sold[p]}/${r.d.p[p].qty}개`:'—'}</b>${r.d.p[p].qty?won(r.d.p[p].price)+'원':''}</div>`).join('')}<div>버린 물건<b>${r.waste}개</b></div></div>
+   <div class="summ">${strat(r.d)}${r.d.note?`<span class="pill">“${esc(r.d.note)}”</span>`:''}</div>
+   <h3 style="margin-top:16px">손님 반응</h3><div class="summ">${r.face.map((x,k)=>`<span class="pill" style="border-left:4px solid ${FACES[k].col}">${FACES[k].lab} ${x}명</span>`).join('')}</div>
+   <h3 style="margin-top:16px">무엇이 통했나 <small style="font-weight:500;color:var(--ink3)">그 선택을 빼고 다시 돌려 본 차이</small></h3><div class="echips">${r.eff&&r.eff.length?r.eff.map(x=>`<span class="echip ${x.dProfit>0?'up':x.dProfit<0?'down':''}"><b>${esc(x.label)}</b>판매 ${x.dSold>0?'+':''}${x.dSold}개<em>${x.dProfit>0?'+':''}${won(x.dProfit)}원</em></span>`).join(''):'<span class="hint">특별한 선택 없음</span>'}</div></div>
+   <div class="card"><h3>오늘 순위</h3><div class="rank">${order.map((i,k)=>`<div class="${i===S.me?'me':''}"><span class="n">${k+1}</span><i style="background:${TCOL[i]}"></i>${esc(teams[i].name)} <small style="color:var(--ink3)">${teams[i].spot+1}번 · ${strat(P.res[i].d).replace(/<[^>]+>/g,' ').trim()}</small><b class="${P.res[i].profit>=0?'pos':'neg'}">${P.res[i].profit>=0?'+':''}${won(P.res[i].profit)}</b></div>`).join('')}</div>
+   <h3 style="margin-top:16px">사흘 합계</h3><div class="rank">${tot.map((i,k)=>`<div class="${i===S.me?'me':''}"><span class="n">${k+1}</span><i style="background:${TCOL[i]}"></i>${esc(teams[i].name)} <small style="color:var(--ink3)">${stars(teams[i].rep)}</small><b class="${teams[i].total>=0?'pos':'neg'}">${teams[i].total>=0?'+':''}${won(teams[i].total)}</b></div>`).join('')}</div></div>
+   <div class="card"><h3>오늘의 경제 이야기</h3>${(P.econ||[]).map(c=>`<div class="ecard"><span class="k">${esc(c.k)}</span><b>${esc(c.t)}</b><p>${esc(c.d)}</p></div>`).join('')}</div>
+   <div class="wait" style="padding:6px 4px"><span class="dot"></span>${S.snap.day<2?'선생님이 다음 장날을 열면 화면이 바뀌어요':'곧 시상식이에요'}</div>`);}
+
+function awards(){const teams=S.snap.teams,A=S.snap.awards||[];
+  frame(`<div class="card"><h2>청도 장날 시상식</h2><p class="sub">사흘 동안 수고했어요.</p><div class="awards">${A.map(a=>`<div class="award ${a.i===S.me?'me':''}"><span class="t">${esc(a.a)}상</span><span class="w" style="color:${TCOL[a.i]}">${esc(teams[a.i].name)}</span><span class="d">${esc(a.d)}</span></div>`).join('')}</div></div>
+   <div class="card"><h3>사흘 합계</h3><div class="rank">${teams.map((x,i)=>i).sort((a,b)=>teams[b].total-teams[a].total).map((i,k)=>`<div class="${i===S.me?'me':''}"><span class="n">${k+1}</span><i style="background:${TCOL[i]}"></i>${esc(teams[i].name)}<b class="${teams[i].total>=0?'pos':'neg'}">${teams[i].total>=0?'+':''}${won(teams[i].total)}</b></div>`).join('')}</div></div>
+   <div style="text-align:center;margin-top:14px"><button class="line" id="leave">처음 화면으로</button></div>`,{steps:false});
+  $('#leave').onclick=()=>{forget();S.token='';S.me=-1;S.snap=null;joinScreen();};}
+
+/* ---------- 그리기 · 받아오기 ---------- */
+let lastKey='';
+function render(force){if(!S.snap||S.me<0)return;const sn=S.snap;const t=myTeam();
+  // 사람 팀 자리가 아니면(컴퓨터가 맡은 자리) 안내
+  if(sn.phase!=='lobby'&&sn.phase!=='title'&&(!t||t.ai)){frame(`<div class="card"><h2>이번 장날에는 참가하지 못했어요</h2><p class="sub">선생님이 장터를 열 때 우리 팀이 들어와 있지 않아 컴퓨터가 맡았어요. 다음 판에 다시 들어와 주세요.</p><button class="line" id="leave">처음 화면으로</button></div>`,{steps:false});$('#leave').onclick=()=>{forget();S.token='';S.me=-1;S.snap=null;joinScreen();};return;}
+  const key=JSON.stringify([sn.phase,sn.day,sn.auction&&sn.auction.spot,sn.auction&&sn.auction.open,(sn.auction&&sn.auction.done||[]).length,sn.live,S.bid,S.plan&&S.plan.at,(sn.pub||[]).length,t&&t.spot,S.tab]);
+  const active=document.activeElement;const typing=active&&active.tagName==='INPUT'&&sn.phase==='decide';
+  if(!force&&key===lastKey)return;if(!force&&typing)return;lastKey=key;
+  window.scrollTo({top:sn.phase!==S.lastPhase?0:window.scrollY});S.lastPhase=sn.phase;
+  const fn=({lobby,title:lobby,open:openOrMeet,meet:openOrMeet,auction,decide,market,result,awards})[sn.phase]||lobby;fn();}
+
+async function poll(){if(!S.token)return;try{const j=await api({a:'poll',code:S.code,token:S.token});S.fails=0;netWarn('');S.me=j.me;S.snap=j.snap;
+    if(!S.plan||S.plan.at!==(j.plan&&j.plan.at))S.plan=j.plan;if(j.snap.phase!=='decide'){/* 장이 열리면 초안은 다음 날을 위해 비운다 */if(j.snap.phase==='market'&&S.draft){S.lastPlan=S.plan||S.draft;S.draft=null;}}
+    S.bid=j.bid;render();}
+  catch(e){if(e.status===403||e.status===404){forget();S.token='';S.me=-1;S.snap=null;joinScreen(e.message);return;}if(++S.fails>=3)netWarn('서버와 연결이 끊겼어요. 잠시 뒤 다시 이어져요.');}}
+setInterval(poll,1500);
+
+/* 시작: 전에 들어온 방이 있으면 이어서 */
+(function(){let r=null;try{r=JSON.parse(localStorage.getItem('jn-team')||'null');}catch(_){}
+  const q=new URLSearchParams(location.search);if(q.get('code'))S.code=q.get('code').replace(/\D/g,'').slice(0,4);
+  if(r&&r.token&&Date.now()-(r.at||0)<12*3600*1000){S.code=r.code;S.token=r.token;S.me=r.me;S.name=r.name||'';poll().then(()=>{if(!S.snap)joinScreen();});}
+  else joinScreen();})();
+})();
+</script>
+</body></html>
