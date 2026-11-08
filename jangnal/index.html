@@ -322,8 +322,9 @@ function simulate(ev,teams,seed){
     return{...s,cost,profit:s.sales-cost,star,n,waste};});
   return{list,res,real,expect,sellers};
 }
-function attribution(ev,teams,seed){const base=simulate(ev,teams,seed).res,n=teams.length,sold=x=>PK.reduce((a,p)=>a+x.sold[p],0);
-  return teams.map((t,i)=>{const out=[];const test=(label,mod)=>{const alt=teams.map((u,j)=>j===i?mod(JSON.parse(JSON.stringify(u))):u);const r=simulate(ev,alt,seed).res[i];out.push({label,dSold:sold(base[i])-sold(r),dProfit:base[i].profit-r.profit});};
+function attribution(ev,teams,seed){const B=simulate(ev,teams,seed),base=B.res,n=teams.length,sold=x=>PK.reduce((a,p)=>a+x.sold[p],0);
+  const byType=(list,i)=>{const o={};for(const k in TYPES)o[k]=0;list.forEach(c=>{if(c.buy===i)o[c.type]++;});return o;};
+  return teams.map((t,i)=>{const out=[],bt=byType(B.list,i);const test=(label,mod)=>{const alt=teams.map((u,j)=>j===i?mod(JSON.parse(JSON.stringify(u))):u);const A=simulate(ev,alt,seed),r=A.res[i],at=byType(A.list,i),dType={};for(const k in TYPES)dType[k]={d:bt[k]-at[k],base:at[k]};out.push({label,dSold:sold(base[i])-sold(r),dProfit:base[i].profit-r.profit,dType});};
     if(t.spot<n-1)test('자리',u=>{u.spot=n-1;u.bid=0;return u;});
     if(t.quality==='good')test('좋은 재료',u=>{u.quality='normal';return u;});
     if(t.pack==='pretty')test('선물 포장',u=>{u.pack='basic';return u;});
@@ -613,6 +614,18 @@ return API;
 .ed .wallet .nums{font-size:13px}
 .res .goods img{width:20px;height:20px}
 .res .tm,.res .goods span{white-space:nowrap}
+.why{display:grid;gap:10px}
+.wteam{background:var(--paper2);border-radius:14px;padding:12px 14px}
+.wteam .wh{display:flex;align-items:center;gap:8px}
+.wteam .wh .n{width:24px;height:24px;border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
+.wteam .wh i{width:11px;height:11px;border-radius:3px}
+.wteam .wh small{color:var(--ink3);font-size:12.5px}
+.wteam .wh .big{margin-left:auto;font-size:24px}
+.wteam ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+.wteam li{display:flex;align-items:center;gap:10px;background:#fff;border-radius:9px;padding:6px 10px;font-size:14px}
+.wteam li b{margin-left:auto;font-family:var(--serif);white-space:nowrap}
+.wteam li.up b{color:var(--good)}.wteam li.down b{color:var(--bad)}
+.wteam li.up{box-shadow:inset 3px 0 0 var(--good)}.wteam li.down{box-shadow:inset 3px 0 0 var(--bad)}
 @media (max-width:820px){.brief{grid-template-columns:1fr}.pcards{grid-template-columns:repeat(3,1fr)}.ed .opts{grid-template-columns:1fr}}
 </style>
 <script>
@@ -838,29 +851,31 @@ function result(){crowd.forEach(a=>W.scene.remove(a.m));crowd=[];tags.forEach(t=
     const rk=G.teams.slice().sort((a,b)=>b.total-a.total);G.teams.forEach(t=>t.ranks.push(rk.indexOf(t)+1));}
   updShopTags('result');W.view.all();
   frame(`<div class="lab">${DAY[G.day]} 결산</div><button class="go" id="open">장부</button>`);
-  const show=()=>{const last=G.day===2,rows=G.teams.map((t,i)=>({t,r:L.res[i]})).sort((a,b)=>b.r.profit-a.r.profit),tot=G.teams.slice().sort((a,b)=>b.total-a.total);
-    const strat=d=>[d.quality==='good'?'좋은 재료':'',d.pack==='pretty'?'선물 포장':'',...d.promo.map(k=>E.PROMOS[k].name)].filter(Boolean).map(x=>`<span class="pill">${x}</span>`).join('');
-    const s=sheet(`<h3>${DAY[G.day]} 장부 <small style="font-weight:500;color:var(--ink3);font-size:14px">${ev().t} · 손님 ${L.real}명</small></h3><div class="cols"><div style="overflow-x:auto"><table class="res"><tr><th>팀</th><th style="text-align:left">판 물건</th><th style="text-align:left">전략</th><th>손님</th><th>후기</th><th>이익</th></tr>${
-      rows.map(({t,r})=>`<tr><td><span class="tm"><i style="background:${t.col}"></i>${t.name}</span><small>${t.spot+1}번${t.bid?' · '+won(t.bid):''}</small></td>
-      <td style="text-align:left"><div class="goods">${picks(t.d).map(p=>`<span><img src="${P[p].img}" alt="">${P[p].short} ${won(t.d.p[p].price)} · ${r.sold[p]}/${t.d.p[p].qty}${L.sellers[p]===1?' <em style="font-style:normal;color:var(--gam)">독점</em>':''}</span>`).join('')}</div></td>
-      <td style="text-align:left">${strat(t.d)||'<span class="pill">기본</span>'}</td><td><div class="faces">${r.face.map((x,k)=>x?`<span title="${FACES[k].lab}">${faceHTML(k)}${x}</span>`:'').join('')}</div></td>
-      <td><span class="stars">${r.star==null?'—':stars(r.star)}</span></td><td class="big ${r.profit>=0?'pos':'neg'}">${r.profit>=0?'+':''}${won(r.profit)}</td></tr>`).join('')}</table></div>
+  const show=()=>{const last=G.day===2,rows=G.teams.map((t,i)=>({t,r:L.res[i],i})).sort((a,b)=>b.r.profit-a.r.profit),tot=G.teams.slice().sort((a,b)=>b.total-a.total);
+    const s=sheet(`<h3>${DAY[G.day]} 결산 <small style="font-weight:500;color:var(--ink3);font-size:14px">${ev().t} · 손님 ${L.real}명</small></h3>
+     <div class="cols"><div class="why">${rows.map(({t,r,i},k)=>`<div class="wteam"><div class="wh"><span class="n">${k+1}</span><i style="background:${t.col}"></i><b>${t.name}</b><small>${t.spot+1}번 · ${picks(t.d).map(p=>P[p].short).join('·')}</small><b class="big ${r.profit>=0?'pos':'neg'}">${r.profit>=0?'+':''}${won(r.profit)}</b></div>
+       <ul>${reasons(t,r,i).map(x=>`<li class="${x.c}"><span>${x.t}</span>${x.v!=null?`<b>${x.v>0?'+':''}${won(x.v)}</b>`:''}</li>`).join('')}</ul></div>`).join('')}</div>
      <div><h4 style="margin-bottom:10px">사흘 합계</h4><div class="rank">${tot.map((t,k)=>`<div><span class="n">${k+1}</span><span class="tm" style="display:flex;align-items:center;gap:8px;font-weight:700"><i style="width:10px;height:10px;border-radius:3px;background:${t.col}"></i>${t.name} <span class="stars" style="font-size:12px">${stars(t.rep)}</span></span><b class="${t.total>=0?'pos':'neg'}">${t.total>=0?'+':''}${won(t.total)}</b></div>`).join('')}</div></div></div>
-     <div class="econ" style="margin-top:18px">${econCards(L).map(c=>`<div class="ecard"><span class="k">${c.k}</span><b>${c.t}</b><p>${c.d}</p></div>`).join('')}</div>
-     <div class="effs" style="margin-top:14px">${rows.map(({t})=>{let ef=L.eff[G.teams.indexOf(t)];ef=ef.filter(x=>x.dProfit!==0);return ef.length?`<div class="eff"><span class="tm"><i style="background:${t.col}"></i>${t.name}</span><div class="echips">${ef.map(x=>`<span class="echip ${x.dProfit>0?'up':x.dProfit<0?'down':''}"><b>${x.label}</b>${x.dProfit>0?'+':''}${won(x.dProfit)}</span>`).join('')}</div></div>`:'';}).join('')}</div>
      <div class="foot"><button class="line" id="x">닫기</button><button class="go" id="n">${last?'시상식':DAY[G.day+1]}</button></div>`);
     s.querySelector('#x').onclick=()=>s.remove();s.querySelector('#n').onclick=()=>{s.remove();if(last)go('awards');else{G.day++;go('brief');}};};
   $('#open').onclick=show;show();}
-function econCards(L){const out=[],T2=G.teams;
-  const mono=T2.map((t,i)=>({t,ps:picks(t.d).filter(p=>L.sellers[p]===1),r:L.res[i]})).filter(x=>x.ps.length).sort((a,b)=>b.r.profit-a.r.profit)[0];
-  if(mono)out.push({k:'독점',t:`${P[mono.ps[0]].name}은 ${mono.t.name}만 팔았어요`,d:'비교할 가게가 없어 값이 높아도 팔렸어요.'});
-  PK.forEach(p=>{if(out.length>=3)return;const s=T2.map((t,i)=>({t,pr:t.d.p[p].price,q:t.d.p[p].qty,s:L.res[i].sold[p]})).filter(x=>x.q>0);if(s.length<2)return;s.sort((a,b)=>a.pr-b.pr);const lo=s[0],hi=s[s.length-1];if(hi.pr-lo.pr<300)return;
-    out.push({k:'경쟁',t:`${P[p].name}, ${s.length}팀이 같이 팔았어요`,d:`${lo.t.name} ${won(lo.pr)}원 → ${lo.s}/${lo.q}개, ${hi.t.name} ${won(hi.pr)}원 → ${hi.s}/${hi.q}개`});});
-  let worst=null;T2.forEach((t,i)=>{const r=L.res[i],q=PK.reduce((a,p)=>a+t.d.p[p].qty,0);if(q&&r.waste/q>=.3&&(!worst||r.waste>worst.w))worst={t,w:r.waste,q};});
-  if(worst&&out.length<3)out.push({k:'재고',t:`${worst.t.name}은 ${worst.w}개를 버렸어요`,d:'남은 물건도 다 돈이에요.'});
-  const nothing=L.list.filter(c=>c.buy<0&&c.face===-1).length;if(nothing>=15&&out.length<3)out.push({k:'기회',t:`손님 ${nothing}명이 그냥 갔어요`,d:'살 물건이 없거나 다 떨어졌어요.'});
-  if(!out.length)out.push({k:'시장',t:'비슷한 하루',d:'내일은 다른 선택을 해 볼까요?'});return out.slice(0,3);}
-
+function reasons(t,r,i){const L=G.last,out=[],ef=L.eff[i]||[],uc=p=>E.unitCost(ev(),p,t.d.quality)+E.PACK[t.d.pack].cost;
+  const who=(x,keys)=>{const ks=(keys||Object.keys(E.TYPES)).filter(k=>x.dType[k].d!==0).sort((a,b)=>Math.abs(x.dType[b].d)-Math.abs(x.dType[a].d)).slice(0,2);
+    return ks.map(k=>{const d=x.dType[k];const pc=d.base?Math.round(d.d/d.base*100):null;return `${k} ${d.d>0?'+':''}${d.d}명${pc!=null&&Math.abs(pc)<400?` (${pc>0?'+':''}${pc}%)`:''}`;}).join(', ');};
+  const soldOut=picks(t.d).some(p=>r.left[p]===0);
+  ef.forEach(x=>{if(x.dSold===0&&x.dProfit===0)return;let txt='';const w=who(x,x.label==='인스타'?['학생','관광객']:x.label==='전단'?['어르신','주민']:x.label==='선물 포장'?['관광객','주민']:null);
+    if(x.label==='자리')txt=`${t.spot+1}번 자리: 손님 ${x.dSold>0?'+':''}${x.dSold}명${t.bid?` · 자리값 ${won(t.bid)}원 빼면`:''}`;
+    else if(x.label==='별점')txt=`지난 후기 ${stars(t.rep)}: 손님 ${x.dSold>0?'+':''}${x.dSold}명`;
+    else txt=`${x.label}: ${w||`손님 ${x.dSold>0?'+':''}${x.dSold}명`}`;
+    if(x.dProfit<0&&x.dSold<=1&&soldOut&&['인스타','전단','시식','선물 포장','자리'].includes(x.label))txt+=' · 어차피 다 팔려서 돈만 씀';
+    out.push({t:txt,v:x.dProfit,c:x.dProfit>0?'up':x.dProfit<0?'down':''});});
+  picks(t.d).forEach(p=>{const d=t.d.p[p],left=r.left[p];
+    if(L.sellers[p]===1&&r.sold[p]>0)out.push({t:`${P[p].name} 독점: 비교할 가게 없음, ${r.sold[p]}/${d.qty}개`,c:'up'});
+    else if(L.sellers[p]>1){const others=G.teams.filter((u,j)=>j!==i&&u.d.p[p].qty>0);const cheaper=others.filter(u=>u.d.p[p].price<d.price).length;if(cheaper)out.push({t:`${P[p].name} 경쟁: ${cheaper}팀이 더 쌌음, ${r.sold[p]}/${d.qty}개`,c:'down'});else out.push({t:`${P[p].name} 경쟁: 우리가 가장 쌌음, ${r.sold[p]}/${d.qty}개`,c:'up'});}
+    if(left>0&&left/d.qty>=.25)out.push({t:`${P[p].short} ${left}개 남김`,v:-left*uc(p),c:'down'});
+    if(left===0&&d.qty>0)out.push({t:`${P[p].short} 다 팔림 — 더 준비했어도 팔렸을 수도`,c:''});});
+  if(r.face[3]>=8)out.push({t:`값이 비싸 돌아간 손님 ${r.face[3]}명`,c:'down'});
+  out.sort((a,b)=>Math.abs(b.v||0)-Math.abs(a.v||0));return out.slice(0,5);}
 /* ---------- 6. 시상 ---------- */
 function awards(){orbitOn=true;W.flyTo({dist:80,pitch:.6});const T2=G.teams,by=f=>T2.slice().sort((a,b)=>f(b)-f(a))[0];
   const best=by(t=>t.total),sat=by(t=>t.rep),thrift=by(t=>-t.waste),rise=by(t=>t.ranks[0]-t.ranks[2]),bid=T2.filter(t=>t.bidsTotal>0),hunt=bid.length?bid.slice().sort((a,b)=>b.total/b.bidsTotal-a.total/a.bidsTotal)[0]:null;
