@@ -756,8 +756,34 @@ function editor(i){const t=G.teams[i],d=JSON.parse(JSON.stringify(t.d));let want
   draw();}
 
 /* ---------- 3. 공개: 자리 + 물건 ---------- */
-function reveal(){G.teams.forEach(t=>{if(!t.ready){t.d=aiPlan(t);t.ready=true;}});
-  const R=E.resolveSpots(G.teams,G.n);G.teams.forEach((t,i)=>{t.spot=R.spot[i];t.bid=R.paid[i];t.bidsTotal+=t.bid;});
+/* 동점: 그 팀들만 재입찰(같거나 높게) → 그래도 같으면 동전 */
+function rebidSheet(sp,tied,amount){return new Promise(res=>{const bids={};tied.forEach(x=>bids[x.i]=amount);
+  const s=sheet('');const box=s.firstChild;
+  const draw=()=>{box.innerHTML=`<h3>${sp+1}번 집터 · 동점 ${won(amount)}원</h3><p class="sub">같은 금액을 써낸 팀만 다시 써내요. 같거나 더 높게.</p>
+    <div class="rev">${tied.map(x=>{const t=G.teams[x.i];return `<div class="row"><i style="background:${t.col}"></i><b>${t.name}</b><div class="stepper" style="margin-left:auto"><button data-i="${x.i}" data-v="-5000">−</button><output>${won(bids[x.i])}원</output><button data-i="${x.i}" data-v="5000">+</button></div></div>`;}).join('')}</div>
+    <div class="foot"><button class="go" id="ok">재입찰 확정</button></div>`;
+    box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;bids[i]=Math.max(amount,Math.min(E.START,bids[i]+ +b.dataset.v));draw();});
+    box.querySelector('#ok').onclick=()=>{s.remove();res(bids);};};draw();});}
+function coinSheet(sp,tied){return new Promise(res=>{const w=tied[Math.floor(Math.random()*tied.length)];
+  const s=sheet(`<h3>${sp+1}번 집터 · 또 동점!</h3><p class="sub">동전으로 정해요.</p>
+   <div style="display:flex;justify-content:center;gap:28px;margin:18px 0" id="coins">${tied.map(x=>{const t=G.teams[x.i];return `<div data-c="${x.i}" style="width:120px;height:120px;border-radius:50%;background:${t.col};color:#fff;display:grid;place-items:center;font-weight:700;font-size:20px;transition:transform .15s,opacity .4s">${t.name}</div>`;}).join('')}</div>
+   <div class="foot"><button class="go" id="flip">동전 던지기</button></div>`);
+  s.querySelector('#flip').onclick=()=>{const b=s.querySelector('#flip');b.disabled=true;const cs=[...s.querySelectorAll('[data-c]')];let k=0,n=0;
+    const iv=setInterval(()=>{cs.forEach((c,j)=>c.style.transform=j===k?'scale(1.18)':'scale(.9)');k=(k+1)%cs.length;n++;if(n>14+Math.floor(Math.random()*6)){clearInterval(iv);
+      cs.forEach(c=>{const win=+c.dataset.c===w.i;c.style.transform=win?'scale(1.25)':'scale(.8)';c.style.opacity=win?'1':'.3';});
+      b.disabled=false;b.textContent=G.teams[w.i].name+' 차지!';b.onclick=()=>{s.remove();res(w.i);};}},110);};});}
+async function resolveWithTies(){const n=G.n,teams=G.teams,spot=teams.map(()=>null),paid=teams.map(()=>0),log=[];
+  for(let sp=0;sp<n-1;sp++){let c=teams.map((t,i)=>({i,bid:t.bid||0,o:t.order||i})).filter(x=>spot[x.i]===null&&teams[x.i].want===sp&&x.bid>0);
+    const sortc=()=>c.sort((a,b)=>b.bid-a.bid||a.o-b.o);sortc();
+    if(c.length>1&&c[0].bid===c[1].bid){const tied=c.filter(x=>x.bid===c[0].bid);const re=await rebidSheet(sp,tied,c[0].bid);tied.forEach(x=>{x.bid=re[x.i];teams[x.i].bid=re[x.i];});sortc();
+      if(c[0].bid===c[1].bid){const tied2=c.filter(x=>x.bid===c[0].bid);const w=await coinSheet(sp,tied2);c=[c.find(x=>x.i===w),...c.filter(x=>x.i!==w)];}}
+    if(c.length){spot[c[0].i]=sp;paid[c[0].i]=c[0].bid;}log.push({s:sp,bids:c,winner:c.length?c[0].i:null});}
+  const free=[];for(let sp=0;sp<n;sp++)if(!spot.includes(sp))free.push(sp);
+  teams.map((t,i)=>({i,bid:t.bid||0,o:t.order||i})).filter(x=>spot[x.i]===null).sort((a,b)=>b.bid-a.bid||a.o-b.o).forEach(x=>{spot[x.i]=free.shift();});
+  return{spot,paid,log};}
+async function reveal(){G.teams.forEach(t=>{if(!t.ready){t.d=aiPlan(t);t.ready=true;}});
+  frame(`<div class="lab">공개 중</div>`);
+  const R=await resolveWithTies();G.teams.forEach((t,i)=>{t.spot=R.spot[i];t.bid=R.paid[i];t.bidsTotal+=t.bid;});
   G.teams.forEach((t,i)=>raiseShop(i));showPlotTags();W.view.all();showShopTags('goods');
   frame(`<div class="lab">자리 확정</div><button class="line" id="again">다시 보기</button><button class="go" id="next">장 열기</button>`);
   W.onPick=i=>W.view.plot(i);
