@@ -394,6 +394,7 @@ const PCOL=['#E2622A','#2D6FB8','#2E8A5B','#C99A12'];
 const G={players:[],cur:0,phase:'title',news:[],acts:[],t0:0,over:false,doubles:0};
 const cp=()=>G.players[G.cur];
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const shuffled=c=>{const idx=c.opts.map((_,i)=>i);for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}return{...c,opts:idx.map(i=>c.opts[i]),a:idx.indexOf(c.a)};};
 const networth=p=>p.cash+Object.keys(p.own).reduce((a,i)=>a+D.BOARD[i].price*(p.own[i].up?1.5:1),0);
 W.buildTiles(D.BOARD);
 
@@ -491,13 +492,13 @@ function land(p,dbl){const b=D.BOARD[p.pos];frame(`<span class="msg">${G.lastDic
 function info(h,txt,cb){const s=sheet(`<h3>${h}</h3><p style="font-size:16px">${txt}</p><div class="foot"><button class="go" id="ok">확인</button></div>`);s.querySelector('#ok').onclick=()=>{s.remove();cb();};}
 function bizCard(b){return`<div class="biz"><div class="ic" style="background:var(--${b.cat})">${b.cat}</div><div><div class="nm">${b.name}</div><div class="es">${b.esg}</div></div></div>`;}
 function landBiz(p,b,next){const idx=p.pos,owner=G.players.find(q=>q.own[idx]);
-  if(!owner){let disc=0,answered=false;const s=sheet('');const box=s.firstChild;
+  if(!owner){let disc=0,answered=false;const s=sheet('');const box=s.firstChild;const bq=b.q?shuffled(b):null;
     const draw=()=>{const price=Math.round(b.price*(1-disc)),can=p.cash>=price;
       box.innerHTML=`${bizCard(b)}<div class="fact"><b>ESG 포인트</b>${b.fact||b.esg}</div>
-       ${b.q?`<div class="card quiz" style="margin:10px 0"><h4 style="font-size:16px">알고 사면 10% 할인 · ${b.q}</h4><div class="qopts">${b.opts.map((o,i)=>`<button data-q="${i}" ${answered?'disabled':''} class="${answered&&i===b.a?'ok':''}">${o}</button>`).join('')}</div>${answered?`<p style="margin:8px 0 0;font-weight:700;color:${disc?'var(--good)':'var(--bad)'}">${disc?'정답! 10% 할인':'아쉬워요. 정가예요'}</p>`:''}</div>`:''}
+       ${bq?`<div class="card quiz" style="margin:10px 0"><h4 style="font-size:16px">알고 사면 10% 할인 · ${bq.q}</h4><div class="qopts">${bq.opts.map((o,i)=>`<button data-q="${i}" ${answered?'disabled':''} class="${answered&&i===bq.a?'ok':''}">${o}</button>`).join('')}</div>${answered?`<p style="margin:8px 0 0;font-weight:700;color:${disc?'var(--good)':'var(--bad)'}">${disc?'정답! 10% 할인':'아쉬워요. 정가예요'}</p>`:''}</div>`:''}
        <div class="kv"><span>구매가<b>${disc?`<s style="color:var(--ink3);font-size:14px">${fmt(b.price)}</s> `:''}${fmt(price)}</b></span><span>방문료<b>${fmt(b.rent)}</b></span><span>내 현금<b>${fmt(p.cash)}</b></span></div>
        <div class="foot"><button class="line" id="no">안 사요</button><button class="go" id="buy" ${can?'':'disabled'}>${can?'사기':'현금 부족'}</button></div>`;
-      box.querySelectorAll('[data-q]').forEach(bt=>bt.onclick=()=>{answered=true;disc=+bt.dataset.q===b.a?.1:0;draw();});
+      box.querySelectorAll('[data-q]').forEach(bt=>bt.onclick=()=>{answered=true;disc=+bt.dataset.q===bq.a?.1:0;draw();});
       box.querySelector('#no').onclick=()=>{s.remove();next();};
       box.querySelector('#buy').onclick=()=>{s.remove();p.cash-=price;p.own[idx]={up:false};raise(p,idx);pop(p,'−'+fmt(price),'minus');cashFx(p,-price);toast(`${b.name} 창업!`);checkWin(p)||next();};};
     draw();return;}
@@ -529,7 +530,7 @@ function applyFx(fx,p){fx.split(';').forEach(f=>{const [k,a,b]=f.split(':');cons
   if(k==='own'){const q=G.players.find(q=>q.own[a-1]);if(q)give(q,v);}});}
 
 /* 행동카드 · 미션 */
-function actionCard(p,next){if(!G.acts.length)G.acts=shuffle(D.ACTIONS.slice());const c=G.acts.pop();
+function actionCard(p,next){if(!G.acts.length)G.acts=shuffle(D.ACTIONS.slice());let c=G.acts.pop();if(c.kind==='quiz')c=shuffled(c);
   mission(p,c,ok=>{if(ok){if(c.kind==='quiz'){p.cash+=10000;pop(p,'+1억','plus');cashFx(p,10000);W.cheerAll();esgChange(p,1);toast('정답! 1억, ESG +1',2500);}else{p.cash+=20000;pop(p,'+2억','plus');cashFx(p,20000);W.cheerAll();G.players.forEach(q=>esgChange(q,1));toast('성공! 뽑은 사람 2억, 전원 ESG +1',2500);}}else toast(c.kind==='quiz'?'틀렸어요. 다음에 다시!':'아쉬워요. 다음에 다시!');checkWin(p)||next();});}
 function mission(p,c,cb){let left=45,iv;
   const s=sheet(c.kind==='quiz'?`<h3>행동카드 · 퀴즈</h3><p class="sub">모둠이 상의해서 45초 안에 고르세요 · 정답이면 1억, ESG +1</p><div class="tmr" id="tmr">45</div><div class="card quiz"><h4>${c.q}</h4><div class="qopts">${c.opts.map((o,i)=>`<button data-q="${i}">${o}</button>`).join('')}</div></div>`
