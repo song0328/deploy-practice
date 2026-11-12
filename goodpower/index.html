@@ -436,17 +436,17 @@ function start(){G.players=[...Array(n).keys()].map(i=>({i,name:(names[i]||'').t
   G.news=shuffle(D.NEWS.slice());G.acts=shuffle(D.ACTIONS.slice());G.cur=0;G.t0=Date.now();G.phase='play';W.spawnNPCs();beginTurn();}
 
 /* 턴 */
-function beginTurn(){const p=cp();p.upThisTurn=false;G.busy=false;
+function beginTurn(){const p=cp();p.upThisTurn=false;G.busy=false;G.turnId=(G.turnId||0)+1;G.ended=false;
   const w=W.tileWorld(p.pos);W.flyTo({tx:w.x*.12,tz:w.z*.12,dist:76});
   if(p.shortcut){p.shortcut=false;frame(`<span class="msg">전력망 지름길! 원하는 칸으로 가요</span><button class="go" id="pick">칸 고르기</button>`);$('#pick').onclick=()=>pickTile(p);return;}
-  frame(`${p.jail?`<span class="msg">점검소 ${p.jail}차례 남음 · 더블이면 출발</span>`:G.dblMsg?`<span class="msg dbl">더블! 한 번 더</span>`:`<span class="msg">주사위를 굴려요</span>`}<div class="dice"><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div></div><button class="go" id="roll">굴리기</button>${canUpgrade(p)?'<button class="gold" id="up">업그레이드</button>':''}`);
+  frame(`${p.jail?`<span class="msg">점검소 ${p.jail}차례 남음 · 더블이면 출발</span>`:G.dblMsg?`<span class="msg dbl">${(G.lastDice||'더블!')} 한 번 더</span>`:`<span class="msg">주사위를 굴려요</span>`}<div class="dice"><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div></div><button class="go" id="roll">굴리기</button>${canUpgrade(p)?'<button class="gold" id="up">업그레이드</button>':''}`);
   G.dblMsg=false;$('#roll').onclick=()=>roll();const u=$('#up');if(u)u.onclick=()=>upgradeSheet(p);}
 function canUpgrade(p){return !p.upThisTurn&&Object.keys(p.own).some(i=>!p.own[i].up&&p.cash>=D.BOARD[i].price/2);}
 function roll(){if(G.busy)return;G.busy=true;const p=cp();$('#roll').disabled=true;const dies=[...document.querySelectorAll('.die')];dies.forEach(d=>d.classList.add('roll'));
   let k=0;const iv=setInterval(()=>{dies.forEach(d=>d.dataset.v=1+Math.floor(Math.random()*6));if(++k>8){clearInterval(iv);const a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6);dies.forEach(d=>d.classList.remove('roll'));dies[0].dataset.v=a;dies[1].dataset.v=b;setTimeout(()=>afterRoll(a,b),500);}},90);}
 function afterRoll(a,b){const p=cp(),dbl=a===b;
   if(p.jail){if(dbl){p.jail=0;toast('더블! 점검소에서 출발');}else{p.jail--;toast(p.jail?'점검 중… 한 차례 쉬어요':'점검 끝. 다음 차례에 출발');endTurn(false);return;}}
-  if(dbl)G.doubles++;
+  if(dbl)G.doubles++;G.lastDice=`🎲 ${a}+${b}${dbl?' 더블!':''}`;
   move(p,a+b,true,()=>land(p,dbl));}
 function move(p,steps,income,done){let k=0;const hop=()=>{if(k>=steps){done();return;}const next=(p.pos+1)%32;p.pos=next;k++;
     if(next===0&&income){const inc=D.START_INCOME[p.esg];p.cash+=inc;pop(p,'+'+fmt(inc),'plus');cashFx(p,inc);toast(`출발점 통과! 운영 수익 ${fmt(inc)}`);}
@@ -458,7 +458,7 @@ function pickTile(p){const s=sheet(`<h3>전력망 지름길</h3><p class="sub">�
   s.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{s.remove();const to=+b.dataset.t;const steps=(to-p.pos+32)%32;move(p,steps,false,()=>land(p,false));});}
 
 /* 도착 */
-function land(p,dbl){const b=D.BOARD[p.pos];frame(`<span class="msg">${b.name}</span>`);
+function land(p,dbl){const b=D.BOARD[p.pos];frame(`<span class="msg">${G.lastDice?G.lastDice+' · ':''}${b.name}</span>`);
   const next=()=>endTurn(dbl);
   if(b.t==='start'){const inc=D.START_INCOME[p.esg];/* move()에서 이미 지급 */setTimeout(next,600);return;}
   if(b.t==='biz')return landBiz(p,b,next);
@@ -466,7 +466,7 @@ function land(p,dbl){const b=D.BOARD[p.pos];frame(`<span class="msg">${b.name}</
   if(b.t==='action')return actionCard(p,next);
   if(b.t==='practice')return mission(p,{kind:'teacher',h:'교실 절전 탐정',txt:'안 쓰는 전등이나 기기를 찾아요. 강사님 허락을 받고 끄거나, 끄는 동작을 해요.'},ok=>{if(ok){p.cash+=10000;pop(p,'+1억','plus');cashFx(p,10000);W.cheerAll();esgChange(p,1);}next();});
   if(b.t==='event'){if(b.kind==='shortcut'){p.shortcut=true;info('전력망 지름길',b.desc,next);}
-    else if(b.kind==='again'){info('바람 타고 한 번 더',b.desc,()=>{frame(`<span class="msg">한 번 더!</span><div class="dice"><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div></div><button class="go" id="roll">굴리기</button>`);G.busy=false;$('#roll').onclick=()=>{if(G.busy)return;G.busy=true;$('#roll').disabled=true;const dies=[...document.querySelectorAll('.die')];dies.forEach(d=>d.classList.add('roll'));setTimeout(()=>{const a=1+Math.floor(Math.random()*6),c=1+Math.floor(Math.random()*6);dies.forEach(d=>d.classList.remove('roll'));dies[0].dataset.v=a;dies[1].dataset.v=c;setTimeout(()=>move(p,a+c,true,()=>land(p,dbl)),400);},700);};});}
+    else if(b.kind==='again'){info('바람 타고 한 번 더',b.desc,()=>{frame(`<span class="msg">한 번 더!</span><div class="dice"><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div></div><button class="go" id="roll">굴리기</button>`);G.busy=false;$('#roll').onclick=()=>{if(G.busy)return;G.busy=true;$('#roll').disabled=true;const dies=[...document.querySelectorAll('.die')];dies.forEach(d=>d.classList.add('roll'));setTimeout(()=>{const a=1+Math.floor(Math.random()*6),c=1+Math.floor(Math.random()*6);dies.forEach(d=>d.classList.remove('roll'));dies[0].dataset.v=a;dies[1].dataset.v=c;G.lastDice=`🎲 ${a}+${c}${a===c?' 더블!':''}`;if(a===c)G.doubles++;setTimeout(()=>move(p,a+c,true,()=>land(p,a===c)),400);},700);};});}
     else if(b.kind==='fund'){const ps=G.players.slice().sort((x,y)=>networth(y)-networth(x));const top=ps[0],bot=ps[ps.length-1];
       if(ps.length>1&&networth(top)!==networth(ps[1])&&networth(bot)!==networth(ps[ps.length-2])&&top!==bot){const amt=Math.min(2000,top.cash);top.cash-=amt;bot.cash+=amt;cashFx(top,-amt,bot);info('지역 상생 기금',`순자산 1위 ${top.name}이 최하위 ${bot.name}에게 ${fmt(amt)}을 지원해요.`,next);}
       else info('지역 상생 기금','동률이라 이번엔 생략해요.',next);}
@@ -527,7 +527,7 @@ function mission(p,c,cb){let left=45,iv;
 
 /* 턴 끝 · 승리 */
 function endTurn(dbl){const p=cp();refreshDock();
-  if(G.over)return;
+  if(G.over||G.ended)return;G.ended=true;
   if(dbl&&!p.jail&&G.doubles<3){G.dblMsg=true;toast('더블! '+p.name+' 한 번 더 굴려요',2200);setTimeout(()=>{beginTurn();},700);return;}
   G.cur=(G.cur+1)%G.players.length;G.doubles=0;G.dblMsg=false;setTimeout(beginTurn,500);}
 function checkWin(p){if(G.over)return false;if(networth(p)>=D.GOAL){endGame('goal',p);return true;}return false;}
