@@ -1,0 +1,417 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="착한전력 주식회사 — ESG 10억 챌린지. 태양과 바람으로 전기를 만들고 ESG 실천으로 회사를 키우는 교실용 보드게임 (따숨교육)"><meta name="robots" content="noindex">
+<title>착한전력 주식회사 · ESG 10억 챌린지</title>
+<meta name="author" content="따숨교육"><meta name="copyright" content="© 2026 따숨교육. All rights reserved.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--ink:#1C2A22;--ink2:#4A5A50;--ink3:#86948A;--paper:#FBF7EC;--paper2:#F1EBDC;--rule:#DCD3BE;--green:#1E4D3A;--green2:#2E6B4F;--gold:#C9A24A;--E:#3E7A4F;--S:#2F5A80;--G:#6E4A8C;--news:#2F5A80;--act:#9B3E2E;--ev:#6E4A8C;--good:#2E8A5B;--bad:#C8402F;--serif:"Gowun Batang",serif;--sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color-scheme:light}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden}
+body{background:#0F2B20;color:var(--ink);font-family:var(--sans);font-size:15px;-webkit-font-smoothing:antialiased}
+#c3d{position:fixed;inset:0;display:block}
+#tags{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.tag{position:absolute;left:0;top:0;will-change:transform;pointer-events:none}
+.tag .lab{background:rgba(251,247,236,.94);border-radius:8px;padding:3px 7px;font-size:11px;font-weight:700;color:var(--ink);white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.2);text-align:center;line-height:1.25}
+.tag .lab small{display:block;font-weight:500;color:var(--ink3);font-size:10px}
+.tag .lab.corner{font-size:12px;background:var(--green);color:#FBF7EC}
+.tag .lab.corner small{color:#C9D6CC}
+.tag .lab.title{background:transparent;box-shadow:none;padding:0}
+.tag .pop{background:var(--ink);color:#fff;border-radius:10px;padding:6px 10px;font-size:14px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.tag .pop.plus{background:var(--good)}.tag .pop.minus{background:var(--bad)}
+#ui{position:fixed;inset:0;pointer-events:none}
+#ui>*{pointer-events:auto}
+.panel{background:rgba(251,247,236,.96);border-radius:16px;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+button{font:inherit;border:0;border-radius:12px;padding:10px 16px;background:var(--paper2);color:var(--ink);cursor:pointer;font-weight:700;touch-action:manipulation}
+button:active{transform:translateY(1px)}
+button.go{background:var(--green2);color:#fff}
+button.gold{background:var(--gold);color:var(--ink)}
+button.line{background:transparent;border:1.5px solid var(--rule)}
+button.danger{background:#F5E1DC;color:var(--bad)}
+button:disabled{opacity:.4;cursor:not-allowed}
+/* 상단 */
+.top{position:absolute;left:12px;right:12px;top:10px;display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:8px;padding:8px 14px;font-family:var(--serif);font-size:18px;color:var(--green)}
+.brand .mk{width:12px;height:12px;background:var(--gold);transform:rotate(45deg);border-radius:3px}
+.brand small{font-family:var(--sans);font-size:12px;color:var(--ink3);font-weight:500}
+.clock{margin-left:auto;padding:8px 16px;font-family:var(--serif);font-size:22px;letter-spacing:.04em}
+.clock.low{color:var(--bad)}
+.goal{padding:8px 14px;font-size:13px;color:var(--ink2)}
+.goal b{font-family:var(--serif);font-size:16px;color:var(--green)}
+/* 플레이어 */
+.players{position:absolute;left:12px;top:64px;display:grid;gap:6px;width:230px}
+.pl{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:8px 12px;border-radius:14px;background:rgba(251,247,236,.92);box-shadow:0 2px 8px rgba(0,0,0,.2);font-size:13px;transition:transform .2s}
+.pl.on{transform:translateX(6px);box-shadow:0 0 0 3px var(--gold),0 2px 8px rgba(0,0,0,.2)}
+.pl i{width:14px;height:14px;border-radius:5px;background:var(--c)}
+.pl b{display:block;font-size:14px}
+.pl small{color:var(--ink3);display:block}
+.pl .cash{font-family:var(--serif);font-size:15px;text-align:right;white-space:nowrap}
+.pl .g{display:inline-block;width:20px;height:20px;border-radius:6px;background:var(--green);color:#fff;font-size:12px;font-weight:700;text-align:center;line-height:20px;margin-right:4px}
+.pl .g.D{background:#555}.pl .g.C{background:#6B7A70}.pl .g.B{background:#4B8A5A}.pl .g.A{background:#2E6B4F}.pl .g.S{background:var(--gold);color:var(--ink)}
+/* 하단 */
+.dock{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:10px 14px;max-width:calc(100vw - 24px)}
+.dock .who{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;padding-right:6px}
+.dock .who i{width:14px;height:14px;border-radius:5px;background:var(--c)}
+.dock .msg{color:var(--ink2);font-size:14px;max-width:360px}
+.dice{display:flex;gap:6px}
+.die{width:44px;height:44px;border-radius:10px;background:#fff;box-shadow:inset 0 0 0 2px var(--rule);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px}
+.die i{border-radius:50%;background:var(--ink);opacity:0}
+.die[data-v="1"] i:nth-child(5),.die[data-v="2"] i:nth-child(3),.die[data-v="2"] i:nth-child(7),.die[data-v="3"] i:nth-child(3),.die[data-v="3"] i:nth-child(5),.die[data-v="3"] i:nth-child(7),.die[data-v="4"] i:nth-child(1),.die[data-v="4"] i:nth-child(3),.die[data-v="4"] i:nth-child(7),.die[data-v="4"] i:nth-child(9),.die[data-v="5"] i:nth-child(1),.die[data-v="5"] i:nth-child(3),.die[data-v="5"] i:nth-child(5),.die[data-v="5"] i:nth-child(7),.die[data-v="5"] i:nth-child(9),.die[data-v="6"] i:nth-child(1),.die[data-v="6"] i:nth-child(3),.die[data-v="6"] i:nth-child(4),.die[data-v="6"] i:nth-child(6),.die[data-v="6"] i:nth-child(7),.die[data-v="6"] i:nth-child(9){opacity:1}
+.die.roll{animation:shake .12s infinite}
+@keyframes shake{0%{transform:rotate(-8deg) translateY(-2px)}50%{transform:rotate(8deg) translateY(2px)}100%{transform:rotate(-8deg)}}
+.cam{position:absolute;right:12px;bottom:14px;display:grid;grid-template-columns:repeat(3,36px);gap:4px;padding:6px}
+.cam button{padding:0;height:36px;font-size:16px}
+/* 시트 */
+.scrim{position:fixed;inset:0;background:rgba(15,43,32,.55);display:grid;place-items:center;z-index:20;padding:14px}
+.sheet{width:min(640px,100%);max-height:calc(100vh - 28px);overflow:auto;padding:22px 24px}
+.sheet h3{font-family:var(--serif);font-size:24px;margin:0 0 4px}
+.sheet .sub{color:var(--ink3);font-size:14px;margin:0 0 14px}
+.sheet .foot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.card{border-radius:14px;padding:16px 18px;margin:8px 0}
+.card.news{background:#E8EFF5;border-left:6px solid var(--news)}
+.card.act{background:#F7E8E3;border-left:6px solid var(--act)}
+.card.quiz{background:#EFE8F5;border-left:6px solid var(--G)}
+.card h4{margin:0 0 6px;font-size:18px}
+.card p{margin:0;font-size:16px;line-height:1.55}
+.card .fx{margin-top:10px;font-weight:700;color:var(--green)}
+.tmr{font-family:var(--serif);font-size:48px;text-align:center;margin:8px 0;color:var(--act)}
+.tmr.low{color:var(--bad)}
+.qopts{display:grid;gap:8px;margin-top:10px}
+.qopts button{text-align:left;background:#fff;padding:12px 14px;font-size:16px}
+.qopts button.ok{background:#DDF1E4;color:var(--good)}.qopts button.no{background:#F7DCD6;color:var(--bad)}
+.biz{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.biz .ic{width:64px;height:64px;border-radius:14px;display:grid;place-items:center;color:#fff;font-family:var(--serif);font-size:28px}
+.biz .nm{font-size:20px;font-weight:700}
+.biz .es{color:var(--ink2);font-size:14px}
+.kv{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
+.kv span{font-size:12.5px;color:var(--ink3)}.kv b{display:block;font-family:var(--serif);font-size:18px;color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:10px}
+.grid button{display:grid;gap:2px;padding:10px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--rule);text-align:left}
+.grid button small{font-weight:500;color:var(--ink3);font-size:11px}
+.grid button.on{box-shadow:inset 0 0 0 2.5px var(--green2);background:#E8F2EC}
+.grid button.done{opacity:.5}
+.rank div{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--rule);font-size:16px}
+.rank .n{width:28px;height:28px;border-radius:50%;background:var(--paper2);display:grid;place-items:center;font-weight:700;font-size:13px}
+.rank i{width:12px;height:12px;border-radius:4px}
+.rank b{margin-left:auto;font-family:var(--serif);font-size:18px}
+.rank div.win{background:#FFF6DD;margin:0 -10px;padding:10px;border-radius:10px}
+/* 시작 */
+.hero{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 28px));padding:26px 28px;text-align:center}
+.hero .maker{font-size:13px;color:var(--ink3);display:flex;justify-content:center;align-items:center;gap:6px}
+.hero .maker .mk2{width:9px;height:9px;background:var(--gold);transform:rotate(45deg);border-radius:2px}
+.hero .en{font-family:var(--serif);letter-spacing:.3em;color:var(--gold);font-size:12px;margin-top:10px}
+.hero h1{font-family:var(--serif);font-size:44px;margin:4px 0 0;color:var(--green);line-height:1.1}
+.hero h2{font-size:18px;color:var(--gold);margin:4px 0 10px;font-weight:700}
+.hero p{color:var(--ink2);margin:0 0 14px;font-size:15px}
+.seg{display:inline-flex;background:var(--paper2);border-radius:12px;padding:3px;gap:2px}
+.seg button{padding:8px 14px;background:transparent}.seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.names{display:grid;gap:6px;margin:12px 0}
+.names label{display:flex;align-items:center;gap:8px}
+.names i{width:14px;height:14px;border-radius:5px;flex:none}
+.names input{flex:1;font:inherit;padding:8px 10px;border:1.5px solid var(--rule);border-radius:10px;background:#fff;outline:none}
+.names input:focus{border-color:var(--green2)}
+.hero .row{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.rules{display:grid;gap:6px;text-align:left}
+.rule{display:grid;grid-template-columns:130px 1fr;gap:10px;padding:8px 10px;background:var(--paper2);border-radius:10px;font-size:14px}
+.rule b{color:var(--green)}
+.cr{font-size:11px;color:var(--ink3);margin-top:14px;line-height:1.5}
+.copy{position:fixed;right:12px;top:10px;font-size:11px;color:#9FB5A8;pointer-events:none}
+.toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:15px;z-index:30;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+@media (max-width:760px){.players{width:170px;font-size:12px}.pl .cash{font-size:13px}.dock .msg{display:none}.goal{display:none}.hero h1{font-size:34px}}
+</style></head><body>
+<canvas id="c3d"></canvas><div id="tags"></div><div id="ui"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ===== 판 · 카드 데이터 (금액 단위: 만 원) =====
+const DATA=(function(){
+const GRADES=['D','C','B','A','S'];
+const START_INCOME=[5000,10000,12500,15000,20000];
+const START_CASH=20000, GOAL=100000, TIME_MIN=25;
+// cat: E 환경, S 사회, G 지배구조, news, action, event, start, practice, check
+const BOARD=[
+ {i:1,t:'start',name:'창업 출발점',desc:'한 바퀴 돌아 지나거나 도착하면 등급별 운영 수익'},
+ {i:2,t:'biz',cat:'E',name:'텀블러 카페',price:10000,rent:2000,esg:'다회용 컵 회수'},
+ {i:3,t:'biz',cat:'S',name:'우리 동네 식당',price:10000,rent:2000,esg:'주방 노동자 폭염 쉼터'},
+ {i:4,t:'action',name:'행동카드'},
+ {i:5,t:'biz',cat:'E',name:'절전 편의점',price:10000,rent:2000,esg:'냉장 진열대 문 설치'},
+ {i:6,t:'news',name:'뉴스카드'},
+ {i:7,t:'biz',cat:'G',name:'그린 배송몰',price:10000,rent:2000,esg:'포장 감축 실적 공개'},
+ {i:8,t:'biz',cat:'E',name:'수리·새활용 가게',price:10000,rent:2000,esg:'수리 부품 재사용'},
+ {i:9,t:'action',name:'행동카드'},
+ {i:10,t:'biz',cat:'S',name:'전기 배달 회사',price:15000,rent:3000,esg:'라이더 휴식 보장'},
+ {i:11,t:'practice',name:'교실 절전 탐정',desc:'안 쓰는 전등을 찾고 허락을 받아 끄거나 끄는 동작 → 1억'},
+ {i:12,t:'biz',cat:'E',name:'전기 버스 차고지',price:15000,rent:3000,esg:'피크 시간 충전 분산'},
+ {i:13,t:'news',name:'뉴스카드'},
+ {i:14,t:'biz',cat:'E',name:'학교 햇빛 발전소',price:15000,rent:3000,esg:'옥상 태양광 확대',gen:true},
+ {i:15,t:'biz',cat:'E',name:'고효율 조명 공장',price:15000,rent:3000,esg:'LED 조명 교체'},
+ {i:16,t:'event',kind:'shortcut',name:'전력망 지름길',desc:'다음 차례에 원하는 칸으로. 이동 중 출발 수익은 없어요'},
+ {i:17,t:'biz',cat:'E',name:'햇빛 발전 회사',price:15000,rent:3000,esg:'주차장 태양광 설치',gen:true},
+ {i:18,t:'action',name:'행동카드'},
+ {i:19,t:'biz',cat:'G',name:'스마트 계량기 회사',price:15000,rent:3000,esg:'절전량과 측정 기준 공개'},
+ {i:20,t:'news',name:'뉴스카드'},
+ {i:21,t:'biz',cat:'S',name:'배터리 생산 공장',price:20000,rent:4000,esg:'작업자 안전 교육'},
+ {i:22,t:'biz',cat:'E',name:'에너지저장센터',price:20000,rent:4000,esg:'남는 전기 저장',gen:true},
+ {i:23,t:'check',name:'전력망 점검소',desc:'D로 떨어진 사람만 이동. 최대 두 차례 정지. 더블이면 즉시 출발'},
+ {i:24,t:'biz',cat:'S',name:'바다 바람 발전소',price:20000,rent:4000,esg:'어민과 설치 위치 협의',gen:true},
+ {i:25,t:'action',name:'행동카드'},
+ {i:26,t:'biz',cat:'E',name:'전기차 충전소',price:20000,rent:4000,esg:'한산한 시간 충전 할인'},
+ {i:27,t:'news',name:'뉴스카드'},
+ {i:28,t:'biz',cat:'G',name:'지역 전력 회사',price:20000,rent:4000,esg:'전력 공급원별 비중 공개'},
+ {i:29,t:'event',kind:'again',name:'바람 타고 한 번 더',desc:'주사위를 다시 굴려 이동하고 도착 칸 행동'},
+ {i:30,t:'biz',cat:'G',name:'그린 데이터센터',price:20000,rent:4000,esg:'전기·냉각수 사용량 공개'},
+ {i:31,t:'event',kind:'fund',name:'지역 상생 기금',desc:'순자산 1위가 최하위에 현금 최대 2,000만 지원. 동률이면 생략'},
+ {i:32,t:'news',name:'뉴스카드'},
+];
+// 뉴스카드: fx(game, me) 로 적용. txt는 소리 내어 읽는 뉴스
+const NEWS=[
+ {h:'폭염 경보! 전기 사용 급증',txt:'한낮 기온 36도. 전력 수요가 올해 최고치를 기록했어요. 발전소를 가진 회사는 전기를 많이 팔았어요.',fx:'gen:+2000'},
+ {h:'태양광 보조금 확대',txt:'정부가 태양광·절전 설비에 보조금을 늘렸어요. 환경(E) 사업마다 지원금이 들어와요.',fx:'cat:E:+1000'},
+ {h:'전기요금 인상',txt:'연료값이 올라 전기요금이 올랐어요. 모든 회사가 전기요금을 더 내요.',fx:'all:-1000'},
+ {h:'ESG 우수기업 선정',txt:'우리 회사가 올해의 ESG 우수기업으로 뽑혔어요! 등급이 올라요.',fx:'esg:+1'},
+ {h:'탄소 배출 과태료',txt:'탄소를 많이 배출한 회사에 과태료가 부과됐어요. ESG 등급이 가장 낮은 회사가 내요.',fx:'lowest:-2000'},
+ {h:'재생에너지 투자 열풍',txt:'재생에너지 회사에 투자가 몰려요. 우리 회사에도 투자금이 들어왔어요.',fx:'me:+3000'},
+ {h:'그린워싱 적발',txt:'친환경인 척만 한 회사가 적발됐어요. 우리 회사도 보고서를 다시 써야 해요. 등급이 내려가요.',fx:'esg:-1'},
+ {h:'노동자 안전 캠페인',txt:'일하는 사람을 지키는 회사가 칭찬받았어요. 사회(S) 사업마다 지원금이 들어와요.',fx:'cat:S:+1500'},
+ {h:'데이터센터 전기 소비 논란',txt:'인공지능 때문에 데이터센터 전기 사용이 크게 늘었어요. 그린 데이터센터 주인은 전기 절약 상을 받아요.',fx:'own:30:+3000'},
+ {h:'전기차 100만 대 돌파',txt:'전기차가 늘어 충전소마다 줄을 서요. 전기차 충전소 주인은 큰돈을 벌어요.',fx:'own:26:+3000'},
+ {h:'전국 절전 캠페인 성공',txt:'모두가 함께 전기를 아껴 발전소를 덜 돌렸어요. 모든 회사가 절약한 돈을 받아요.',fx:'all:+1000'},
+ {h:'겨울 한파',txt:'난방으로 전기가 많이 쓰여요. 모두 난방비를 내고, 에너지저장센터 주인은 저장해 둔 전기를 팔아요.',fx:'all:-500;own:22:+2500'},
+ {h:'지역 축제 전력 공급',txt:'지역 축제에 전기를 안정적으로 공급했어요. 지역 전력 회사 주인이 감사패와 보너스를 받아요.',fx:'own:28:+2000'},
+ {h:'정보 공개 우수 회사',txt:'사용량과 비중을 투명하게 공개한 회사가 상을 받았어요. 지배구조(G) 사업마다 상금이 들어와요.',fx:'cat:G:+1500'},
+ {h:'해상풍력 어민 상생 협약',txt:'바다 바람 발전소가 어민과 협약을 맺어 칭찬받았어요. 주인은 보너스를 받아요.',fx:'own:24:+2000'},
+ {h:'정전 사고',txt:'낡은 전력망이 고장 나 잠깐 정전됐어요. 수리비를 모두가 조금씩 나눠 내요.',fx:'all:-800'},
+];
+// 행동카드: 모둠 전원이 함께, 강사가 성공 여부 결정 (kind: body/teacher/quiz)
+const ACTIONS=[
+ {kind:'body',h:'온도 1도',txt:'겨울이면 히터를 1도 낮추고, 여름이면 에어컨을 1도 올려요. (강사님 허락 받고!)'},
+ {kind:'body',h:'쓰레기 사냥',txt:'모둠 전원이 교실 바닥에 떨어진 쓰레기를 하나씩 주워 버려요.'},
+ {kind:'body',h:'대기전력 찾기',txt:'꽂혀만 있는 충전기나 안 쓰는 전원을 하나 찾아요. 뽑을지는 강사님께 여쭤봐요.'},
+ {kind:'body',h:'몸으로 발전!',txt:'모둠 전원이 제자리에서 스쿼트 10번! 우리 몸이 발전기예요.'},
+ {kind:'body',h:'태양과 바람',txt:'모둠 전원이 창문 쪽을 가리키며 "태양과 바람으로 전기를!"이라고 외쳐요.'},
+ {kind:'body',h:'다시 쓰기',txt:'모둠 전원이 다시 쓸 수 있는 물건(텀블러, 이면지 등)을 하나씩 들어 보여요.'},
+ {kind:'body',h:'다 같이 만세!',txt:'모둠 전원이 일어나서 "착한 전력 만세!" 세 번 외쳐요.'},
+ {kind:'teacher',h:'감사 인사',txt:'모둠 전원이 일어나 강사님께 "감사합니다!"를 크게 외쳐요.'},
+ {kind:'teacher',h:'ESG 설명',txt:'모둠원이 한 명씩 강사님께 E·S·G가 각각 무엇인지 말씀드려요. (환경·사회·지배구조)'},
+ {kind:'teacher',h:'오늘 배운 것',txt:'모둠원이 한 명씩 오늘 배운 것을 한 가지씩 강사님께 말씀드려요.'},
+ {kind:'teacher',h:'하이파이브',txt:'모둠 전원이 강사님과 하이파이브! 그리고 "우리 회사 화이팅!"'},
+ {kind:'quiz',h:'퀴즈',q:'ESG의 E는 무엇일까요?',opts:['환경 (Environment)','에너지 (Energy)','경제 (Economy)'],a:0},
+ {kind:'quiz',h:'퀴즈',q:'태양광 발전은 무엇으로 전기를 만들까요?',opts:['햇빛','뜨거운 물','석탄'],a:0},
+ {kind:'quiz',h:'퀴즈',q:'플러그를 꽂아만 둬도 새는 전기를 뭐라고 할까요?',opts:['대기전력','정전','누전'],a:0},
+ {kind:'quiz',h:'퀴즈',q:'냉장고 문을 자주 열면 전기는?',opts:['더 많이 쓴다','덜 쓴다','똑같다'],a:0},
+ {kind:'quiz',h:'퀴즈',q:'풍력 발전기가 전기를 만들려면 무엇이 필요할까요?',opts:['바람','비','눈'],a:0},
+ {kind:'quiz',h:'퀴즈',q:'ESG의 S는 무엇일까요?',opts:['사회 (Social)','과학 (Science)','태양 (Sun)'],a:0},
+ {kind:'quiz',h:'퀴즈',q:'여름에 에어컨 온도를 1도 올리면?',opts:['전기를 아낀다','전기를 더 쓴다','상관없다'],a:0},
+];
+return{GRADES,START_INCOME,START_CASH,GOAL,TIME_MIN,BOARD,NEWS,ACTIONS};
+})();
+
+/* ===== 3D 판 ===== */
+const W3=(function(){
+const T=THREE,cv=document.getElementById('c3d'),R=new T.WebGLRenderer({canvas:cv,antialias:true});R.setPixelRatio(Math.min(2,devicePixelRatio));R.shadowMap.enabled=true;R.shadowMap.type=T.PCFSoftShadowMap;
+const scene=new T.Scene();scene.background=new T.Color('#0F2B20');scene.fog=new T.Fog('#0F2B20',90,170);
+const cam=new T.PerspectiveCamera(42,1,.1,400);
+scene.add(new T.HemisphereLight('#FFF6E0','#2E4A3A',.75));const sun=new T.DirectionalLight('#FFF3D6',1.0);sun.position.set(30,60,25);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-45,right:45,top:45,bottom:-45,near:1,far:150});scene.add(sun);
+const M=(c,o={})=>new T.MeshLambertMaterial({color:c,...o});
+const box=(w,h,d,c,x=0,y=0,z=0)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),M(c));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;return m;};
+// 바닥
+const ground=new T.Mesh(new T.PlaneGeometry(400,400),M('#143A2B'));ground.rotation.x=-Math.PI/2;ground.position.y=-.2;ground.receiveShadow=true;scene.add(ground);
+const spinners=[];
+const base=box(44,.6,44,'#1E4D3A',0,-.3,0);scene.add(base);
+const inner=box(27.6,.1,27.6,'#F4EEDD',0,.08,0);scene.add(inner);
+// 가운데 장식: 작은 도시 + 풍력 + 나무
+(function(){const g=new T.Group();const hs=[1.4,2.2,1.8,2.8,2.0,1.5,2.4,1.7];
+  hs.forEach((h,i)=>{const col=['#D9E7DC','#C7DBCC','#E6EFE8'][i%3];const b=box(1.5,h,1.5,col,-5.25+(i%4)*3.5,h/2+.1,4+Math.floor(i/4)*2.6);g.add(b);const r=box(1.6,.12,1.6,'#5E9E6E',b.position.x,h+.16,b.position.z);g.add(r);if(i%2)g.add(box(1,.05,.7,'#2B4C7E',b.position.x,h+.25,b.position.z));});
+  for(const x of [-10,10]){const p=box(.22,6,.22,'#E8EEEA',x,3,-4);g.add(p);const nac=box(.5,.4,.9,'#E8EEEA',x,6,-4);g.add(nac);const hub=new T.Group();hub.position.set(x,6,-3.5);for(let k=0;k<3;k++){const bl=box(.2,2.6,.08,'#F4F7F5',0,1.3,0);const w=new T.Group();w.rotation.z=k*2.094;w.add(bl);hub.add(w);}hub.userData.spin=true;g.add(hub);}
+  for(let i=0;i<8;i++){const x=-11+i*3.1,z=-9.5;const tr=box(.2,.8,.2,'#7A5A3A',x,.4,z);g.add(tr);const lf=new T.Mesh(new T.SphereGeometry(.7,7,6),M(['#4E9960','#3F8A52'][i%2]));lf.position.set(x,1.2,z);lf.castShadow=true;g.add(lf);}
+  scene.add(g);g.traverse(o=>{if(o.userData.spin)spinners.push(o);});})();
+// 칸 좌표
+const CAT_COL={E:'#3E7A4F',S:'#2F5A80',G:'#6E4A8C',news:'#2F5A80',action:'#9B3E2E',event:'#6E4A8C',start:'#9B3E2E',practice:'#3E7A4F',check:'#243B31'};
+const TILES=[];
+function tilePos(idx){const side=Math.floor(idx/8),k=idx%8;const c=17,s=12;
+  if(side===0)return{x:k===0?c:s-(k-1)*4,z:c,rot:0,corner:k===0};
+  if(side===1)return{x:-c,z:k===0?c:s-(k-1)*4,rot:Math.PI/2,corner:k===0};
+  if(side===2)return{x:k===0?-c:-s+(k-1)*4,z:-c,rot:Math.PI,corner:k===0};
+  return{x:c,z:k===0?-c:-s+(k-1)*4,rot:-Math.PI/2,corner:k===0};}
+function buildTiles(BOARD){BOARD.forEach((b,i)=>{const p=tilePos(i),g=new T.Group();g.position.set(p.x,0,p.z);g.rotation.y=p.rot;
+  const col=CAT_COL[b.cat||b.t]||'#888';
+  if(p.corner){g.add(box(6,.35,6,'#FBF7EC',0,.17,0));g.add(box(6,.12,6,col,0,.4,0).translateY(0));g.children[1].scale.set(.92,1,.92);}
+  else{g.add(box(3.9,.35,6,'#FBF7EC',0,.17,0));g.add(box(3.9,.14,1.3,col,0,.42,2.35));}
+  scene.add(g);TILES.push({g,p,b,col});});}
+function tileWorld(i,ox=0,oz=0){const t=TILES[i],v=new T.Vector3(ox,0,oz).applyAxisAngle(new T.Vector3(0,1,0),t.p.rot);return{x:t.p.x+v.x,z:t.p.z+v.z};}
+// 말
+function makeToken(col){const g=new T.Group();const body=new T.Mesh(new T.CylinderGeometry(.42,.5,1.1,10),M(col));body.position.y=.95;body.castShadow=true;g.add(body);
+  const head=new T.Mesh(new T.SphereGeometry(.4,10,8),M('#F6D9B8'));head.position.y=1.85;head.castShadow=true;g.add(head);
+  const hat=new T.Mesh(new T.CylinderGeometry(.44,.44,.22,10),M(col));hat.position.y=2.12;g.add(hat);const brim=new T.Mesh(new T.CylinderGeometry(.6,.6,.06,10),M(col));brim.position.y=2.02;g.add(brim);
+  const eyes=new T.Mesh(new T.BoxGeometry(.34,.06,.06),M('#2A2A2A'));eyes.position.set(0,1.9,.36);g.add(eyes);g.scale.setScalar(1.35);scene.add(g);return g;}
+// 건물
+function makeBuilding(cat,col,owner,up){const g=new T.Group();const c={E:'#5E9E6E',S:'#5A86B0',G:'#9070B0'}[cat]||'#999';
+  const w=2.2,d=2.2,h=up?2.6:1.5;g.add(box(w,h,d,'#F7F2E4',0,h/2+.4,0));
+  const roof=new T.Mesh(new T.ConeGeometry(1.75,.9,4),M(c));roof.rotation.y=Math.PI/4;roof.position.y=h+.85;roof.castShadow=true;g.add(roof);
+  for(let i=0;i<(up?2:1);i++)for(let j=0;j<2;j++){const win=box(.4,.45,.05,'#FFE9A8',-.5+j*1,.9+i*1.1,d/2+.03);g.add(win);}
+  if(cat==='E'||up){const pan=box(1.2,.06,.8,'#2B4C7E',0,h+1.32,0);pan.rotation.x=-.35;g.add(pan);}
+  if(up){const p=box(.12,2.4,.12,'#E8EEEA',1.4,h+1.5,0);g.add(p);const hub=new T.Group();hub.position.set(1.4,h+2.7,0);for(let k=0;k<3;k++){const bl=box(.08,1.1,.04,'#F4F7F5',0,.55,0);const ww=new T.Group();ww.rotation.z=k*2.094;ww.add(bl);hub.add(ww);}hub.userData.spin=true;spinners.push(hub);g.add(hub);}
+  const pole=box(.08,1.6,.08,'#444',-1.5,1.2,-.9);g.add(pole);const flag=box(.7,.4,.05,owner,-1.15,1.8,-.9);g.add(flag);
+  g.position.y=0;return g;}
+// 카메라
+const want={yaw:.35,pitch:1.0,dist:80,tx:0,tz:0},cur={...want};
+function place(){const c=cur;cam.position.set(c.tx+Math.sin(c.yaw)*Math.cos(c.pitch)*c.dist,Math.sin(c.pitch)*c.dist,c.tz+Math.cos(c.yaw)*Math.cos(c.pitch)*c.dist);cam.lookAt(c.tx,0,c.tz);}
+function flyTo(o){Object.assign(want,o);}
+function resize(){const w=innerWidth,h=innerHeight;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}addEventListener('resize',resize);resize();
+const tickers=[];let last=performance.now();
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+  for(const k in want)cur[k]+=(want[k]-cur[k])*Math.min(1,dt*4);place();spinners.forEach(s=>s.rotation.z+=dt*2.2);
+  for(let i=tickers.length-1;i>=0;i--){if(tickers[i](dt)===false)tickers.splice(i,1);}
+  R.render(scene,cam);requestAnimationFrame(loop);}requestAnimationFrame(loop);
+function project(x,y,z){const v=new T.Vector3(x,y,z).project(cam);return{x:(v.x+1)/2*innerWidth,y:(1-v.y)/2*innerHeight,vis:v.z<1};}
+return{T,scene,cam,TILES,buildTiles,tilePos,tileWorld,makeToken,makeBuilding,flyTo,want,tickers,project,box};
+})();
+
+/* ===== 게임 ===== */
+(function(){
+const D=DATA,W=W3,T=W.T,$=s=>document.querySelector(s),ui=$('#ui'),tagsEl=$('#tags');
+const PCOL=['#E2622A','#2D6FB8','#2E8A5B','#C99A12'];
+const fmt=n=>{const neg=n<0;n=Math.abs(Math.round(n));const e=Math.floor(n/10000),m=n%10000;let s=e?e+'억':'';if(m||!e)s+=(e?' ':'')+m.toLocaleString('ko-KR')+'만';return(neg?'−':'')+s;};
+const G={players:[],cur:0,phase:'title',news:[],acts:[],t0:0,over:false,doubles:0};
+const cp=()=>G.players[G.cur];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const networth=p=>p.cash+Object.keys(p.own).reduce((a,i)=>a+D.BOARD[i].price*(p.own[i].up?1.5:1),0);
+W.buildTiles(D.BOARD);
+
+/* 이름표 */
+const tags=new Set();
+function addTag(html,cls,pos,life){const el=document.createElement('div');el.className='tag';el.innerHTML=`<div class="${cls}">${html}</div>`;tagsEl.appendChild(el);const t={el,pos,life};tags.add(t);return t;}
+W.tickers.push(dt=>{tags.forEach(t=>{const p=typeof t.pos==='function'?t.pos():t.pos,s=W.project(p.x,p.y,p.z);t.el.style.display=s.vis?'':'none';t.el.style.transform=`translate(${s.x}px,${s.y}px) translate(-50%,-100%)`;if(t.life!=null){t.life-=dt;t.el.style.opacity=Math.min(1,t.life);if(t.life<=0){t.el.remove();tags.delete(t);}}});});
+D.BOARD.forEach((b,i)=>{const p=W.tileWorld(i,0,b.t==='biz'?-.6:0);const corner=W.TILES[i].p.corner;
+  addTag(`${b.name}${b.t==='biz'?`<small>${fmt(b.price)}</small>`:''}`,'lab'+(corner?' corner':''),{x:p.x,y:.9,z:p.z});});
+addTag('<div style="font-family:var(--serif);font-size:22px;color:#1E4D3A;letter-spacing:.02em">착한전력 주식회사</div><small style="letter-spacing:.25em;color:#C9A24A;font-weight:700">GOOD POWER COMPANY</small>','lab title',{x:0,y:.4,z:-1});
+function pop(p,txt,cls){const x=p.tok.position.x,z=p.tok.position.z;let age=0;const t=addTag(txt,'pop '+cls,()=>({x,y:3.2+age,z}),2);W.tickers.push(dt=>{age+=dt*.9;return tags.has(t);});}
+
+/* UI 틀 */
+function toast(t,ms=1800){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),ms);}
+function sheet(html){const s=document.createElement('div');s.className='scrim';s.innerHTML=`<div class="panel sheet">${html}</div>`;document.body.appendChild(s);return s;}
+function clockTxt(){const left=Math.max(0,D.TIME_MIN*60-Math.floor((Date.now()-G.t0)/1000));return Math.floor(left/60)+':'+String(left%60).padStart(2,'0');}
+function frame(dock){const p=cp();
+  ui.innerHTML=`<div class="top"><div class="panel brand"><span class="mk"></span>착한전력 주식회사<small>ESG 10억 챌린지</small></div><div class="panel goal">목표 <b>${fmt(D.GOAL)}</b> · 현금 + 사업</div><div class="panel clock" id="clock">${clockTxt()}</div></div>
+  <div class="players">${G.players.map((q,i)=>`<div class="pl ${i===G.cur?'on':''}" style="--c:${q.col}"><i></i><div><b>${q.name}</b><small><span class="g ${D.GRADES[q.esg]}">${D.GRADES[q.esg]}</span>사업 ${Object.keys(q.own).length}곳${q.jail?' · 점검 중':''}</small></div><div class="cash">${fmt(q.cash)}</div></div>`).join('')}</div>
+  <div class="panel dock" id="dock"><div class="who" style="--c:${p.col}"><i></i>${p.name}</div>${dock}</div>
+  <div class="panel cam"><button id="c1">↺</button><button id="c2">＋</button><button id="c3">↻</button><button id="c4">⌂</button><button id="c5">－</button><button id="c6">▣</button></div><div class="copy">© 2026 따숨교육</div>`;
+  $('#c1').onclick=()=>W.flyTo({yaw:W.want.yaw+.5});$('#c3').onclick=()=>W.flyTo({yaw:W.want.yaw-.5});$('#c2').onclick=()=>W.flyTo({dist:Math.max(20,W.want.dist*.75)});$('#c5').onclick=()=>W.flyTo({dist:Math.min(110,W.want.dist*1.3)});$('#c4').onclick=()=>W.flyTo({yaw:.35,pitch:1.0,dist:80,tx:0,tz:0});$('#c6').onclick=()=>W.flyTo({pitch:1.4,dist:70,tx:0,tz:0});}
+setInterval(()=>{const c=$('#clock');if(!c||G.phase==='title'||G.over)return;c.textContent=clockTxt();c.classList.toggle('low',Date.now()-G.t0>(D.TIME_MIN-3)*60000);if(Date.now()-G.t0>=D.TIME_MIN*60000)endGame('time');},500);
+
+/* 시작 화면 */
+let n=4,names=['1번','2번','3번','4번'];
+function title(){G.phase='title';
+  ui.innerHTML=`<div class="panel hero"><div class="maker"><span class="mk2"></span>따숨교육</div><div class="en">GOOD POWER COMPANY</div><h1>착한전력 주식회사</h1><h2>ESG 10억 챌린지</h2><p>태양과 바람으로 전기를 만들고, ESG 실천으로 회사를 키워요!</p>
+   <div class="seg" id="nseg">${[2,3,4].map(k=>`<button data-n="${k}" class="${k===n?'on':''}">${k}명</button>`).join('')}</div>
+   <div class="names" id="names"></div>
+   <div class="row"><button class="line" id="rules">규칙</button><button class="go" id="start">회사 세우기</button></div>
+   <div class="cr"><b>© 2026 따숨교육</b> · 착한전력 주식회사는 따숨교육이 기획·제작한 교육용 게임입니다. 무단 복제·배포·수정을 금합니다.</div></div><div class="copy">© 2026 따숨교육</div>`;
+  const drawNames=()=>{$('#names').innerHTML=[...Array(n).keys()].map(i=>`<label><i style="background:${PCOL[i]}"></i><input maxlength="8" value="${names[i]}" data-i="${i}" placeholder="이름"></label>`).join('');$('#names').querySelectorAll('input').forEach(inp=>inp.oninput=()=>{names[+inp.dataset.i]=inp.value;});};drawNames();
+  document.querySelectorAll('#nseg button').forEach(b=>b.onclick=()=>{n=+b.dataset.n;document.querySelectorAll('#nseg button').forEach(x=>x.classList.toggle('on',x===b));drawNames();});
+  $('#rules').onclick=showRules;$('#start').onclick=()=>start();}
+function showRules(){const s=sheet(`<h3>규칙</h3><div class="rules">
+  <div class="rule"><b>시작</b><span>개인당 2억, ESG C 등급</span></div>
+  <div class="rule"><b>이동</b><span>주사위 2개. 더블이면 한 번 더</span></div>
+  <div class="rule"><b>사업</b><span>빈 사업은 사고, 남의 사업은 방문료를 내요. 부족하면 가진 현금만</span></div>
+  <div class="rule"><b>업그레이드</b><span>내 차례에 사업 1곳, 구매가의 절반. 방문료 +50%, ESG +1</span></div>
+  <div class="rule"><b>출발점</b><span>지나거나 도착하면 ESG 등급별 운영 수익 (D 5,000만 ~ S 2억)</span></div>
+  <div class="rule"><b>행동카드</b><span>모둠 전원 45초 미션. 강사님이 성공을 확인하면 뽑은 사람 2억, 전원 ESG +1</span></div>
+  <div class="rule"><b>ESG D</b><span>전력망 점검소로 이동, 최대 두 차례 정지. 더블이면 즉시 출발</span></div>
+  <div class="rule"><b>승리</b><span>현금 + 사업 구매가가 10억이면 승리. 25분 뒤엔 최고액</span></div></div>
+  <div class="foot"><button class="go" id="ok">알겠어요</button></div>`);s.querySelector('#ok').onclick=()=>s.remove();}
+function start(){G.players=[...Array(n).keys()].map(i=>({i,name:(names[i]||'').trim()||(i+1)+'번',col:PCOL[i],cash:D.START_CASH,esg:1,pos:0,own:{},jail:0,shortcut:false,upThisTurn:false,tok:W.makeToken(PCOL[i])}));
+  G.players.forEach((p,i)=>{const w=W.tileWorld(0,-1.2+(i%2)*2.4,-1.2+Math.floor(i/2)*2.4);p.tok.position.set(w.x,0,w.z);});
+  G.news=shuffle(D.NEWS.slice());G.acts=shuffle(D.ACTIONS.slice());G.cur=0;G.t0=Date.now();G.phase='play';beginTurn();}
+
+/* 턴 */
+function beginTurn(){const p=cp();p.upThisTurn=false;G.doubles=0;
+  const w=W.tileWorld(p.pos);W.flyTo({tx:w.x*.3,tz:w.z*.3,dist:66});
+  if(p.shortcut){p.shortcut=false;frame(`<span class="msg">전력망 지름길! 원하는 칸으로 가요</span><button class="go" id="pick">칸 고르기</button>`);$('#pick').onclick=()=>pickTile(p);return;}
+  frame(`${p.jail?`<span class="msg">점검소 ${p.jail}차례 남음 · 더블이면 출발</span>`:`<span class="msg">주사위를 굴려요</span>`}<div class="dice"><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div></div><button class="go" id="roll">굴리기</button>${canUpgrade(p)?'<button class="gold" id="up">업그레이드</button>':''}`);
+  $('#roll').onclick=()=>roll();const u=$('#up');if(u)u.onclick=()=>upgradeSheet(p);}
+function canUpgrade(p){return !p.upThisTurn&&Object.keys(p.own).some(i=>!p.own[i].up&&p.cash>=D.BOARD[i].price/2);}
+function roll(){const p=cp();$('#roll').disabled=true;const dies=[...document.querySelectorAll('.die')];dies.forEach(d=>d.classList.add('roll'));
+  let k=0;const iv=setInterval(()=>{dies.forEach(d=>d.dataset.v=1+Math.floor(Math.random()*6));if(++k>8){clearInterval(iv);const a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6);dies.forEach(d=>d.classList.remove('roll'));dies[0].dataset.v=a;dies[1].dataset.v=b;setTimeout(()=>afterRoll(a,b),500);}},90);}
+function afterRoll(a,b){const p=cp(),dbl=a===b;
+  if(p.jail){if(dbl){p.jail=0;toast('더블! 점검소에서 출발');}else{p.jail--;toast(p.jail?'점검 중… 한 차례 쉬어요':'점검 끝. 다음 차례에 출발');endTurn(false);return;}}
+  if(dbl)G.doubles++;
+  move(p,a+b,true,()=>land(p,dbl));}
+function move(p,steps,income,done){let k=0;const hop=()=>{if(k>=steps){done();return;}const next=(p.pos+1)%32;p.pos=next;k++;
+    if(next===0&&income){const inc=D.START_INCOME[p.esg];p.cash+=inc;pop(p,'+'+fmt(inc),'plus');toast(`출발점 통과! 운영 수익 ${fmt(inc)}`);}
+    hopTo(p,next,()=>setTimeout(hop,40));};hop();}
+function hopTo(p,idx,cb){const o=p.tok.position.clone(),w=W.tileWorld(idx,-1.2+(p.i%2)*2.4,-1.2+Math.floor(p.i/2)*2.4),dur=.22;let t=0;
+  W.tickers.push(dt=>{t=Math.min(dur,t+dt);const k=t/dur;p.tok.position.set(o.x+(w.x-o.x)*k,Math.sin(k*Math.PI)*1.2,o.z+(w.z-o.z)*k);if(t>=dur){p.tok.position.y=0;cb();return false;}});
+  W.flyTo({tx:w.x*.3,tz:w.z*.3});}
+function pickTile(p){const s=sheet(`<h3>전력망 지름길</h3><p class="sub">갈 칸을 고르세요. 출발 수익은 없어요.</p><div class="grid">${D.BOARD.map((b,i)=>i===p.pos?'':`<button data-t="${i}">${b.name}<small>${b.t==='biz'?fmt(b.price):b.t}</small></button>`).join('')}</div>`);
+  s.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{s.remove();const to=+b.dataset.t;const steps=(to-p.pos+32)%32;move(p,steps,false,()=>land(p,false));});}
+
+/* 도착 */
+function land(p,dbl){const b=D.BOARD[p.pos];frame(`<span class="msg">${b.name}</span>`);
+  const next=()=>endTurn(dbl);
+  if(b.t==='start'){const inc=D.START_INCOME[p.esg];/* move()에서 이미 지급 */setTimeout(next,600);return;}
+  if(b.t==='biz')return landBiz(p,b,next);
+  if(b.t==='news')return newsCard(p,next);
+  if(b.t==='action')return actionCard(p,next);
+  if(b.t==='practice')return mission(p,{kind:'teacher',h:'교실 절전 탐정',txt:'안 쓰는 전등이나 기기를 찾아요. 강사님 허락을 받고 끄거나, 끄는 동작을 해요.'},ok=>{if(ok){p.cash+=10000;pop(p,'+1억','plus');esgChange(p,1);}next();});
+  if(b.t==='event'){if(b.kind==='shortcut'){p.shortcut=true;info('전력망 지름길',b.desc,next);}
+    else if(b.kind==='again'){info('바람 타고 한 번 더',b.desc,()=>{frame(`<span class="msg">한 번 더!</span><div class="dice"><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div></div><button class="go" id="roll">굴리기</button>`);$('#roll').onclick=()=>{$('#roll').disabled=true;const dies=[...document.querySelectorAll('.die')];dies.forEach(d=>d.classList.add('roll'));setTimeout(()=>{const a=1+Math.floor(Math.random()*6),c=1+Math.floor(Math.random()*6);dies.forEach(d=>d.classList.remove('roll'));dies[0].dataset.v=a;dies[1].dataset.v=c;setTimeout(()=>move(p,a+c,true,()=>land(p,dbl)),400);},700);};});}
+    else if(b.kind==='fund'){const ps=G.players.slice().sort((x,y)=>networth(y)-networth(x));const top=ps[0],bot=ps[ps.length-1];
+      if(ps.length>1&&networth(top)!==networth(ps[1])&&networth(bot)!==networth(ps[ps.length-2])&&top!==bot){const amt=Math.min(2000,top.cash);top.cash-=amt;bot.cash+=amt;info('지역 상생 기금',`순자산 1위 ${top.name}이 최하위 ${bot.name}에게 ${fmt(amt)}을 지원해요.`,next);}
+      else info('지역 상생 기금','동률이라 이번엔 생략해요.',next);}
+    return;}
+  if(b.t==='check'){setTimeout(next,600);return;}
+  next();}
+function info(h,txt,cb){const s=sheet(`<h3>${h}</h3><p style="font-size:16px">${txt}</p><div class="foot"><button class="go" id="ok">확인</button></div>`);s.querySelector('#ok').onclick=()=>{s.remove();cb();};}
+function bizCard(b){return`<div class="biz"><div class="ic" style="background:var(--${b.cat})">${b.cat}</div><div><div class="nm">${b.name}</div><div class="es">${b.esg}</div></div></div>`;}
+function landBiz(p,b,next){const idx=p.pos,owner=G.players.find(q=>q.own[idx]);
+  if(!owner){const can=p.cash>=b.price;const s=sheet(`${bizCard(b)}<div class="kv"><span>구매가<b>${fmt(b.price)}</b></span><span>방문료<b>${fmt(b.rent)}</b></span><span>내 현금<b>${fmt(p.cash)}</b></span></div>
+    <div class="foot"><button class="line" id="no">안 사요</button><button class="go" id="buy" ${can?'':'disabled'}>${can?'사기':'현금 부족'}</button></div>`);
+    s.querySelector('#no').onclick=()=>{s.remove();next();};s.querySelector('#buy').onclick=()=>{s.remove();p.cash-=b.price;p.own[idx]={up:false};raise(p,idx);pop(p,'−'+fmt(b.price),'minus');toast(`${b.name} 창업!`);checkWin(p)||next();};return;}
+  if(owner===p){toast('내 사업이에요');setTimeout(next,600);return;}
+  const rent=b.rent*(owner.own[idx].up?1.5:1),pay=Math.min(rent,p.cash);p.cash-=pay;owner.cash+=pay;pop(p,'−'+fmt(pay),'minus');
+  info(`${owner.name}의 ${b.name}`,`방문료 ${fmt(rent)}${pay<rent?` 중 가진 현금 ${fmt(pay)}만 내요.`:'을 내요.'}`,()=>{checkWin(owner)||next();});}
+function raise(p,idx){const t=W.TILES[idx],old=t.bld;if(old)W.scene.remove(old);const g=W.makeBuilding(D.BOARD[idx].cat,t.col,p.col,p.own[idx].up);const w=W.tileWorld(idx,0,-1.2);g.position.set(w.x,0,w.z);g.rotation.y=t.p.rot;g.scale.setScalar(.01);W.scene.add(g);t.bld=g;
+  let k=0;W.tickers.push(dt=>{k=Math.min(1,k+dt*1.8);const e=1+2.7*Math.pow(k-1,3)+1.7*Math.pow(k-1,2);g.scale.setScalar(Math.max(.01,e));return k<1;});}
+function upgradeSheet(p){const list=Object.keys(p.own).map(Number);const s=sheet(`<h3>업그레이드</h3><p class="sub">구매가의 절반. 방문료 +50%, ESG +1. 내 차례에 1곳</p><div class="grid">${list.map(i=>{const b=D.BOARD[i],up=p.own[i].up,can=!up&&p.cash>=b.price/2;return`<button data-u="${i}" class="${up?'done':''}" ${can?'':'disabled'}>${b.name}<small>${up?'완료':fmt(b.price/2)}</small></button>`;}).join('')}</div><div class="foot"><button class="line" id="x">닫기</button></div>`);
+  s.querySelector('#x').onclick=()=>s.remove();s.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{const i=+b.dataset.u;p.cash-=D.BOARD[i].price/2;p.own[i].up=true;p.upThisTurn=true;raise(p,i);pop(p,'−'+fmt(D.BOARD[i].price/2),'minus');esgChange(p,1);s.remove();toast(`${D.BOARD[i].name} 업그레이드!`);refreshDock();});}
+function refreshDock(){const p=cp();const u=$('#up');if(u&&!canUpgrade(p))u.remove();const ps=$('.players');if(ps)ps.outerHTML=`<div class="players">${G.players.map((q,i)=>`<div class="pl ${i===G.cur?'on':''}" style="--c:${q.col}"><i></i><div><b>${q.name}</b><small><span class="g ${D.GRADES[q.esg]}">${D.GRADES[q.esg]}</span>사업 ${Object.keys(q.own).length}곳${q.jail?' · 점검 중':''}</small></div><div class="cash">${fmt(q.cash)}</div></div>`).join('')}</div>`;}
+function esgChange(p,d){const was=p.esg;p.esg=Math.max(0,Math.min(4,p.esg+d));if(p.esg!==was)toast(`${p.name} ESG ${D.GRADES[was]} → ${D.GRADES[p.esg]}`);
+  if(p.esg===0&&was>0){p.jail=2;const w=W.tileWorld(22,-1.2+(p.i%2)*2.4,-1.2+Math.floor(p.i/2)*2.4);p.pos=22;p.tok.position.set(w.x,0,w.z);toast(`${p.name}: D 등급! 전력망 점검소로`,2500);}refreshDock();}
+
+/* 뉴스카드 */
+function newsCard(p,next){if(!G.news.length)G.news=shuffle(D.NEWS.slice());const c=G.news.pop();
+  const s=sheet(`<h3>뉴스카드</h3><p class="sub">소리 내어 읽어요</p><div class="card news"><h4>${c.h}</h4><p>${c.txt}</p><div class="fx">${fxText(c.fx)}</div></div><div class="foot"><button class="go" id="ok">효과 적용</button></div>`);
+  s.querySelector('#ok').onclick=()=>{s.remove();applyFx(c.fx,p);refreshDock();if(!G.players.some(q=>checkWin(q)))next();};}
+function fxText(fx){return fx.split(';').map(f=>{const [k,a,b]=f.split(':');const v=+(b||a);const s=v>0?'+'+fmt(v):fmt(v);
+  if(k==='gen')return`발전 사업마다 ${s}`;if(k==='cat')return`${{E:'환경',S:'사회',G:'지배구조'}[a]}(${a}) 사업마다 ${s}`;if(k==='all')return`모두 ${s}`;if(k==='me')return`뽑은 사람 ${s}`;if(k==='esg')return`뽑은 사람 ESG ${v>0?'+':''}${v}`;if(k==='lowest')return`ESG 최하위 ${s}`;if(k==='own')return`${D.BOARD[a-1].name} 주인 ${s}`;return'';}).join(' · ');}
+function applyFx(fx,p){fx.split(';').forEach(f=>{const [k,a,b]=f.split(':');const v=+(b||a);
+  const give=(q,amt)=>{if(!amt)return;q.cash=Math.max(0,q.cash+amt);pop(q,(amt>0?'+':'−')+fmt(Math.abs(amt)),amt>0?'plus':'minus');};
+  if(k==='gen')G.players.forEach(q=>give(q,v*Object.keys(q.own).filter(i=>D.BOARD[i].gen).length));
+  if(k==='cat')G.players.forEach(q=>give(q,v*Object.keys(q.own).filter(i=>D.BOARD[i].cat===a).length));
+  if(k==='all')G.players.forEach(q=>give(q,v));if(k==='me')give(p,v);if(k==='esg')esgChange(p,v);
+  if(k==='lowest'){const m=Math.min(...G.players.map(q=>q.esg));G.players.filter(q=>q.esg===m).forEach(q=>give(q,v));}
+  if(k==='own'){const q=G.players.find(q=>q.own[a-1]);if(q)give(q,v);}});}
+
+/* 행동카드 · 미션 */
+function actionCard(p,next){if(!G.acts.length)G.acts=shuffle(D.ACTIONS.slice());const c=G.acts.pop();
+  mission(p,c,ok=>{if(ok){p.cash+=20000;pop(p,'+2억','plus');G.players.forEach(q=>esgChange(q,1));toast('성공! 뽑은 사람 2억, 전원 ESG +1',2500);}else toast('아쉬워요. 다음에 다시!');checkWin(p)||next();});}
+function mission(p,c,cb){let left=45,iv;
+  const s=sheet(c.kind==='quiz'?`<h3>행동카드 · 퀴즈</h3><p class="sub">모둠이 상의해서 45초 안에 고르세요</p><div class="tmr" id="tmr">45</div><div class="card quiz"><h4>${c.q}</h4><div class="qopts">${c.opts.map((o,i)=>`<button data-q="${i}">${o}</button>`).join('')}</div></div>`
+   :`<h3>행동카드</h3><p class="sub">모둠 전원이 함께 · 45초 · 강사님이 성공을 확인해요</p><div class="tmr" id="tmr">45</div><div class="card act"><h4>${c.h}</h4><p>${c.txt}</p></div><div class="foot"><button class="danger" id="no">실패</button><button class="go" id="ok">강사님 확인 · 성공!</button></div>`);
+  const tick=()=>{left--;const e=s.querySelector('#tmr');if(!e)return;e.textContent=left;e.classList.toggle('low',left<=10);if(left<=0){clearInterval(iv);e.textContent='끝!';}};iv=setInterval(tick,1000);
+  const done=ok=>{clearInterval(iv);s.remove();cb(ok);};
+  if(c.kind==='quiz'){s.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const i=+b.dataset.q,ok=i===c.a;s.querySelectorAll('[data-q]').forEach((x,j)=>{x.disabled=true;if(j===c.a)x.classList.add('ok');else if(j===i)x.classList.add('no');});setTimeout(()=>done(ok),1200);});}
+  else{s.querySelector('#ok').onclick=()=>done(true);s.querySelector('#no').onclick=()=>done(false);}}
+
+/* 턴 끝 · 승리 */
+function endTurn(dbl){const p=cp();refreshDock();
+  if(G.over)return;
+  if(dbl&&!p.jail&&G.doubles<3){toast('더블! 한 번 더');setTimeout(()=>{beginTurn();},700);return;}
+  G.cur=(G.cur+1)%G.players.length;setTimeout(beginTurn,500);}
+function checkWin(p){if(G.over)return false;if(networth(p)>=D.GOAL){endGame('goal',p);return true;}return false;}
+function endGame(why,winner){if(G.over)return;G.over=true;const ps=G.players.slice().sort((a,b)=>networth(b)-networth(a));const w=winner||ps[0];
+  document.querySelectorAll('.scrim').forEach(x=>x.remove());
+  sheet(`<h3>${why==='goal'?'10억 달성!':'25분 종료'}</h3><p class="sub">${w.name}의 승리 · 현금 + 사업 구매가</p><div class="rank">${ps.map((q,k)=>`<div class="${q===w?'win':''}"><span class="n">${k+1}</span><i style="background:${q.col}"></i>${q.name} <small style="color:var(--ink3)">ESG ${D.GRADES[q.esg]} · 사업 ${Object.keys(q.own).length}곳</small><b>${fmt(networth(q))}</b></div>`).join('')}</div>
+   <div class="foot"><button class="go" id="again">처음으로</button></div>`).querySelector('#again').onclick=()=>location.reload();}
+title();
+})();
+</script>
+</body></html>
