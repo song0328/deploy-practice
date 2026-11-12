@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="description" content="착한전력 주식회사 — ESG 10억 챌린지. 태양과 바람으로 전기를 만들고 ESG 실천으로 회사를 키우는 교실용 보드게임 (따숨교육)"><meta name="robots" content="noindex">
 <title>착한전력 주식회사 · ESG 10억 챌린지</title>
 <meta name="author" content="따숨교육"><meta name="copyright" content="© 2026 따숨교육. All rights reserved.">
@@ -124,7 +124,20 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .cr{font-size:11px;color:var(--ink3);margin-top:14px;line-height:1.5}
 .copy{position:fixed;right:12px;top:10px;font-size:11px;color:#9FB5A8;pointer-events:none}
 .toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:15px;z-index:30;box-shadow:0 4px 14px rgba(0,0,0,.3)}
-@media (max-width:760px){.players{width:170px;font-size:12px}.pl .cash{font-size:13px}.dock .msg{display:none}.goal{display:none}.hero h1{font-size:34px}}
+@media (max-width:900px){.players{width:190px}.pl{padding:6px 10px;font-size:12px}.pl b{font-size:13px}.pl .cash{font-size:13px}.goal{display:none}.brand{font-size:16px}.brand small{display:none}.clock{font-size:18px;padding:6px 12px}}
+@media (max-height:460px){.players{width:150px;top:46px;gap:3px}.pl{padding:4px 8px;font-size:11px}.pl b{font-size:12px}.pl .cash{font-size:11px}.pl small{display:none}.top{top:4px}.dock{bottom:6px;padding:6px 10px}.die{width:34px;height:34px;padding:5px}.cam{bottom:6px;right:6px;grid-template-columns:repeat(3,28px)}.cam button{height:28px;font-size:13px}.sheet{max-height:calc(100vh - 12px);padding:12px 14px}.tmr{font-size:32px;margin:0}}
+@media (max-width:640px){
+  .top{left:8px;right:8px;top:6px;gap:6px}.brand{padding:6px 10px;font-size:15px}.bank{padding:6px 10px;font-size:12px}.clock{font-size:16px;padding:6px 10px}
+  .players{left:8px;right:8px;top:48px;width:auto;grid-template-columns:1fr 1fr;gap:4px}
+  .pl{padding:5px 8px;font-size:11px;gap:6px;border-radius:10px}.pl b{font-size:12px}.pl small{font-size:10px}.pl .cash{font-size:12px}.pl .g{width:16px;height:16px;line-height:16px;font-size:10px}.pl.on{transform:none}
+  .dock{bottom:8px;padding:8px 10px;gap:6px;width:calc(100vw - 16px);justify-content:center;flex-wrap:wrap}.dock .who{font-size:14px}.dock .msg{display:block;font-size:12px;max-width:100%;width:100%;text-align:center;order:-1}
+  .die{width:36px;height:36px;padding:5px}button{padding:9px 12px;font-size:14px}
+  .cam{right:8px;bottom:86px;grid-template-columns:repeat(3,30px);padding:4px}.cam button{height:30px;font-size:14px}
+  .scrim{padding:8px}.sheet{padding:16px 14px;border-radius:14px}.sheet h3{font-size:20px}.card{padding:12px 14px}.card p{font-size:15px}.tmr{font-size:40px}
+  .biz .ic{width:48px;height:48px;font-size:22px}.biz .nm{font-size:17px}.kv{gap:10px}.kv b{font-size:16px}
+  .hero{padding:18px 16px}.hero h1{font-size:30px}.hero h2{font-size:15px}.hero p{font-size:13px}
+  .copy{display:none}
+}
 </style></head><body>
 <canvas id="c3d"></canvas><div id="tags"></div><div id="ui"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -362,14 +375,16 @@ function cheerAll(){NPCS.forEach(n=>{n.cheer=2.2;});}
 const want={yaw:0,pitch:1.22,dist:82,tx:0,tz:0},cur={...want};
 function place(){const c=cur;cam.position.set(c.tx+Math.sin(c.yaw)*Math.cos(c.pitch)*c.dist,Math.sin(c.pitch)*c.dist,c.tz+Math.cos(c.yaw)*Math.cos(c.pitch)*c.dist);cam.lookAt(c.tx,0,c.tz);}
 function flyTo(o){Object.assign(want,o);}
-function resize(){const w=innerWidth,h=innerHeight;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}addEventListener('resize',resize);resize();
+function fitDist(){const a=cam.aspect,t=Math.tan(cam.fov/2*Math.PI/180);const half=a<1?22.5:24;const dw=half/(t*a),dh=half/t;return Math.max(dw,dh)*(a<1?1.04:1.22);}
+let baseDist=82;
+function resize(){const w=innerWidth,h=innerHeight;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();const nd=fitDist();const k=want.dist/baseDist;baseDist=nd;want.dist=nd*k;cur.dist=want.dist;const port=cam.aspect<1;want.pitch=port?1.42:1.22;cur.pitch=want.pitch;want.tz=port&&cam.aspect>.6?-4:0;cur.tz=want.tz;scene.fog.near=nd*1.6;scene.fog.far=nd*2.6;}addEventListener('resize',resize);resize();
 const tickers=[];let last=performance.now();
 function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;
   for(const k in want)cur[k]+=(want[k]-cur[k])*Math.min(1,dt*4);place();spinners.forEach(s=>s.rotation.z+=dt*2.2);
   for(let i=tickers.length-1;i>=0;i--){if(tickers[i](dt)===false)tickers.splice(i,1);}
   R.render(scene,cam);requestAnimationFrame(loop);}requestAnimationFrame(loop);
 function project(x,y,z){const v=new T.Vector3(x,y,z).project(cam);return{x:(v.x+1)/2*innerWidth,y:(1-v.y)/2*innerHeight,vis:v.z<1};}
-return{T,scene,cam,TILES,buildTiles,tilePos,tileWorld,makeToken,makeBuilding,flyTo,want,tickers,project,box,spawnNPCs,addCustomer,cheerAll};
+return{T,scene,cam,TILES,buildTiles,tilePos,tileWorld,makeToken,makeBuilding,flyTo,want,tickers,project,box,spawnNPCs,addCustomer,cheerAll,base:()=>baseDist};
 })();
 
 /* ===== 게임 ===== */
@@ -407,7 +422,7 @@ function frame(dock){const p=cp();
   <div class="players">${G.players.map((q,i)=>`<div class="pl ${i===G.cur?'on':''}" data-i="${i}" style="--c:${q.col}"><i></i><div><b>${q.name}</b><small><span class="g ${D.GRADES[q.esg]}">${D.GRADES[q.esg]}</span>사업 ${Object.keys(q.own).length}곳${q.jail?' · 점검 중':''}</small></div><div class="cash">${fmt(q.cash)}</div></div>`).join('')}</div>
   <div class="panel dock" id="dock"><div class="who" style="--c:${p.col}"><i></i>${p.name}</div>${dock}</div>
   <div class="panel cam"><button id="c1">↺</button><button id="c2">＋</button><button id="c3">↻</button><button id="c4">⌂</button><button id="c5">－</button><button id="c6">▣</button></div><div class="copy">© 2026 따숨교육</div>`;
-  $('#c1').onclick=()=>W.flyTo({yaw:W.want.yaw+.5});$('#c3').onclick=()=>W.flyTo({yaw:W.want.yaw-.5});$('#c2').onclick=()=>W.flyTo({dist:Math.max(20,W.want.dist*.75)});$('#c5').onclick=()=>W.flyTo({dist:Math.min(110,W.want.dist*1.3)});$('#c4').onclick=()=>W.flyTo({yaw:0,pitch:1.22,dist:82,tx:0,tz:0});$('#c6').onclick=()=>W.flyTo({pitch:1.4,dist:70,tx:0,tz:0});}
+  $('#c1').onclick=()=>W.flyTo({yaw:W.want.yaw+.5});$('#c3').onclick=()=>W.flyTo({yaw:W.want.yaw-.5});$('#c2').onclick=()=>W.flyTo({dist:Math.max(W.base()*.3,W.want.dist*.75)});$('#c5').onclick=()=>W.flyTo({dist:Math.min(W.base()*1.4,W.want.dist*1.3)});$('#c4').onclick=()=>W.flyTo({yaw:0,pitch:W.cam.aspect<1?1.42:1.22,dist:W.base(),tx:0,tz:W.cam.aspect<1&&W.cam.aspect>.6?-4:0});$('#c6').onclick=()=>W.flyTo({pitch:1.45,dist:W.base()*.9,tx:0,tz:0});}
 setInterval(()=>{const c=$('#clock');if(!c||G.phase==='title'||G.over)return;c.textContent=clockTxt();c.classList.toggle('low',Date.now()-G.t0>(D.TIME_MIN-3)*60000);if(Date.now()-G.t0>=D.TIME_MIN*60000)endGame('time');},500);
 
 /* 시작 화면 */
@@ -437,7 +452,7 @@ function start(){G.players=[...Array(n).keys()].map(i=>({i,name:(names[i]||'').t
 
 /* 턴 */
 function beginTurn(){const p=cp();p.upThisTurn=false;G.busy=false;G.turnId=(G.turnId||0)+1;G.ended=false;
-  const w=W.tileWorld(p.pos);W.flyTo({tx:w.x*.12,tz:w.z*.12,dist:76});
+  const w=W.tileWorld(p.pos);W.flyTo({tx:w.x*.12,tz:w.z*.12,dist:W.base()*.93});
   if(p.shortcut){p.shortcut=false;frame(`<span class="msg">전력망 지름길! 원하는 칸으로 가요</span><button class="go" id="pick">칸 고르기</button>`);$('#pick').onclick=()=>pickTile(p);return;}
   frame(`${p.jail?`<span class="msg">점검소 ${p.jail}차례 남음 · 더블이면 출발</span>`:G.dblMsg?`<span class="msg dbl">${(G.lastDice||'더블!')} 한 번 더</span>`:`<span class="msg">주사위를 굴려요</span>`}<div class="dice"><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div><div class="die" data-v="1">${'<i></i>'.repeat(9)}</div></div><button class="go" id="roll">굴리기</button>${canUpgrade(p)?'<button class="gold" id="up">업그레이드</button>':''}`);
   G.dblMsg=false;$('#roll').onclick=()=>roll();const u=$('#up');if(u)u.onclick=()=>upgradeSheet(p);}
