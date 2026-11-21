@@ -14,11 +14,12 @@ const LOGIN_FAIL_LIMIT = 8;            // 비밀번호를 15분 안에 틀려도
 const LOGIN_WINDOW = 900;
 const FAIL_WARN = 10;                  // 10분 안에 틀린 코드 입력이 이만큼이면 경고
 const WINDOW_MS = 10 * 60 * 1000;
+const MAX_DAYS = 60;                   // 코드 하나를 열어 둘 수 있는 최대 기간(일)
 
 function statusOf(rec, today) {
   if (rec.revoked) return 'revoked';
   if (rec.date > today) return 'upcoming';
-  if (rec.date === today) return 'today';
+  if ((rec.end || rec.date) >= today) return 'today';
   return 'expired';
 }
 
@@ -31,7 +32,7 @@ function warningsFor(list, events, today) {
   const label = c => `"${c.label}" (${U.prettyCode(c.code)})`;
 
   list.forEach(c => {
-    if (c.limit > 0 && c.devices > c.limit && (c.date === today || c.date > today) && !c.revoked) {
+    if (c.limit > 0 && c.devices > c.limit && (c.end || c.date) >= today && !c.revoked) {
       out.push(`${label(c)} 코드로 기기 ${c.devices}대가 들어왔어요. 예상 인원은 ${c.limit}명이에요. 다른 곳으로 코드가 퍼졌는지 확인해 보세요.`);
     }
   });
@@ -113,12 +114,15 @@ module.exports = async function handler(req, res) {
     if (action === 'create') {
       const label = String(body.label || '').trim();
       const date = String(body.date || '');
+      const end = String(body.end || '') || date;
       const apps = Array.isArray(body.apps) ? body.apps.filter(a => Object.prototype.hasOwnProperty.call(U.GRANTS, a)) : [];
       if (!label) return U.sendJson(res, 200, { ok: false, msg: '반 이름을 적어 주세요.' });
       if (!U.isDateStr(date)) return U.sendJson(res, 200, { ok: false, msg: '날짜를 골라 주세요.' });
       if (date < today) return U.sendJson(res, 200, { ok: false, msg: '지난 날짜로는 발급할 수 없어요.' });
+      if (!U.isDateStr(end) || end < date) return U.sendJson(res, 200, { ok: false, msg: '끝 날짜는 시작 날짜와 같거나 그 뒤여야 해요.' });
+      if ((Date.parse(end) - Date.parse(date)) / 86400000 > MAX_DAYS - 1) return U.sendJson(res, 200, { ok: false, msg: `코드는 최대 ${MAX_DAYS}일까지 열어 둘 수 있어요.` });
       if (!apps.length) return U.sendJson(res, 200, { ok: false, msg: '쓸 수 있는 놀이도시를 하나 이상 골라 주세요.' });
-      const rec = await codes.createCode({ label, teacher: body.teacher, date, limit: Number(body.limit) || 0, apps: [...new Set(apps)] });
+      const rec = await codes.createCode({ label, teacher: body.teacher, date, end, limit: Number(body.limit) || 0, apps: [...new Set(apps)] });
       return U.sendJson(res, 200, { ok: true, code: rec });
     }
 

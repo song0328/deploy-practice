@@ -32,11 +32,12 @@ async function getCode(code, opts) {
 function forget(code) { cache.delete(code); }
 
 /* ── 발급 ──────────────────────────────────────────────── */
-async function createCode({ label, teacher, date, limit, apps }) {
+async function createCode({ label, teacher, date, end, limit, apps }) {
   const rec = {
     label: String(label).slice(0, 40),
     teacher: String(teacher || '').slice(0, 30),
     date,
+    end: end || date,
     limit: limit > 0 ? Math.min(Math.floor(limit), 999) : 0,
     apps,
     createdAt: Date.now(),
@@ -78,7 +79,7 @@ async function listCodes() {
     try { list.push(JSON.parse(raw)); } catch { /* 깨진 항목은 건너뜀 */ }
   });
   const from = U.kstDate(Date.now() - STATS_DAYS * 86400000);
-  const recent = list.filter(r => r.date >= from);
+  const recent = list.filter(r => (r.end || r.date) >= from);
   if (recent.length) {
     const out = await store.pipeline(recent.flatMap(r => [['SCARD', K.dev(r.code)], ['GET', K.cnt(r.code)], ['GET', K.last(r.code)]]));
     recent.forEach((r, i) => {

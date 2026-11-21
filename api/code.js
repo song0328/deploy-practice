@@ -47,7 +47,8 @@ module.exports = async function handler(req, res) {
 
     const today = U.kstDate();
     if (today < rec.date) return fail('early', `아직 열리지 않은 코드예요. (${fmtDate(rec.date)}에 열려요)`);
-    if (today > rec.date) return fail('expired', '수업 날짜가 지난 코드예요. 새 코드를 받아 주세요.');
+    const end = rec.end || rec.date;
+    if (today > end) return fail('expired', '사용 기간이 지난 코드예요. 새 코드를 받아 주세요.');
     if (!rec.apps.includes(app.grant)) return fail('app', '이 놀이도시에서는 쓸 수 없는 코드예요.');
 
     /* 통과 — 기기 번호(무작위)를 붙여 입장 기록을 남긴다 */
@@ -56,7 +57,7 @@ module.exports = async function handler(req, res) {
     const { isNewDevice } = await codes.recordEntry(code, dev);
     await codes.recordEvent({ k: 'ok', c: code, a: appKey, d: dev.slice(1, 5), n: isNewDevice ? 1 : 0, ip: ih.slice(0, 6) });
 
-    const expMs = U.endOfKstDay(rec.date);
+    const expMs = U.endOfKstDay(end);
     const token = U.sign('session', { c: code, a: rec.apps, e: Math.floor(expMs / 1000) });
     U.addCookies(res, [
       U.cookie(req, 'pc_session', token, (expMs - Date.now()) / 1000),
