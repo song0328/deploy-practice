@@ -91,6 +91,8 @@ button:focus-visible{outline:3px solid var(--jjok);outline-offset:2px}
 .timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:40px;letter-spacing:.02em;min-width:110px;text-align:center}
 .timer.low{color:var(--bad)}
 /* 3D 위 이름표 */
+.lead{position:absolute;left:0;top:0;height:2px;transform-origin:0 50%;background:var(--c);opacity:.8;pointer-events:none;border-radius:2px}
+.lead::after{content:'';position:absolute;right:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--c)}
 .tag{position:absolute;left:0;top:0;transform:translate(-50%,-100%);white-space:nowrap;pointer-events:none;will-change:transform}
 .plot{background:rgba(36,33,29,.82);color:#fff;border-radius:999px;padding:4px 11px 4px 5px;font-size:13px;display:flex;align-items:center;gap:7px}
 .plot b{width:22px;height:22px;border-radius:50%;background:#fff;color:var(--ink);display:grid;place-items:center;font-size:12px}
@@ -343,7 +345,7 @@ const PROMOS={
   taste:{name:'시연·체험',cost:25000,eff:{어르신:1.06,주민:1.06,학생:1.06,관광객:1.06},reach:{}}};
 // 자리별로 손님이 지나가며 볼 확률 (0번이 입구 명당)
 const PASS=[1,.9,.8,.75,.6,.55,.45,.4];
-const SPOTS=[{n:'입구 명당'},{n:'입구길'},{n:'마당'},{n:'마당'},{n:'동쪽 골목'},{n:'서쪽 골목'},{n:'정자 길'},{n:'정자 길'}];
+const SPOTS=[{n:'입구 명당'},{n:'입구 거리'},{n:'중앙 광장'},{n:'중앙 광장'},{n:'동쪽 골목'},{n:'서쪽 골목'},{n:'무대 앞'},{n:'무대 앞'}];
 const grade=s=>PASS[s]>=.9?3:PASS[s]>=.7?2:1;
 const REACH_BONUS=.08;       // 홍보를 보고 찾아온 손님은 그 가게를 조금 더 좋게 본다
 const hf=(a,b,c)=>{const h=Math.sin(a*9137.1+b*71.3+c*13.7)*43758.5453;return h-Math.floor(h);};
@@ -434,7 +436,7 @@ const SKY=new T.Color('#BFE0EE');
 renderer.setClearColor(SKY);
 scene.fog=new T.Fog('#CFE6EE',120,260);
 const camera=new T.PerspectiveCamera(42,1,0.5,600);
-scene.add(new T.HemisphereLight('#F2F8FF','#7C8A5A',0.62));
+scene.add(new T.HemisphereLight('#F2F8FF','#8C8F86',0.62));
 const sun=new T.DirectionalLight('#FFF0D6',0.72);
 sun.position.set(-40,70,30);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
 Object.assign(sun.shadow.camera,{near:10,far:200,left:-60,right:60,top:60,bottom:-60});
@@ -455,7 +457,7 @@ class Merge{constructor(){this.p=[];this.n=[];this.c=[];}
 const r=(()=>{let s=20261130;return(a=0,b=1)=>{s=(Math.imul(1664525,s)+1013904223)>>>0;return a+(s/4294967296)*(b-a);};})();
 
 /* --- 장터 배치 ---
-   남쪽 입구(z+) → 입구길 → 가운데 마당(감나무) → 동·서 골목, 북쪽 정자.
+   남쪽 입구 아치(z+) → 입구 거리 → 중앙 광장(분수) → 동·서 골목, 북쪽 공연 무대.
    집터는 손님이 지나가는 순서대로 0(명당)~5 */
 const PLOTS=[
   {x:-7.6,z:19,face:[1,0],zone:'road'},{x:7.6,z:19,face:[-1,0],zone:'road'},
@@ -466,87 +468,110 @@ PLOTS.forEach(p=>{if(!p.face){const d=Math.hypot(p.x,p.z);p.face=[-p.x/d,-p.z/d]
 const NODES={gate:{x:0,z:52},road:{x:0,z:21},yard:{x:0,z:5},east:{x:15,z:-1},west:{x:-15,z:-1},north:{x:0,z:-21}};
 
 const M=new Merge();
-// 땅
-M.add(U.box,0,-.5,0,420,1,420,'#93B86A');
-// 바깥 언덕·산
-for(let i=0;i<34;i++){const a=i/34*Math.PI*2+r(-.05,.05),d=r(120,170),h=r(18,46);M.add(U.cone8,Math.cos(a)*d,h/2-1,Math.sin(a)*d,r(40,70),h,r(40,70),i%3?'#6E9A5E':'#7FA868',0,r(0,3),0);}
-for(let i=0;i<14;i++){const a=i/14*Math.PI*2+.2,d=r(210,250),h=r(50,80);M.add(U.cone8,Math.cos(a)*d,h/2-2,Math.sin(a)*d,r(80,120),h,r(80,120),'#8FB0B7',0,r(0,3),0);}
-// 흙길·마당
-const DIRT='#D8C69D',DIRT2='#CDB98C';
-M.add(U.box,0,.02,36,7,.06,34,DIRT);                   // 입구길
-M.add(U.cyl,0,.03,0,30,.06,30,DIRT2);                 // 가운데 마당
-M.add(U.box,24,.02,-1,24,.06,6,DIRT);M.add(U.box,-24,.02,-1,24,.06,6,DIRT);
-M.add(U.box,0,.02,-24,5,.06,22,DIRT);
-// 마당 테두리 돌
+// 땅: 바깥 잔디 · 마켓 블록 보도 · 둘레 찻길
+M.add(U.box,0,-.5,0,420,1,420,'#A9C08A');
+const WALK='#BDBDB6',ROAD='#4A4F57',TILE='#E6D3B0',TILE2='#CDB48A';
+M.add(U.box,0,.01,2,110,.04,124,WALK);                        // 마켓 블록 (x -55..55, z -60..64)
+function road(x,z,w,d){M.add(U.box,x,.02,z,w,.05,d,ROAD);
+  const along=w>d,L=along?w:d;for(let s=-L/2+3;s<L/2-2;s+=6){if(along)M.add(U.box,x+s,.05,z,2.6,.02,.25,'#F2EFE6');else M.add(U.box,x,.05,z+s,.25,.02,2.6,'#F2EFE6');}}
+road(0,70,150,12);road(0,-66,150,12);road(-61,2,12,124);road(61,2,12,124);
+for(let i=-3;i<=3;i++)M.add(U.box,i*1.3,.06,70,.7,.02,9,'#F7F5EE');   // 입구 앞 건널목
+// 광장 바닥 (타일)
+M.add(U.box,0,.03,41,7,.06,46,TILE);                            // 입구 거리 (z 18..64)
+for(let z=20;z<64;z+=2)M.add(U.box,0,.065,z,7,.01,.08,TILE2);
+M.add(U.cyl,0,.04,0,30,.07,30,TILE);                           // 중앙 광장
+M.add(U.cyl,0,.05,0,19,.07,19,TILE2);M.add(U.cyl,0,.06,0,17,.07,17,TILE);
+M.add(U.box,24,.03,-1,24,.06,6,TILE);M.add(U.box,-24,.03,-1,24,.06,6,TILE);
+M.add(U.box,0,.03,-24,5,.06,22,TILE);
+// 광장 둘레 화단 (길 나는 곳은 비움)
 for(let i=0;i<40;i++){const a=i/40*Math.PI*2;if(Math.abs(Math.sin(a))>.97&&Math.cos(a)<0||Math.abs(a-Math.PI/2)<.18||Math.abs(a-Math.PI*1.5)<.12||Math.abs(a)<.1||Math.abs(a-Math.PI*2)<.1||Math.abs(a-Math.PI)<.1)continue;
-  M.add(U.ico,Math.cos(a)*15.3,.18,Math.sin(a)*15.3,r(.8,1.2),r(.4,.6),r(.8,1.2),r(0,1)<.5?'#A9A396':'#BDB6A8',0,r(0,3),0);}
-// 입구 (일주문)
-(function(){const z=46,R='#A8322A',D='#2F3437';
-  [-4.2,4.2].forEach(x=>{M.add(U.cyl,x,3.2,z,.7,6.4,.7,R);M.add(U.box,x,.25,z,1.3,.5,1.3,'#8E877A');});
-  M.add(U.box,0,5.6,z,10,.55,.6,R);M.add(U.box,0,6.4,z,9.6,.5,.7,'#3C6B5E');
-  M.add(U.prism,0,6.7,z,12.4,1.7,3.4,D,0,Math.PI/2,0);M.add(U.box,0,6.72,z,12.6,.25,3.6,'#43494C');
-  M.add(U.box,0,8.45,z,12,.3,.4,D);})();
-// 기와집 (배경)
-function house(x,z,ry,w,d,wall='#F1EBDD'){const c=Math.cos(ry),s=Math.sin(ry),P=(lx,lz)=>[x+lx*c+lz*s,z-lx*s+lz*c];
-  M.add(U.box,x,.35,z,w+.4,.7,d+.4,'#9B9385',0,ry,0);
-  M.add(U.box,x,1.9,z,w,2.4,d,wall,0,ry,0);
-  [-1,1].forEach(k=>{const [px,pz]=P(k*w/2,d/2+.01);M.add(U.box,px,1.9,pz,.25,2.4,.08,'#6B4A33',0,ry,0);});
-  const [bx,bz]=P(0,d/2+.02);M.add(U.box,bx,3.0,bz,w,.22,.08,'#6B4A33',0,ry,0);
-  for(let k=-1;k<=1;k+=2){const [wx,wz]=P(k*w/4,d/2+.03);M.add(U.box,wx,1.9,wz,w/5,1.1,.06,'#E9D9B8',0,ry,0);M.add(U.box,wx,1.9,wz,.06,1.1,.08,'#6B4A33',0,ry,0);}
-  M.add(U.prism,x,3.1,z,d+1.6,1.6,w+1.6,'#56606A',0,ry+Math.PI/2,0);
-  M.add(U.box,x,4.72,z,.35,.28,w+1.8,'#2E3336',0,ry+Math.PI/2,0);}
-[[-22,30,0,6,4],[-30,22,Math.PI/2,6,4],[22,30,0,6,4],[31,21,-Math.PI/2,6,4],[-34,-18,0,7,4.5],[-18,-20,0,6,4],[18,-20,0,6,4],[34,-18,0,7,4.5],
- [-14,-38,0,6,4],[14,-38,0,6,4],[-40,6,Math.PI/2,6,4.5],[40,6,-Math.PI/2,6,4.5],[-28,42,.2,5,4],[28,42,-.2,5,4]].forEach(h=>house(...h));
-// 돌담
-function wall(x1,z1,x2,z2){const L=Math.hypot(x2-x1,z2-z1),n=Math.ceil(L/1.1),ry=Math.atan2(x2-x1,z2-z1);
-  M.add(U.box,(x1+x2)/2,.45,(z1+z2)/2,.9,.9,L,'#B5AC9C',0,ry,0);
-  for(let i=0;i<n;i++){const t=(i+.5)/n;M.add(U.ico,x1+(x2-x1)*t,.95,z1+(z2-z1)*t,r(.8,1.1),r(.35,.5),r(.8,1.1),r(0,1)<.5?'#A39A8A':'#C4BCAD',0,r(0,3),0);}
-  M.add(U.box,(x1+x2)/2,1.12,(z1+z2)/2,1.1,.18,L+.2,'#4A5052',0,ry,0);}
-wall(-5,44,-16,44);wall(5,44,16,44);wall(-16,44,-16,33);wall(16,44,16,33);
-wall(-12,-31,-4,-31);wall(4,-31,12,-31);wall(37,-10,37,4);wall(-37,-10,-37,4);
-// 정자 (북쪽)
-(function(){const x=0,z=-36;M.add(U.box,x,.4,z,7,.8,7,'#9B9385');M.add(U.box,x,.9,z,6.2,.2,6.2,'#B98B5A');
-  [[-2.7,-2.7],[2.7,-2.7],[-2.7,2.7],[2.7,2.7]].forEach(([a,b])=>M.add(U.cyl,x+a,2.6,z+b,.4,3.4,.4,'#A8322A'));
-  M.add(U.box,x,4.4,z,6.6,.35,6.6,'#3C6B5E');M.add(U.cone4,x,5.6,z,10,2.6,10,'#3E4448',0,Math.PI/4,0);M.add(U.box,x,6.95,z,.4,.4,.4,'#2E3336');})();
-// 평상·장독대·짚단
-function pyeong(x,z,ry){M.add(U.box,x,.55,z,3,.18,2,'#B98B5A',0,ry,0);[[-1.3,-.8],[1.3,-.8],[-1.3,.8],[1.3,.8]].forEach(([a,b])=>{const c=Math.cos(ry),s=Math.sin(ry);M.add(U.box,x+a*c+b*s,.25,z-a*s+b*c,.18,.5,.18,'#7A5638');});}
-pyeong(-9,7,.3);pyeong(9,7,-.3);pyeong(-4,-36+5.2,0);
-function jars(x,z){M.add(U.box,x,.2,z,3.4,.4,2.4,'#A39A8A');for(let i=0;i<5;i++){const a=r(-1.2,1.2),b=r(-.7,.7),s=r(.55,.85);M.add(U.cyl,x+a,.4+s*.55,z+b,s,s*1.1,s,'#5A3A26');M.add(U.cyl,x+a,.4+s*1.15,z+b,s*.75,.12,s*.75,'#4A2E1E');}}
-jars(-26,27);jars(26,27);jars(-36,-12);jars(36,-12);jars(-14,-33);
-for(let i=0;i<10;i++){const a=r(0,6.28),d=r(52,80);M.add(U.cone8,Math.cos(a)*d,.9,Math.sin(a)*d,2.2,1.8,2.2,'#D9B866');}
-// 논두렁 줄무늬 (바깥 들판)
-for(let k=-4;k<=4;k++){M.add(U.box,k*20,.04,78,18,.04,22,k%2?'#A4C46F':'#9AC067');M.add(U.box,k*20,.04,-70,18,.04,22,k%2?'#9AC067':'#A4C46F');}
-// 감나무
-const fruitPos=[];
-function gamTree(x,z,s){M.add(U.cyl,x,1.6*s,z,.5*s,3.2*s,.5*s,'#6B4A33');M.add(U.cyl,x+.6*s,3*s,z,.3*s,1.6*s,.3*s,'#6B4A33',0,0,-.6);
-  const greens=['#5E8F3E','#6D9C45','#557F37'];
-  for(let i=0;i<5;i++){const a=i/5*6.28,d=1.1*s;M.add(U.ico,x+Math.cos(a)*d,(3.6+r(0,.8))*s,z+Math.sin(a)*d,r(2.2,2.8)*s,r(1.8,2.3)*s,r(2.2,2.8)*s,greens[i%3],r(0,3),r(0,3),0);}
-  M.add(U.ico,x,4.7*s,z,2.6*s,2.2*s,2.6*s,greens[1],0,r(0,3),0);
-  for(let i=0;i<Math.round(14*s);i++){const a=r(0,6.28),d=r(.8,2)*s;fruitPos.push([x+Math.cos(a)*d,(r(3,5.3))*s,z+Math.sin(a)*d,s]);}}
-gamTree(0,0,1.45);
-[[-20,12,.9],[20,12,.9],[-32,34,1],[32,34,1],[-30,-28,1.1],[30,-28,1.1],[-46,-4,1],[46,-4,1],[-12,56,.9],[12,56,.9],[0,-50,1.1],[-50,26,1],[50,26,1]].forEach(t=>gamTree(...t));
-// 장대와 깃발 줄
-const poles=[[-4,24],[4,24],[-4,32],[4,32],[-4,40],[4,40]];
-poles.forEach(([x,z])=>M.add(U.cyl,x,2.6,z,.16,5.2,.16,'#6B4A33'));
+  if(i%2)continue;const x=Math.cos(a)*15.4,z=Math.sin(a)*15.4;
+  M.add(U.box,x,.3,z,1.3,.6,1.3,'#B9BDBF',0,-a,0);M.add(U.ico,x,.8,z,1.2,.6,1.2,i%4?'#6FA34E':'#5E9445',0,r(0,3),0);
+  for(let k=0;k<3;k++)M.add(U.sph,x+r(-.4,.4),1.05,z+r(-.4,.4),.22,.22,.22,['#F06A8A','#F2C230','#FFFFFF'][k]);}
+// 입구 아치
+(function(){const z=46,DK='#2F3437',OR='#E2622A';
+  [-5,5].forEach(x=>{M.add(U.box,x,3.6,z,1.3,7.2,1.3,'#F4EEE2');M.add(U.box,x,1.1,z,1.36,.5,1.36,OR);M.add(U.box,x,.2,z,1.7,.4,1.7,'#9AA0A3');M.add(U.box,x,7.35,z,1.6,.3,1.6,DK);});
+  M.add(U.box,0,6.4,z,11.6,1.9,.8,DK);M.add(U.box,0,7.45,z,11.8,.2,1,OR);
+  for(let i=0;i<9;i++)M.add(U.sph,-4+i,7.8,z,.32,.32,.32,['#F2C230','#E2622A','#2D6FB8'][i%3]);})();
+// 도시 건물: 1층은 가게(유리창·차양·간판 띠), 위층은 사무실 창
+const BC=['#EBDDC8','#F2CDB0','#CFE0E3','#E9E5DC','#F2E3B3','#DCCBE3','#CBDDC6','#F0D4D4'],AC=['#E2622A','#2D6FB8','#2E8A5B','#C99A12','#D2467A','#178F9A'];
+function bldg(x,z,w,d,fl,k){const ry=Math.round(Math.atan2(-x,-z)/(Math.PI/2))*(Math.PI/2),c=Math.cos(ry),s=Math.sin(ry),P=(lx,lz)=>[x+lx*c+lz*s,z-lx*s+lz*c];
+  const col=BC[k%BC.length],acc=AC[k%AC.length],H1=3.2,FH=2.6,h=H1+(fl-1)*FH;
+  M.add(U.box,x,h/2,z,w,h,d,col,0,ry,0);
+  // 1층 가게
+  let [gx,gz]=P(0,d/2+.03);M.add(U.box,gx,1.35,gz,w-1.2,2.1,.08,'#3E5766',0,ry,0);
+  [gx,gz]=P(0,d/2+.06);M.add(U.box,gx,2.85,gz,w-.6,.55,.12,acc,0,ry,0);
+  const n=6,sw=(w-.6)/n;for(let i=0;i<n;i++){const [ax,az]=P(-(w-.6)/2+sw*(i+.5),d/2+.65);M.add(U.box,ax,2.4,az,sw,.14,1.2,i%2?'#FFF8EC':acc,0,ry,0);}
+  // 위층 창 (앞·뒤)
+  const nw=Math.max(2,Math.round(w/1.8));
+  for(let f=1;f<fl;f++){const y=H1+(f-.5)*FH;M.add(U.box,x,H1+(f-1)*FH,z,w+.08,.14,d+.08,'#BDB5A8',0,ry,0);
+    for(let i=0;i<nw;i++){const lx=-w/2+(i+.5)*w/nw;for(const side of[1,-1]){const [wx,wz]=P(lx,side*(d/2+.03));M.add(U.box,wx,y,wz,w/nw*.55,1.25,.08,'#6F8796',0,ry,0);}}}
+  // 옥상
+  M.add(U.box,x,h+.15,z,w+.2,.3,d+.2,'#A9A49A',0,ry,0);
+  const [ux,uz]=P(w*.2,-d*.15);M.add(U.box,ux,h+.75,uz,1.4,.9,1,'#9AA3A8',0,ry,0);}
+[[-22,31,8,6,3],[22,31,8,6,3],[-31,21,6,7,2],[31,21,6,7,2],[-28,42,7,5,4],[28,42,7,5,4],[-14,57,8,6,3],[14,57,8,6,3],[-30,56,8,6,4],[30,56,8,6,4],
+ [-42,6,6,9,3],[42,6,6,9,3],[-46,28,7,6,3],[46,28,7,6,3],[-46,-30,7,6,2],[46,-30,7,6,2],
+ [-34,-19,8,5,2],[34,-19,8,5,2],[-18,-21,7,5,2],[18,-21,7,5,2],[-14,-40,7,5,1],[14,-40,7,5,1],[-32,-44,8,6,1],[32,-44,8,6,1]].forEach((b,k)=>bldg(...b,k));
+// 둘레 너머 고층 빌딩 (하늘선)
+for(let gx=-176;gx<=176;gx+=22)for(let gz=-176;gz<=176;gz+=22){const d=Math.hypot(gx,gz);if(d>185||(Math.abs(gx)<72&&gz>-76&&gz<84))continue;
+  const x=gx+r(-4,4),z=gz+r(-4,4),w=r(9,15),dd=r(9,15),h=r(10,22)+Math.max(0,d-80)*r(.05,.28),col=['#9FB3C1','#B6C2CA','#C9CFD3','#8EA4B4','#BFC8BE','#D4C9B8'][Math.floor(r(0,6))];
+  M.add(U.box,x,h/2,z,w,h,dd,col);
+  for(let y=2.2;y<h-1.5;y+=3.1)M.add(U.box,x,y,z,w+.1,1.3,dd+.1,'#6E8494');
+  M.add(U.box,x,h+.3,z,w*.6,.6,dd*.6,'#8D969C');}
+for(let i=0;i<14;i++){const a=i/14*Math.PI*2+.2,d=r(230,260),h=r(40,70);M.add(U.cone8,Math.cos(a)*d,h/2-2,Math.sin(a)*d,r(80,120),h,r(80,120),'#A9BFC6',0,r(0,3),0);}
+// 공연 무대 (북쪽)
+(function(){const z=-36,DK='#2F3437';M.add(U.box,0,.6,z,11,1.2,7,'#3A3F45');M.add(U.box,0,1.25,z+.3,10.4,.1,6,'#B98B5A');
+  M.add(U.box,0,3.9,z-3.3,11,5.4,.4,'#264B73');M.add(U.box,0,2.6,z-3.08,9,.18,.06,'#E2622A');
+  [[-5.4,-3.4],[5.4,-3.4],[-5.4,3.4],[5.4,3.4]].forEach(([a,b])=>M.add(U.box,a,3.4,z+b,.35,6.8,.35,DK));
+  M.add(U.box,0,6.9,z-3.4,11.2,.35,.35,DK);M.add(U.box,0,6.9,z+3.4,11.2,.35,.35,DK);M.add(U.box,-5.4,6.9,z,.35,.35,7.2,DK);M.add(U.box,5.4,6.9,z,.35,.35,7.2,DK);
+  [-3.5,0,3.5].forEach(x=>M.add(U.cyl,x,6.55,z+3.4,.5,.6,.5,'#F2C230'));
+  [-5.6,5.6].forEach(x=>{M.add(U.box,x+(x<0?-1:1)*1.2,1.6,z-2.5,1.4,3.2,1.2,'#24272B');M.add(U.cyl,x+(x<0?-1:1)*1.2,2.4,z-1.88,.8,.05,.8,'#4A4F57',Math.PI/2,0,0);});})();
+// 중앙 분수
+(function(){M.add(U.cyl,0,.35,0,4.8,.7,4.8,'#C9CDD0');M.add(U.cyl,0,.66,0,4.2,.08,4.2,'#7EC3E0');
+  M.add(U.cyl,0,1.5,0,.8,1.8,.8,'#C9CDD0');M.add(U.cyl,0,2.45,0,2.6,.26,2.6,'#C9CDD0');M.add(U.cyl,0,2.6,0,2.2,.06,2.2,'#8ACFE8');
+  M.add(U.cyl,0,3.2,0,.4,1.1,.4,'#C9CDD0');M.add(U.sph,0,3.95,0,.75,.75,.75,'#A6DDF0');
+  for(let i=0;i<8;i++){const a=i/8*Math.PI*2;M.add(U.sph,Math.cos(a)*1.25,1.5,Math.sin(a)*1.25,.28,.8,.28,'#A6DDF0');}})();
+// 벤치 · 파라솔 테이블 · 가로등
+function bench(x,z,ry){M.add(U.box,x,.55,z,3,.14,.8,'#B98B5A',0,ry,0);M.add(U.box,x,.9,z,3,.5,.1,'#B98B5A',0,ry,0);
+  [-1.2,1.2].forEach(a=>{const c=Math.cos(ry),s=Math.sin(ry);M.add(U.box,x+a*c,.28,z-a*s,.14,.56,.7,'#3B4046',0,ry,0);});}
+bench(-9,7,.3);bench(9,7,-.3);bench(-4,-30.8,0);bench(4,-30.8,0);
+function parasol(x,z,k){M.add(U.cyl,x,.75,z,1.6,.1,1.6,'#F4EEE2');M.add(U.cyl,x,.38,z,.18,.75,.18,'#3B4046');M.add(U.cyl,x,1.6,z,.1,3.2,.1,'#3B4046');
+  M.add(U.cone8,x,3.3,z,4.2,1.1,4.2,AC[k%AC.length]);
+  [[1.4,0],[-1.4,0],[0,1.4],[0,-1.4]].forEach(([a,b])=>M.add(U.box,x+a,.45,z+b,.55,.9,.55,'#8E623E'));}
+parasol(-26,24,0);parasol(26,24,3);parasol(-40,-10,1);parasol(40,-10,4);parasol(-12,-31,2);parasol(12,-31,5);
+function lamp(x,z){M.add(U.cyl,x,2.7,z,.16,5.4,.16,'#3B4046');M.add(U.box,x,5.45,z,.55,.22,.55,'#3B4046');M.add(U.sph,x,5.2,z,.45,.4,.45,'#FFF3C4');M.add(U.cyl,x,.12,z,.5,.24,.5,'#3B4046');}
+const poles=[[-4,24],[4,24],[-4,32],[4,32],[-4,40],[4,40]];poles.forEach(([x,z])=>lamp(x,z));
+[[-12,12],[12,12],[-16,-16],[16,-16],[-34,3.5],[34,3.5],[-3.5,-14],[3.5,-14]].forEach(([x,z])=>lamp(x,z));
+// 가로수 (네모 화분)
+function stTree(x,z,s=1){M.add(U.box,x,.25,z,1.6,.5,1.6,'#9AA0A3');M.add(U.cyl,x,1.6*s,z,.35*s,2.4*s,.35*s,'#6B4A33');
+  M.add(U.ico,x,3.4*s,z,2.6*s,2.6*s,2.6*s,['#5E8F3E','#6D9C45','#557F37'][Math.floor(r(0,3))],r(0,3),r(0,3),0);M.add(U.ico,x+.5*s,4.2*s,z+.3*s,1.7*s,1.7*s,1.7*s,'#79A84E',0,r(0,3),0);}
+for(let x=-50;x<=50;x+=10){if(Math.abs(x)>6){stTree(x,62);}stTree(x,-58);}
+for(let z=-50;z<=55;z+=10){stTree(-53,z);stTree(53,z);}
+[[-20,12],[20,12],[-30,-28],[30,-28],[-10,46],[10,46],[0,-50]].forEach(([x,z])=>stTree(x,z,1.1));
+// 길가 자동차
+function car(x,z,ry,col){const c=Math.cos(ry),s=Math.sin(ry);M.add(U.box,x,.75,z,1.9,.8,4,col,0,ry,0);M.add(U.box,x-.2*s,1.45,z-.2*c,1.7,.65,2.2,'#BFD3DD',0,ry,0);
+  [[-.95,1.3],[.95,1.3],[-.95,-1.3],[.95,-1.3]].forEach(([a,b])=>M.add(U.cyl,x+a*c+b*s,.38,z-a*s+b*c,.75,.35,.75,'#222',0,ry,Math.PI/2));}
+[[-40,67.5,Math.PI/2,'#E2622A'],[-18,72.5,-Math.PI/2,'#2D6FB8'],[22,67.5,Math.PI/2,'#F2F2F2'],[44,72.5,-Math.PI/2,'#F2C230'],
+ [58.5,30,0,'#2E8A5B'],[63.5,-12,Math.PI,'#D2467A'],[-58.5,-26,0,'#F2F2F2'],[-63.5,18,Math.PI,'#178F9A'],[10,-63.5,Math.PI/2,'#2D6FB8'],[-34,-68.5,-Math.PI/2,'#C99A12']].forEach(a=>car(...a));
 const stat=M.build();scene.add(stat);
-// 감 열매 (한 번에 그리기)
-const fruit=new T.InstancedMesh(new T.SphereGeometry(.22,7,5),new T.MeshLambertMaterial({color:'#EE6A1E'}),fruitPos.length);
-fruitPos.forEach((p,i)=>{fruit.setMatrixAt(i,new T.Matrix4().compose(new T.Vector3(p[0],p[1],p[2]),new T.Quaternion(),new T.Vector3(p[3],p[3],p[3])));});
-fruit.castShadow=true;scene.add(fruit);
-// 오방색 깃발
-const flagCols=['#D93A2B','#F2C230','#2F6EB5','#FFFFFF','#2F8F5B'],flagN=[];
+// 축제 깃발 줄 (가로등 사이)
+const flagCols=['#E2622A','#F2C230','#2D6FB8','#FFFFFF','#2E8A5B'],flagN=[];
 const FM=new Merge();
 function bunting(x1,z1,x2,z2,h){const n=12;for(let i=0;i<n;i++){const t=(i+.5)/n,sag=Math.sin(t*Math.PI)*.8;FM.add(U.cone4,x1+(x2-x1)*t,h-sag-.35,z1+(z2-z1)*t,.45,.7,.06,flagCols[i%5],Math.PI,Math.atan2(x2-x1,z2-z1),0);}}
 bunting(-4,24,4,24,5);bunting(-4,32,4,32,5);bunting(-4,40,4,40,5);bunting(-4,24,-4,40,5.1);bunting(4,24,4,40,5.1);
+bunting(-12,12,12,12,5);
 const flags=FM.build(false,false);scene.add(flags);
 // 간판
 function textTex(text,{bg='#F6E7C1',fg='#2A2420',w=512,h=128,size=76,border=null}={}){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');
   g.fillStyle=bg;g.fillRect(0,0,w,h);if(border){g.strokeStyle=border;g.lineWidth=10;g.strokeRect(5,5,w-10,h-10);}g.fillStyle=fg;
   const F=n=>'700 '+n+'px "Gowun Batang", serif';g.font=F(size);while(g.measureText(text).width>w-48&&size>24){size-=4;g.font=F(size);}g.textAlign='center';g.textBaseline='middle';g.fillText(text,w/2,h/2+4);
   const t=new T.CanvasTexture(c);t.anisotropy=4;return t;}
-const gateSign=new T.Mesh(new T.PlaneGeometry(5,1.25),new T.MeshBasicMaterial({map:textTex('ENK 창업마켓시티',{bg:'#2F3437',fg:'#F2C230',border:'#A8322A'})}));
-gateSign.position.set(0,5.0,46.33);scene.add(gateSign);
-const gateSign2=gateSign.clone();gateSign2.rotation.y=Math.PI;gateSign2.position.z=45.67;scene.add(gateSign2);
+const gateSign=new T.Mesh(new T.PlaneGeometry(8.6,1.5),new T.MeshBasicMaterial({map:textTex('ENK 창업마켓시티',{bg:'#2F3437',fg:'#FFFFFF',border:'#E2622A',w:640,h:112,size:70})}));
+gateSign.position.set(0,6.4,46.42);scene.add(gateSign);
+const gateSign2=gateSign.clone();gateSign2.rotation.y=Math.PI;gateSign2.position.z=45.58;scene.add(gateSign2);
+const stageSign=new T.Mesh(new T.PlaneGeometry(8,1.6),new T.MeshBasicMaterial({map:textTex('ENK 창업 무대',{bg:'#264B73',fg:'#FFFFFF',border:'#F2C230'})}));
+stageSign.position.set(0,5.2,-36-3.08);scene.add(stageSign);
+const stageSign2=stageSign.clone();stageSign2.material=new T.MeshBasicMaterial({map:textTex('ENK 창업마켓시티',{bg:'#264B73',fg:'#FFFFFF',border:'#F2C230'})});stageSign2.rotation.y=Math.PI;stageSign2.position.z=-36-3.52;scene.add(stageSign2);
 
 /* --- 집터 표시 (빈 땅) --- */
 const plotObjs=PLOTS.map((p,i)=>{const g=new T.Group();g.position.set(p.x,0,p.z);g.rotation.y=p.ry;
@@ -680,16 +705,32 @@ const gradeWord=s=>['','보통 자리','좋은 자리','명당'][E.grade(s)];
 /* ---------- 3D 위 이름표 ---------- */
 const tags=new Set();
 function addTag(html,cls,pos){const el=document.createElement('div');el.className='tag';el.innerHTML=`<div class="${cls}">${html}</div>`;tagsEl.appendChild(el);const t={el,pos,life:null};tags.add(t);return t;}
-function dropTag(t){if(!t)return;t.el.remove();tags.delete(t);}
-W.tickers.push((dt)=>{tags.forEach(t=>{const p=typeof t.pos==='function'?t.pos():t.pos,s=W.project(p.x,p.y,p.z);t.el.style.display=s.vis?'':'none';t.el.style.transform=`translate(${s.x}px,${s.y}px) translate(-50%,-100%)`;
-  if(t.life!=null){t.life-=dt;if(t.life<=0)dropTag(t);}});});
+function dropTag(t){if(!t)return;t.el.remove();if(t.line)t.line.remove();tags.delete(t);}
+W.tickers.push((dt)=>{tags.forEach(t=>{if(t.ref)return;const p=typeof t.pos==='function'?t.pos():t.pos,s=W.project(p.x,p.y,p.z);t.el.style.display=s.vis?'':'none';
+  t.el.style.transform=`translate(${s.x}px,${s.y}px) translate(-50%,-100%)`;
+  if(t.life!=null){t.life-=dt;if(t.life<=0)dropTag(t);}});
+  layShopTags();});
+/* 가게 이름표: 장이 서는 동안엔 화면 양옆 빈 곳에 줄 세우고 가는 선으로 가게와 잇는다 (손님 다니는 길을 가리지 않게) */
+function layShopTags(){if(!shopTags.length)return;
+  const out=true; // 어느 날, 어느 단계든 이름표는 항상 바깥쪽에 줄 세운다
+  if(!out){shopTags.forEach(t=>{const s=W.project(t.ref.x,5.6,t.ref.z);t.el.style.display=s.vis?'':'none';t.el.style.transform=`translate(${s.x}px,${s.y}px) translate(-50%,-100%)`;t.line.style.display='none';});return;}
+  const c=W.project(0,1.5,-1).x,dk=document.getElementById('dock'),top=74,bot=(dk?dk.getBoundingClientRect().top:innerHeight)-10,GAP=8,EDGE=12,FAR=56;
+  const A=shopTags.map(t=>({t,r:W.project(t.ref.x,3,t.ref.z),w:t.el.offsetWidth,h:t.el.offsetHeight}));
+  [A.filter(a=>a.r.x<c),A.filter(a=>a.r.x>=c)].forEach((S,side)=>{if(!S.length)return;S.sort((a,b)=>a.r.y-b.r.y);
+    const w=Math.max(...S.map(a=>a.w)),edge=side?Math.max(...S.map(a=>a.r.x)):Math.min(...S.map(a=>a.r.x));
+    const x=side?Math.min(innerWidth-w-EDGE,edge+FAR):Math.max(EDGE,edge-FAR-w);
+    let y=top;S.forEach(a=>{a.y=Math.max(y,a.r.y-a.h/2);y=a.y+a.h+GAP;});
+    let lim=bot;for(let i=S.length-1;i>=0;i--){S[i].y=Math.min(S[i].y,lim-S[i].h);lim=S[i].y-GAP;}
+    S.forEach(a=>{a.y=Math.max(top,a.y);const t=a.t,ax=side?x:x+w,ay=a.y+a.h/2;
+      t.el.style.display=a.r.vis?'':'none';t.el.style.transform=`translate(${side?x:x+w-a.w}px,${a.y}px)`;
+      const L=t.line,dx=a.r.x-ax,dy=a.r.y-ay;L.style.display=a.r.vis?'':'none';L.style.width=Math.hypot(dx,dy)+'px';L.style.transform=`translate(${ax}px,${ay}px) rotate(${Math.atan2(dy,dx)}rad)`;});});}
 let plotTags=[];
 function showPlotTags(){plotTags.forEach(dropTag);plotTags=[];
   for(let i=0;i<G.n;i++){if(W.plotObjs[i].shop)continue;const p=W.PLOTS[i];
     plotTags.push(addTag(`<b>${i+1}</b>${E.SPOTS[i].n} <span class="gr">${gradeTxt(i)}</span> ${Math.round(E.PASS[i]*100)}%`,'plot'+(E.grade(i)===3?' best':''),{x:p.x,y:2.2,z:p.z}));}}
 let shopTags=[];
 function showShopTags(mode,sold){shopTags.forEach(dropTag);shopTags=[];
-  G.teams.forEach((t,i)=>{const p=W.PLOTS[t.spot];const el=addTag('','shop',{x:p.x,y:5.6,z:p.z});el.el.firstChild.style.setProperty('--c',t.col);el.team=i;shopTags.push(el);});updShopTags(mode,sold);}
+  G.teams.forEach((t,i)=>{const p=W.PLOTS[t.spot];const el=addTag('','shop',null);el.ref={x:p.x,z:p.z};el.line=document.createElement('i');el.line.className='lead';el.line.style.setProperty('--c',t.col);tagsEl.insertBefore(el.line,tagsEl.firstChild);el.el.firstChild.style.setProperty('--c',t.col);el.team=i;shopTags.push(el);});updShopTags(mode,sold);}
 function updShopTags(mode,sold){shopTags.forEach(tg=>{const t=G.teams[tg.team];
   let h=`<b>${esc(tname(t))}${t.ai?' <small class="rb">로봇</small>':''}</b><div class="s"><span>${esc(t.d.product)}</span></div>`;
   if(mode==='sales'&&sold)h+=`<div class="s"><span>판매 ${sold[tg.team]}/${AV(t)}</span><span>${t.d.pm&&G.half==='pm'?`<s>${won(t.d.price)}</s> `:''}${won(G.half==='pm'&&t.d.pm?t.d.pm:t.d.price)}원</span></div>`;
@@ -725,13 +766,13 @@ function bindSide(){const f=$('#fold');if(f)f.onclick=()=>{G.fold=!G.fold;refres
 function sideHTML(){const tabs=[['spot','자리'],['crowd','손님'],['goods','가격대'],['promo','홍보']].concat(G.phase==='lunch'?[['am','오전 장']]:[]).concat(G.day>0?[['prev','지난 장날']]:[]);if(!tabs.some(t=>t[0]===G.tab))G.tab='spot';
   return `<div class="tabs">${tabs.map(([k,n])=>`<button data-tab="${k}" class="${G.tab===k?'on':''}">${n}</button>`).join('')}<button class="fold" id="fold">${G.fold?'펼치기':'접기'}</button></div>${G.fold?'':`<div class="tabbody">${({crowd:crowdHTML,spot:spotHTML,promo:promoHTML,goods:goodsHTML,prev:prevHTML,am:amHTML})[G.tab]()}</div>`}`;}
 const totCrowd=()=>Object.values(E.crowd(ev(),G.n)).reduce((a,b)=>a+b,0);
-// 준비 개수는 팀당 예상 손님의 1.2배까지, 판매 가격은 원가의 4배까지 (손님은 원가의 3배 넘게는 거의 사지 않는다)
+// 준비 개수는 오늘 예상 손님 전체까지 (손님은 한 가게에서 1개만 산다), 판매 가격은 원가의 4배까지 (손님은 원가의 3배 넘게는 거의 사지 않는다)
 // 어제 남은 물건(음식·서비스가 아닌 것)은 원가·업종이 그대로면 오늘 다시 판다
 const AV=t=>t.d.qty+(t.d.stock||0);
 // 통장: 처음 1,200,000원. 쓴 돈은 빠지고 판 돈은 들어온다. 20만 원 아래로 떨어지면 200,000원을 빌려주고, 끝나면 이자 10%를 붙여 갚는다
 const LOAN=200000,LOAN_LINE=200000,RATE=.1,repay=t=>Math.round((t.loan||0)*(1+RATE)),fin=t=>t.cash-repay(t),bud=t=>t.cash;
 const stockOf=(t,d)=>{const c=t.carry;return c&&c.n>0&&c.cost===d.cost&&c.cat===d.cat?c.n:0;};
-const qtyCap=()=>Math.max(10,Math.round(totCrowd()/G.n*1.2/10)*10);
+const qtyCap=()=>Math.max(10,Math.round(totCrowd()/10)*10);
 const priceCap=c=>Math.max(1000,Math.round(E.unitCost(ev(),c)*4/100)*100);
 function spotHTML(){const tot=totCrowd();
   return `<h4>자리 중요도 <small>지나가며 가게를 보는 손님</small></h4><table class="crowd"><tr><th>자리</th><th>중요도</th><th>보는 손님</th><th>오늘 가게</th></tr>${[...Array(G.n).keys()].map(s=>{const t=G.drawing?null:G.teams.find(x=>x.spot===s);
@@ -788,7 +829,7 @@ function title(){orbitOn=true;plotTags.forEach(dropTag);plotTags=[];W.view.all()
 function showRules(){const s=sheet(`<h3>장날 규칙</h3><p class="sub">경기 전에 한 번 읽어 주세요.</p><div class="rules">
   <div class="rule"><b>자본금 1,200,000원</b><span>사흘 동안 쓰는 통장이에요. 물건 만들고 홍보한 돈은 빠지고, 판 돈은 다시 들어와요. 첫날에 다 쓰면 다음 날 쓸 돈이 없어요.</span></div>
   <div class="rule"><b>돈이 바닥나면 대출</b><span>장날 아침 통장에 200,000원도 안 남았으면 200,000원을 빌려줘요. 사흘이 끝나면 이자 10%를 붙여 220,000원을 갚아요.</span></div>
-  <div class="rule"><b>누가 1등?</b><span>사흘 뒤 빌린 돈까지 갚고 돈을 가장 많이 남긴 회사가 1등이에요. 가장 많이 판 회사는 장부에 매출 1위로 표시돼요.</span></div>
+  <div class="rule"><b>누가 1등?</b><span>사흘 뒤 빌린 돈까지 갚고 돈을 가장 많이 남긴 회사가 1등이에요. 판 금액(개수 × 가격)이 가장 많은 회사는 장부에 매출 1위로 표시돼요.</span></div>
   <div class="rule"><b>우리 아이디어 상품</b><span>회사 이름·상품 이름을 적고, 원가·판매 가격·준비 개수를 정해요.</span></div>
   <div class="rule"><b>자리는 매일 뽑기</b><span>입구에 가까울수록 손님이 많이 지나가요. 장날마다 새로 뽑아요.</span></div>
   ${G.lunch?`<div class="rule"><b>점심시간</b><span>손님 절반은 오전, 절반은 오후에 와요. 오전 장을 보고 오후 가격을 바꿀 수 있어요.</span></div>`:`<div class="rule"><b>가격은 장 서기 전에</b><span>장이 서면 그날은 정한 값으로 끝까지 팔아요. 다음 장날에 다시 바꿀 수 있어요.</span></div>`}
@@ -836,7 +877,7 @@ function editor(i){const t=G.teams[i],d=JSON.parse(JSON.stringify(t.d));let cnam
       <div class="chips cats">${E.PRESETS.map((x,k)=>`<button data-c="${k}" class="${d.cat===x.t?'on':''}">${x.t}<small>${x.e}</small><small>원가 ${won(x.c)}원</small></button>`).join('')}</div></div>
      <div class="prod"><div class="stp"><label>원가 <small>1개 만드는 데 드는 돈${e.cmul?' · 오늘 부품·재료값 +'+Math.round((e.cmul-1)*100)+'% → '+won(E.unitCost(e,d.cost))+'원':''}</small></label><div class="stepper"><button data-a="cost.-">−</button><input id="co" inputmode="numeric" value="${d.cost}"><button data-a="cost.+">+</button></div></div>
       <div class="stp"><label>판매 가격 <small>1개 · 원가의 ${(d.price/Math.max(1,E.unitCost(e,d.cost))).toFixed(1)}배 · 최대 ${won(priceCap(d.cost))}원</small></label><div class="stepper"><button data-a="price.-">−</button><input id="pr" inputmode="numeric" value="${d.price}"><button data-a="price.+">+</button></div></div>
-      <div class="stp"><label>${d.stock?'새로 만들 개수':'준비 개수'} <small>만들어 갈 물건 수 · 서비스는 받을 수 있는 손님 수 · 최대 ${cap}개</small></label><div class="stepper"><button data-a="qty.-">−</button><input id="qt" inputmode="numeric" value="${d.qty}"><button data-a="qty.+">+</button></div></div>${keep}${be}${dem}</div>
+      <div class="stp"><label>${d.stock?'새로 만들 개수':'준비 개수'} <small>만들어 갈 물건 수 · 서비스는 받을 수 있는 손님 수 · 최대 ${cap}개 (오늘 예상 손님 수)</small></label><div class="stepper"><button data-a="qty.-">−</button><input id="qt" inputmode="numeric" value="${d.qty}"><button data-a="qty.+">+</button></div></div>${keep}${be}${dem}</div>
      <div class="opts"><div class="opt"><h5>포장</h5><div class="chips"><button data-k="basic" class="${d.pack==='basic'?'on':''}">기본 봉투<small>추가 비용 없음</small></button><button data-k="pretty" class="${d.pack==='pretty'?'on':''}">선물 포장<small>개당 +${won(E.packCost('pretty',d.cost))}원</small></button></div></div>
       <div class="opt"><h5>홍보 · 여러 개 가능</h5><div class="chips">${Object.entries(E.PROMOS).map(([k,x])=>`<button data-m="${k}" class="${d.promo.includes(k)?'on':''}">${x.name}<small>${won(x.cost)}원</small></button>`).join('')}</div></div></div>
      <label class="note"><span>오늘 우리 회사 전략 한 줄 (선택)</span><input id="note" maxlength="40" placeholder="예) 관광객이 많으니 선물 포장으로 비싸게" value="${esc(d.note)}"></label>
@@ -938,7 +979,8 @@ function market(){const am=G.half==='am',all1=G.half==='day',L=G.last;
   document.querySelectorAll('#spd button').forEach(b=>b.onclick=()=>{speed=+b.dataset.s;document.querySelectorAll('#spd button').forEach(x=>x.classList.toggle('on',x===b));});
   const zone=r=>W.PLOTS[r].zone,N=W.NODES;
   function legs(from,to){const out=[];if(from===to)return out;if(from==='gate'){out.push(N.road);from='road';if(to==='road')return out;}
-    if(from!=='yard')out.push(N[from]);if(to!=='yard'||from!=='yard')out.push(N.yard);if(to!=='yard')out.push(N[to]);return out;}
+    const dt=()=>({x:(Math.random()<.5?-1:1)*5.6,z:-1.5});   // 광장 가운데 분수를 돌아서 무대 쪽으로
+    if(from!=='yard')out.push(N[from]);if(from==='north')out.push(dt());if(to!=='yard'||from!=='yard')out.push(N.yard);if(to==='north')out.push(dt());if(to!=='yard')out.push(N[to]);return out;}
   function plan(c){const stops=[];const pool=used.slice().sort((a,b)=>a-b);
     if(c.buy>=0){const ch=G.teams[c.buy].spot;pool.forEach(r=>{if(r<ch&&Math.random()<.4)stops.push(r);});stops.push(ch);}
     else{pool.forEach(r=>{if(Math.random()<.45)stops.push(r);});if(!stops.length)stops.push(pool[Math.floor(Math.random()*pool.length)]);}
@@ -1017,7 +1059,7 @@ function result(){crowd.forEach(a=>W.scene.remove(a.m));crowd=[];tags.forEach(t=
       <td>${won(E.unitCost(ev(),t.d.cost))}</td><td>${won(t.d.price)}${t.d.pm?` → ${won(t.d.pm)}`:''}<small>원가의 ${(t.d.price/Math.max(1,E.unitCost(ev(),t.d.cost))).toFixed(1)}배</small></td><td>${r.sold}/${AV(t)}<small>${G.lunch?'오전 '+L.am[G.teams.indexOf(t)].sold+' · ':''}${AV(t)?Math.round(r.sold/AV(t)*100):0}%${t.d.stock?` · 어제 재고 ${t.d.stock}`:''}${r.left?` · ${E.kindOf(t.d.cat)==='goods'&&G.day<2?'내일로':'버림'} ${r.left}`:''}</small></td>
       <td style="text-align:left;max-width:150px">${strat(t.d)}</td><td><div class="faces">${r.face.map((x,k)=>`<span title="${FACES[k].lab}">${faceHTML(k)}${x}</span>`).join('')}</div></td>
       <td><span class="stars">${r.star==null?'—':stars(r.star)}</span><small>${r.n}명</small></td><td class="big ${r.profit>=0?'pos':'neg'}">${r.profit>=0?'+':''}${won(r.profit)}</td></tr>`).join('')}</table></div>
-     <div><h4 style="margin-bottom:4px">${last?'최종 남은 돈':'지금 남은 돈'}</h4><p class="hint" style="margin:0 0 10px">${last?'빌린 돈은 이자 10%까지 갚은 뒤예요':'통장 잔액에서 빌린 돈(+이자 10%)을 뺀 금액이에요'}</p><div class="rank">${tot.map((t,k)=>`<div><span class="n">${k+1}</span><span class="tm" style="display:flex;align-items:center;gap:8px;font-weight:700;flex-wrap:wrap"><i style="width:10px;height:10px;border-radius:3px;background:${t.col}"></i>${esc(tname(t))} <span class="stars" style="font-size:12px">${stars(t.rep)}</span>${t===topS&&t.sales?'<span class="pill" style="background:#FFE7A8">매출 1위</span>':''}${t.loan?`<small style="font-weight:400;color:var(--ink3)">대출 ${won(t.loan)}</small>`:''}</span><b>${won(fin(t))}</b></div>`).join('')}</div></div></div>
+     <div><h4 style="margin-bottom:4px">${last?'최종 남은 돈':'지금 남은 돈'}</h4><p class="hint" style="margin:0 0 10px">${last?'빌린 돈은 이자 10%까지 갚은 뒤예요':'통장 잔액에서 빌린 돈(+이자 10%)을 뺀 금액이에요 · 매출은 판 개수가 아니라 판 금액(개수 × 가격) 합계예요'}</p><div class="rank">${tot.map((t,k)=>`<div><span class="n">${k+1}</span><span class="tm" style="display:flex;align-items:center;gap:8px;font-weight:700;flex-wrap:wrap"><i style="width:10px;height:10px;border-radius:3px;background:${t.col}"></i>${esc(tname(t))} <span class="stars" style="font-size:12px">${stars(t.rep)}</span>${t===topS&&t.sales?'<span class="pill" style="background:#FFE7A8">매출 1위 '+won(t.sales)+'원</span>':''}${t.loan?`<small style="font-weight:400;color:var(--ink3)">대출 ${won(t.loan)}</small>`:''}</span><b>${won(fin(t))}</b></div>`).join('')}</div></div></div>
      <h4 style="margin:22px 0 10px">오늘의 경제 이야기</h4><div class="econ">${econCards(L).map(c=>`<div class="ecard"><span class="k">${c.k}</span><b>${c.t}</b><p>${c.d}</p></div>`).join('')}</div>
      <h4 style="margin:22px 0 10px">우리 예상과 결과</h4><div class="plans">${rows.map(({t,r},k)=>`<div class="plan"><span class="tm"><i style="background:${t.col}"></i>${esc(tname(t))}</span><span class="nt">${t.d.note?'“'+esc(t.d.note)+'”':'<em>전략을 적지 않았어요</em>'}</span><span class="rk">오늘 ${k+1}위</span><b class="${r.profit>=0?'pos':'neg'}">${r.profit>=0?'+':''}${won(r.profit)}</b></div>`).join('')}</div>
      <h4 style="margin:22px 0 4px">무엇이 통했나</h4><p class="sub" style="margin:0 0 10px">그 선택을 빼고(자리는 가장 끝자리로 바꿔) 같은 장날을 다시 돌려 본 차이예요. 이익은 쓴 돈까지 뺀 값이에요.</p>

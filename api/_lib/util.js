@@ -10,10 +10,12 @@ const APPS = {
   'ai-ethics-city':      { title: 'AI 윤리 놀이도시', grant: 'ai-ethics-city', dir: 'ai-ethics-city', mount: true },
   'playcity':            { title: '스마트 놀이도시',  grant: 'playcity',       dir: 'playcity',       mount: true },
   'playcity-standalone': { title: '스마트 놀이도시',  grant: 'playcity',       dir: 'playcity-standalone', mount: false },
+  'enk-market':          { title: 'ENK 창업마켓시티', grant: 'enk-market',     dir: 'enk-market',     mount: true },
 };
 const GRANTS = {
   'ai-ethics-city': 'AI 윤리 놀이도시',
   'playcity': '스마트 놀이도시',
+  'enk-market': 'ENK 창업마켓시티',
 };
 
 /* ── 비밀값 ─────────────────────────────────────────────── */

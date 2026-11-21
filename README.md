@@ -13,7 +13,7 @@ GitHub에 파일을 올리면 Vercel이 자동으로 배포하기 때문에, **�
 | `api/_private/playcity/` | https://deploy-practice-wine.vercel.app/playcity/ | 스마트 놀이도시 |
 | `api/_private/playcity-standalone/` | https://deploy-practice-wine.vercel.app/playcity-standalone.html | 스마트 놀이도시 한 파일 버전 |
 | `jangnal/` | https://deploy-practice-wine.vercel.app/jangnal/ | 청도 장날 놀이도시 — 청도교육지원청 창업교실 4차시 장사 게임 (입장 코드 없이 열림) |
-| `enk-market/` | https://deploy-practice-wine.vercel.app/enk-market/ | ENK 창업마켓시티 — 장날 게임을 바탕으로 한 창업 마켓 게임 (입장 코드 없이 열림) |
+| `enk-market/` | https://deploy-practice-wine.vercel.app/enk-market/ | ENK 창업마켓시티 — 수업 코드로 입장 (게임 파일은 api/_private/enk-market/, 코드는 /class-admin 에서 발급) |
 | `vercel.json` | | 주소 연결(rewrites)과 배포 설정 |
 
 나머지(`index.html`)도 확실하지 않으면 그대로 두세요.

@@ -12,6 +12,9 @@
     { "source": "/playcity/", "destination": "/api/enter?app=playcity" },
     { "source": "/playcity/:path*", "destination": "/api/enter?app=playcity&p=:path*" },
     { "source": "/playcity-standalone.html", "destination": "/api/enter?app=playcity-standalone" },
+    { "source": "/enk-market", "destination": "/api/enter?app=enk-market" },
+    { "source": "/enk-market/", "destination": "/api/enter?app=enk-market" },
+    { "source": "/enk-market/:path*", "destination": "/api/enter?app=enk-market&p=:path*" },
     { "source": "/class-admin", "destination": "/api/admin" },
     { "source": "/class-admin/", "destination": "/api/admin" }
   ]
